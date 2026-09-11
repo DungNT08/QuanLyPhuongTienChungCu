@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using QuanLyPhuongTienChungCu.Data;
 using QuanLyPhuongTienChungCu.Dtos;
 using QuanLyPhuongTienChungCu.Models;
+using QuanLyPhuongTienChungCu.Services;
 using Microsoft.AspNetCore.Authorization;
 
 namespace QuanLyPhuongTienChungCu.Controllers;
@@ -13,10 +14,14 @@ namespace QuanLyPhuongTienChungCu.Controllers;
 public class ThanhToanController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly AuditLogService _auditLogService;
 
-    public ThanhToanController(AppDbContext context)
+    public ThanhToanController(
+        AppDbContext context,
+        AuditLogService auditLogService)
     {
         _context = context;
+        _auditLogService = auditLogService;
     }
 
     [HttpPost]
@@ -79,6 +84,15 @@ public class ThanhToanController : ControllerBase
 
         _context.ThanhToans.Add(thanhToan);
         await _context.SaveChangesAsync();
+
+        // Ghi AuditLog sau khi thanh toan thanh cong
+        await _auditLogService.GhiLog(
+            userId,
+            "CREATE",
+            "ThanhToan",
+            thanhToan.ThanhToanId,
+           $"Thanh toan luot gui xe {luotGuiXe.LuotGuiXeId}, bien so {luotGuiXe.BienSo}, so tien {thanhToan.SoTien:0}"
+        );
 
         var ketQua = new ThanhToanDto
         {

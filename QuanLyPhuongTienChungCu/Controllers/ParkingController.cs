@@ -189,7 +189,7 @@ public class ParkingController : ControllerBase
             "UPDATE",
             "LuotGuiXe",
             luotGuiXe.LuotGuiXeId,
-            $"Check-out phuong tien {luotGuiXe.BienSo}, so tien {luotGuiXe.SoTien}"
+            $"Check-out phuong tien {luotGuiXe.BienSo}, so tien {luotGuiXe.SoTien:0}"
         );
 
         return Ok(luotGuiXe);
