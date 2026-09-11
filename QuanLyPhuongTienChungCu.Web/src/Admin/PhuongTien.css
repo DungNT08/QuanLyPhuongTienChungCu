@@ -1,0 +1,343 @@
+/* =========================
+   WRAPPER TỔNG
+========================= */
+.pt-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background: #f4f9fc;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* =========================
+   HEADER
+========================= */
+.pt-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 28px;            /* 👈 SỬA: quay về 28px, giống TrangChu */
+  background: #ffffff;
+  border-bottom: 1px solid #dce9ef;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(35, 88, 116, 0.04);
+}
+
+/* LOGO */
+.pt-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 240px;
+  min-width: 240px;
+  box-sizing: border-box;
+}
+.pt-logo-icon {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  background: #eaf7fd;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.pt-logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.pt-logo-text strong {
+  font-size: 15px;
+  color: #0f3b56;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+.pt-logo-text span {
+  font-size: 11px;
+  color: #4f7a92;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Ô TÌM KIẾM */
+.pt-tim-kiem {
+  width: 360px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border: 1px solid #dce7ed;
+  border-radius: 22px;
+  background: #f7fbfd;
+  color: #6b8fa3;
+  transition: all 0.2s ease;
+  margin-left: auto;
+}
+.pt-tim-kiem:focus-within {
+  background: #ffffff;
+  border-color: #4aa7dd;
+  box-shadow: 0 0 0 3px rgba(74, 167, 221, 0.12);
+}
+.pt-tim-kiem input {
+  width: 100%;
+  padding: 0 10px;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: #1b405a;
+  background: transparent;
+  font-weight: 500;
+}
+.pt-tim-kiem input::placeholder {
+  color: #93aebd;
+  font-weight: 400;
+}
+.pt-icon-search {
+  font-size: 15px;
+  color: #6b8fa3;
+  flex-shrink: 0;
+}
+
+/* ADMIN */
+.pt-admin {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.pt-notify {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+.pt-notify:hover {
+  background: #f0f8fc;
+}
+.pt-notify-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #ed4d4d;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  border: 2px solid #ffffff;
+  box-sizing: content-box;
+}
+.pt-avatar {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #dceff8;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.pt-admin-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.2;
+}
+.pt-admin-text strong {
+  font-size: 14px;
+  color: #0f3b56;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.pt-admin-text span {
+  font-size: 11px;
+  color: #6b8fa3;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.pt-arrow {
+  color: #4f7a92;
+  font-size: 13px;
+  cursor: pointer;
+  margin-left: 2px;
+}
+
+/* =========================
+   NỘI DUNG CHÍNH
+========================= */
+.pt-body {
+  margin-left: 240px;
+  width: calc(100% - 240px);
+  min-height: 100vh;
+  padding-top: 68px;          /* Chừa chỗ cho header 68px */
+  box-sizing: border-box;
+  background: #f4f9fc;
+}
+
+/* TIÊU ĐỀ + NÚT THÊM */
+.pt-title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 30px 15px 30px;
+}
+.pt-title-bar h2 {
+  font-size: 22px;
+  color: #0f3b56;
+  font-weight: 800;
+  margin: 0;
+}
+.pt-btn-add {
+  background-color: #1a73e8;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+.pt-btn-add:hover {
+  background-color: #1557b0;
+}
+
+/* KHUNG BẢNG */
+.pt-table-box {
+  background-color: #ffffff;
+  margin: 0 30px 30px 30px;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #dfeaf0;
+  box-shadow: 0 2px 8px rgba(35, 88, 116, 0.03);
+  overflow-x: auto;
+}
+
+.pt-table-search {
+  display: flex;
+  align-items: center;
+  border: 1px solid #dce7ed;
+  border-radius: 8px;
+  padding: 8px 12px;
+  width: 350px;
+  margin-bottom: 15px;
+  background: #f7fbfd;
+}
+.pt-table-search input {
+  border: none;
+  outline: none;
+  margin-left: 10px;
+  width: 100%;
+  font-size: 14px;
+  background: transparent;
+  color: #1b405a;
+}
+
+/* BẢNG */
+.pt-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+.pt-table th {
+  text-align: left;
+  padding: 12px 15px;
+  background-color: #ebf6fb;
+  color: #2f5470;
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  border-bottom: 2px solid #dce9ef;
+  white-space: nowrap;
+}
+.pt-table td {
+  padding: 15px;
+  border-bottom: 1px solid #edf2f5;
+  color: #2f5470;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* TRẠNG THÁI */
+.pt-status {
+  background-color: #d5f2e6;
+  color: #1e7a54;
+  padding: 5px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* NÚT THAO TÁC */
+.pt-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 10px;
+  transition: transform 0.1s;
+}
+.pt-actions button:hover {
+  transform: scale(1.2);
+}
+.pt-edit { color: #1a73e8; }
+.pt-delete { color: #d93025; }
+
+/* PHÂN TRANG */
+.pt-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  color: #6b8fa3;
+  font-size: 13px;
+  font-weight: 600;
+}
+.pt-pages {
+  display: flex;
+  gap: 5px;
+}
+.pt-pages button {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #dce7ec;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #2f5470;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  transition: 0.15s ease;
+}
+.pt-pages button:hover {
+  background: #f0f8fc;
+  border-color: #a8d5ea;
+}
