@@ -1,5 +1,5 @@
 /* =========================
-   HEADER CHUNG (dùng cho mọi trang)
+   HEADER CHUNG
 ========================= */
 .header-trang-chu {
   position: fixed;
@@ -19,7 +19,6 @@
   box-shadow: 0 1px 3px rgba(35, 88, 116, 0.04);
 }
 
-/* LOGO BÊN TRÁI */
 .logo-header {
   display: flex;
   align-items: center;
@@ -62,7 +61,6 @@
   white-space: nowrap;
 }
 
-/* SEARCH */
 .o-tim-kiem {
   width: 360px;
   height: 42px;
@@ -99,14 +97,12 @@
   font-weight: 400;
 }
 
-.icon-tim-kiem,
-.icon-tim-cuoi {
+.icon-tim-kiem {
   font-size: 15px;
   color: #6b8fa3;
   flex-shrink: 0;
 }
 
-/* ACCOUNT */
 .thong-tin-admin {
   display: flex;
   align-items: center;
@@ -194,48 +190,15 @@
   margin-left: 2px;
 }
 
-/* RESPONSIVE HEADER */
-@media (max-width: 1100px) {
-  .header-trang-chu { padding: 0 20px; gap: 16px; }
-  .logo-header { width: 200px; min-width: 200px; }
-  .logo-header-text span { display: none; }
-  .o-tim-kiem { width: 240px; }
-}
-
-@media (max-width: 900px) {
-  .logo-header { width: 180px; min-width: 180px; }
-  .logo-header-text strong { font-size: 13px; }
-  .o-tim-kiem { width: 180px; }
-  .thong-tin-admin-text { display: none; }
-}
-
-@media (max-width: 700px) {
-  .header-trang-chu {
-    position: relative;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    padding: 14px;
-  }
-  .logo-header {
-    width: 100%;
-    min-width: 0;
-    justify-content: center;
-  }
-  .o-tim-kiem { width: 100%; margin-left: 0; }
-  .thong-tin-admin { justify-content: center; }
-  .thong-tin-admin-text { display: flex; }
-}
-
-/* ===== SIDEBAR CỐ ĐỊNH BÊN TRÁI ===== */
+/* =========================
+   SIDEBAR
+========================= */
 .sidebar-admin {
   width: 240px;
   min-width: 240px;
-  height: calc(100vh - 68px);   /* ✅ Trừ đi chiều cao Header */
+  height: calc(100vh - 68px);
   position: fixed;
-  top: 68px;                    /* ✅ Đẩy xuống dưới Header */
+  top: 68px;
   left: 0;
   bottom: 0;
   z-index: 900;
@@ -246,7 +209,6 @@
   overflow-y: auto;
 }
 
-/* ===== MENU ===== */
 .menu-admin {
   width: 100%;
   display: flex;
@@ -298,14 +260,36 @@
   white-space: nowrap;
 }
 
-/* ===== SCROLLBAR ===== */
-.sidebar-admin::-webkit-scrollbar {
-  width: 5px;
+.sidebar-admin::-webkit-scrollbar { width: 5px; }
+.sidebar-admin::-webkit-scrollbar-thumb { background: #c6dce8; border-radius: 10px; }
+.sidebar-admin::-webkit-scrollbar-track { background: transparent; }
+
+/* RESPONSIVE HEADER */
+@media (max-width: 1100px) {
+  .header-trang-chu { padding: 0 20px; gap: 16px; }
+  .logo-header { width: 200px; min-width: 200px; }
+  .logo-header-text span { display: none; }
+  .o-tim-kiem { width: 240px; }
 }
-.sidebar-admin::-webkit-scrollbar-thumb {
-  background: #c6dce8;
-  border-radius: 10px;
+
+@media (max-width: 900px) {
+  .logo-header { width: 180px; min-width: 180px; }
+  .logo-header-text strong { font-size: 13px; }
+  .o-tim-kiem { width: 180px; }
+  .thong-tin-admin-text { display: none; }
 }
-.sidebar-admin::-webkit-scrollbar-track {
-  background: transparent;
+
+@media (max-width: 700px) {
+  .header-trang-chu {
+    position: relative;
+    height: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px;
+  }
+  .logo-header { width: 100%; min-width: 0; justify-content: center; }
+  .o-tim-kiem { width: 100%; margin-left: 0; }
+  .thong-tin-admin { justify-content: center; }
+  .thong-tin-admin-text { display: flex; }
 }

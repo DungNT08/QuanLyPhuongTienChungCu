@@ -5,65 +5,124 @@ import {
   Route,
 } from "react-router-dom";
 
+// =====================================================
+// LAYOUT & SIDEBAR
+// =====================================================
 import SidebarAdmin from "./layouts/sidebarAdmin";
+import SidebarUser from "./layouts/sidebarUser";
 
-import TrangChu from "./Admin/TrangChu";
+// =====================================================
+// TRANG ADMIN
+// =====================================================
+import TrangChuAdmin from "./Admin/TrangChu";
 import PhuongTien from "./Admin/PhuongTien";
 import XeKhach from "./Admin/XeKhach";
 import CheckinOut from "./Admin/Checkin-out";
 import LuotGui from "./Admin/LuotGui";
 import PhiGuiXe from "./Admin/PhiGuiXe";
+import BangGia from "./Admin/BangGia";
+import LichSu from "./Admin/LichSu";
+import BaoCao from "./Admin/BaoCao";
+import QLyUser from "./Admin/QLyUser";
+
+// =====================================================
+// TRANG USER - CƯ DÂN
+// =====================================================
+import TrangChuUser from "./User/TrangChu";
+import PhuongTienU from "./User/PhuongTienU";
+import LichGuiXeU from "./User/LichGuiXeU";
 
 import "./App.css";
 
-/* =========================
-   LAYOUT ADMIN
-========================= */
-
+// =====================================================
+// LAYOUT ADMIN
+// =====================================================
 function LayoutAdmin({ children }) {
   return (
     <div className="app">
-
-      {/* SIDEBAR LUÔN HIỂN THỊ */}
       <SidebarAdmin />
 
-      {/* NỘI DUNG THAY ĐỔI THEO ROUTE */}
       <div className="noi-dung-app">
         {children}
       </div>
-
     </div>
   );
 }
 
+// =====================================================
+// LAYOUT USER
+// =====================================================
+function LayoutUser({ children }) {
+  return (
+    <div className="app">
+      <SidebarUser />
 
-/* =========================
-   APP
-========================= */
+      <div className="noi-dung-app">
+        {children}
+      </div>
+    </div>
+  );
+}
 
+// =====================================================
+// APP
+// =====================================================
 function App() {
   return (
     <Router>
       <Routes>
 
-        {/* =====================
-            TRANG CHỦ
-        ====================== */}
+        {/* =================================================
+            USER - CƯ DÂN
+        ================================================= */}
+
+        {/* Trang chủ */}
         <Route
           path="/"
           element={
+            <LayoutUser>
+              <TrangChuUser />
+            </LayoutUser>
+          }
+        />
+
+        {/* Phương tiện của tôi */}
+        <Route
+          path="/phuong-tien-cua-toi"
+          element={
+            <LayoutUser>
+              <PhuongTienU />
+            </LayoutUser>
+          }
+        />
+
+        {/* Lịch gửi xe */}
+        <Route
+          path="/lich-su-gui-xe"
+          element={
+            <LayoutUser>
+              <LichGuiXeU />
+            </LayoutUser>
+          }
+        />
+
+        {/* =================================================
+            ADMIN
+        ================================================= */}
+
+        {/* Trang chủ Admin */}
+        <Route
+          path="/admin"
+          element={
             <LayoutAdmin>
-              <TrangChu />
+              <TrangChuAdmin />
             </LayoutAdmin>
           }
         />
 
-
-        {/* =====================
-            PHƯƠNG TIỆN CƯ DÂN
-        ====================== */}
+        {/* Phương tiện */}
         <Route
-          path="/phuong-tien"
+          path="/admin/phuong-tien"
           element={
             <LayoutAdmin>
               <PhuongTien />
@@ -71,12 +130,9 @@ function App() {
           }
         />
 
-
-        {/* =====================
-            XE KHÁCH
-        ====================== */}
+        {/* Xe khách */}
         <Route
-          path="/xe-khach"
+          path="/admin/xe-khach"
           element={
             <LayoutAdmin>
               <XeKhach />
@@ -84,12 +140,9 @@ function App() {
           }
         />
 
-
-        {/* =====================
-            CHECK-IN / CHECK-OUT
-        ====================== */}
+        {/* Check-in / Check-out */}
         <Route
-          path="/check-in-out"
+          path="/admin/check-in-out"
           element={
             <LayoutAdmin>
               <CheckinOut />
@@ -97,12 +150,9 @@ function App() {
           }
         />
 
-
-        {/* =====================
-            LƯỢT GỬI XE
-        ====================== */}
+        {/* Lượt gửi xe */}
         <Route
-          path="/luot-gui-xe"
+          path="/admin/luot-gui-xe"
           element={
             <LayoutAdmin>
               <LuotGui />
@@ -110,15 +160,52 @@ function App() {
           }
         />
 
-
-        {/* =====================
-            PHÍ GỬI XE
-        ====================== */}
+        {/* Phí gửi xe */}
         <Route
-          path="/phi-gui-xe"
+          path="/admin/phi-gui-xe"
           element={
             <LayoutAdmin>
               <PhiGuiXe />
+            </LayoutAdmin>
+          }
+        />
+
+        {/* Bảng giá */}
+        <Route
+          path="/admin/bang-gia"
+          element={
+            <LayoutAdmin>
+              <BangGia />
+            </LayoutAdmin>
+          }
+        />
+
+        {/* Lịch sử */}
+        <Route
+          path="/admin/lich-su"
+          element={
+            <LayoutAdmin>
+              <LichSu />
+            </LayoutAdmin>
+          }
+        />
+
+        {/* Báo cáo */}
+        <Route
+          path="/admin/bao-cao"
+          element={
+            <LayoutAdmin>
+              <BaoCao />
+            </LayoutAdmin>
+          }
+        />
+
+        {/* Quản lý người dùng */}
+        <Route
+          path="/admin/ql-user"
+          element={
+            <LayoutAdmin>
+              <QLyUser />
             </LayoutAdmin>
           }
         />

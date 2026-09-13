@@ -1,26 +1,75 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useRef, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./sidebarAdmin.css";
 
 const danhSachMenu = [
-  { icon: "⌂", ten: "Trang chủ", duongDan: "/" },
-  { icon: "🚗", ten: "Phương tiện cư dân", duongDan: "/phuong-tien" },
-  { icon: "🚙", ten: "Xe khách", duongDan: "/xe-khach" },
-  { icon: "⇄", ten: "Check-in / Check-out", duongDan: "/check-in-out" },
-  { icon: "◷", ten: "Lượt gửi xe", duongDan: "/luot-gui-xe" },
-  { icon: "ⓢ", ten: "Phí gửi xe", duongDan: "/phi-gui-xe" },
-  { icon: "◇", ten: "Bảng giá", duongDan: "/bang-gia" },
-  { icon: "◴", ten: "Lịch sử", duongDan: "/lich-su" },
-  { icon: "▥", ten: "Báo cáo", duongDan: "/bao-cao" },
-  { icon: "♙", ten: "Quản lý người dùng", duongDan: "/nguoi-dung" },
+  { icon: "⌂", ten: "Trang chủ", duongDan: "/admin" },
+  { icon: "🚗", ten: "Phương tiện cư dân", duongDan: "/admin/phuong-tien" },
+  { icon: "🚙", ten: "Xe khách", duongDan: "/admin/xe-khach" },
+  { icon: "⇄", ten: "Check-in / Check-out", duongDan: "/admin/check-in-out" },
+  { icon: "◷", ten: "Lượt gửi xe", duongDan: "/admin/luot-gui-xe" },
+  { icon: "ⓢ", ten: "Phí gửi xe", duongDan: "/admin/phi-gui-xe" },
+  { icon: "◇", ten: "Bảng giá", duongDan: "/admin/bang-gia" },
+  { icon: "◴", ten: "Lịch sử", duongDan: "/admin/lich-su" },
+  { icon: "▥", ten: "Báo cáo", duongDan: "/admin/bao-cao" },
+  { icon: "♙", ten: "Quản lý người dùng", duongDan: "/admin/nguoi-dung" },
 ];
 
-function SidebarAdmin() {
+function SidebarAdmin({ duLieuTimKiem = [], onTimKiem }) {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const [tuKhoa, setTuKhoa] = useState("");
+  const [hienDropdown, setHienDropdown] = useState(false);
+  const [hienMenuAdmin, setHienMenuAdmin] = useState(false);
+
+  const adminRef = useRef(null);
+  const searchRef = useRef(null);
+
+  // Đóng dropdown khi click ra ngoài
+  useEffect(() => {
+    const xuLyClickNgoai = (e) => {
+      if (adminRef.current && !adminRef.current.contains(e.target)) {
+        setHienMenuAdmin(false);
+      }
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setHienDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", xuLyClickNgoai);
+    return () => document.removeEventListener("mousedown", xuLyClickNgoai);
+  }, []);
+
+  // Lọc kết quả tìm kiếm
+  const ketQuaTimKiem = tuKhoa.trim()
+    ? duLieuTimKiem.filter((item) =>
+        item.ten.toLowerCase().includes(tuKhoa.toLowerCase())
+      )
+    : [];
+
+  // Xử lý Enter
+  const xuLyEnter = (e) => {
+    if (e.key === "Enter") {
+      if (onTimKiem) onTimKiem(tuKhoa);
+      if (ketQuaTimKiem.length > 0) {
+        navigate(ketQuaTimKiem[0].duongDan);
+        setTuKhoa("");
+        setHienDropdown(false);
+      }
+    }
+  };
+
+  const dangXuat = () => {
+    if (window.confirm("Bạn chắc chắn muốn đăng xuất?")) {
+      localStorage.clear();
+      sessionStorage.clear();
+      alert("Đã đăng xuất!");
+      navigate("/");
+    }
+  };
 
   return (
     <>
-      {/* ===== HEADER CHUNG ===== */}
       <header className="header-trang-chu">
         <div className="logo-header">
           <div className="logo-header-icon">🏢</div>
@@ -30,26 +79,147 @@ function SidebarAdmin() {
           </div>
         </div>
 
-        <div className="o-tim-kiem">
+        {/* Ô TÌM KIẾM */}
+        <div className="o-tim-kiem" ref={searchRef} style={{ position: "relative" }}>
           <span className="icon-tim-kiem">🔍</span>
-          <input type="text" placeholder="Tìm kiếm biển số, tên cư dân..." />
+          <input
+            type="text"
+            placeholder="Tìm kiếm biển số, tên cư dân..."
+            value={tuKhoa}
+            onChange={(e) => {
+              setTuKhoa(e.target.value);
+              setHienDropdown(true);
+            }}
+            onFocus={() => setHienDropdown(true)}
+            onKeyDown={xuLyEnter}
+          />
+
+          {hienDropdown && tuKhoa.trim() && duLieuTimKiem.length > 0 && (
+            <div style={{
+              position: "absolute",
+              top: "calc(100% + 6px)",
+              left: 0,
+              right: 0,
+              background: "#ffffff",
+              border: "1px solid #dce7ed",
+              borderRadius: 8,
+              boxShadow: "0 6px 20px rgba(35, 88, 116, 0.12)",
+              maxHeight: 300,
+              overflowY: "auto",
+              zIndex: 10001,
+            }}>
+              {ketQuaTimKiem.length === 0 ? (
+                <div style={{ padding: "12px 16px", fontSize: 13, color: "#6b8fa3", textAlign: "center" }}>
+                  Không tìm thấy kết quả
+                </div>
+              ) : (
+                ketQuaTimKiem.map((item, i) => (
+                  <div
+                    key={i}
+                    onClick={() => {
+                      navigate(item.duongDan);
+                      setTuKhoa("");
+                      setHienDropdown(false);
+                    }}
+                    style={{
+                      padding: "10px 14px",
+                      cursor: "pointer",
+                      borderBottom: i < ketQuaTimKiem.length - 1 ? "1px solid #f0f5f8" : "none",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "#f4f9fc")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "#ffffff")}
+                  >
+                    <div style={{ fontSize: 11, color: "#4f7a92", fontWeight: 700, marginBottom: 3 }}>
+                      {item.loai}
+                    </div>
+                    <div style={{ fontSize: 13, color: "#1b405a", fontWeight: 500 }}>
+                      {item.ten}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
 
-        <div className="thong-tin-admin">
+        {/* KHU VỰC ADMIN */}
+        <div className="thong-tin-admin" ref={adminRef} style={{ position: "relative" }}>
           <button className="nut-thong-bao" type="button">
             🔔
             <span className="so-thong-bao">3</span>
           </button>
-          <div className="anh-admin">👤</div>
-          <div className="thong-tin-admin-text">
-            <strong>Admin</strong>
-            <span>Quản trị viên</span>
+
+          <div
+            onClick={() => setHienMenuAdmin((v) => !v)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 14,
+              cursor: "pointer",
+              userSelect: "none",
+            }}
+          >
+            <div className="anh-admin">👤</div>
+            <div className="thong-tin-admin-text">
+              <strong>Admin</strong>
+              <span>Quản trị viên</span>
+            </div>
+            <span className="mui-ten-admin">▾</span>
           </div>
-          <span className="mui-ten-admin">▾</span>
+
+          {hienMenuAdmin && (
+            <div style={{
+              position: "absolute",
+              top: "calc(100% + 8px)",
+              right: 0,
+              minWidth: 220,
+              background: "#ffffff",
+              border: "1px solid #dce7ed",
+              borderRadius: 10,
+              boxShadow: "0 8px 24px rgba(35, 88, 116, 0.15)",
+              overflow: "hidden",
+              zIndex: 10002,
+            }}>
+              <div style={{ padding: "12px 16px", borderBottom: "1px solid #edf2f5", background: "#fafdfe" }}>
+                <div style={{ fontSize: 14, fontWeight: 800, color: "#0f3b56" }}>Admin</div>
+                <div style={{ fontSize: 11, color: "#6b8fa3", fontWeight: 500, marginTop: 2 }}>
+                  admin@chungcu.vn
+                </div>
+              </div>
+
+              <button
+                onClick={() => { alert("Mở trang thông tin cá nhân"); setHienMenuAdmin(false); }}
+                style={{ width: "100%", padding: "11px 16px", border: "none", background: "#ffffff", textAlign: "left", fontSize: 13, fontWeight: 600, color: "#1b405a", cursor: "pointer", display: "flex", alignItems: "center", gap: 10 }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#f4f9fc")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "#ffffff")}
+              >
+                <span>👤</span><span>Thông tin cá nhân</span>
+              </button>
+
+              <button
+                onClick={() => { alert("Mở trang cài đặt"); setHienMenuAdmin(false); }}
+                style={{ width: "100%", padding: "11px 16px", border: "none", background: "#ffffff", textAlign: "left", fontSize: 13, fontWeight: 600, color: "#1b405a", cursor: "pointer", display: "flex", alignItems: "center", gap: 10 }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#f4f9fc")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "#ffffff")}
+              >
+                <span>⚙️</span><span>Cài đặt</span>
+              </button>
+
+              <div style={{ height: 1, background: "#edf2f5", margin: "4px 0" }} />
+
+              <button
+                onClick={dangXuat}
+                style={{ width: "100%", padding: "11px 16px", border: "none", background: "#ffffff", textAlign: "left", fontSize: 13, fontWeight: 700, color: "#d93025", cursor: "pointer", display: "flex", alignItems: "center", gap: 10 }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#fef2f2")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "#ffffff")}
+              >
+                <span>🚪</span><span>Đăng xuất</span>
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
-      {/* ===== SIDEBAR ===== */}
       <aside className="sidebar-admin">
         <nav className="menu-admin">
           {danhSachMenu.map((menu) => (
