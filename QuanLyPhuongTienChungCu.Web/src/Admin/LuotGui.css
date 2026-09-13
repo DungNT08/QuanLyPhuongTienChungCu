@@ -1,0 +1,453 @@
+/* =========================
+   KHUNG NỘI DUNG TRANG
+========================= */
+
+.noi-dung-luot-gui {
+  width: calc(100% - 240px);
+
+  min-height: calc(100vh - 68px);
+
+  margin-left: 240px;
+
+  padding:
+    88px
+    28px
+    28px;
+
+  box-sizing: border-box;
+
+  background: #f4f9fc;
+
+  color: #1b405a;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+
+/* =========================
+   TIÊU ĐỀ
+========================= */
+
+.tieu-de-luot-gui {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 20px;
+
+  flex-wrap: wrap;
+}
+
+.tieu-de-luot-gui h1 {
+  margin: 0;
+
+  font-size: 26px;
+
+  color: #0f3b56;
+
+  font-weight: 800;
+
+  letter-spacing: 0.2px;
+
+  white-space: nowrap;
+}
+
+
+/* =========================
+   TAB
+========================= */
+
+.thanh-tab-luot-gui {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  margin-bottom: 16px;
+
+  border-bottom: 1px solid #dce7ed;
+}
+
+.tab-luot-gui {
+  position: relative;
+
+  padding:
+    11px
+    17px
+    12px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #718c9d;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    color
+    0.2s
+    ease;
+}
+
+.tab-luot-gui:hover {
+  color: #1b80b8;
+}
+
+.tab-luot-gui-dang-chon {
+  color: #147db5;
+}
+
+.tab-luot-gui-dang-chon::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+
+  right: 0;
+
+  bottom: -1px;
+
+  height: 3px;
+
+  background: #3b9fe0;
+
+  border-radius:
+    4px
+    4px
+    0
+    0;
+}
+
+
+/* =========================
+   KHUNG BẢNG
+========================= */
+
+.o-dashboard-luot-gui {
+  width: 100%;
+
+  background: #ffffff;
+
+  border: 1px solid #dfeaf0;
+
+  border-radius: 10px;
+
+  box-shadow:
+    0
+    2px
+    8px
+    rgba(35, 88, 116, 0.03);
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================
+   VÙNG BẢNG
+========================= */
+
+.vung-bang-luot-gui {
+  width: 100%;
+
+  overflow-x: auto;
+}
+
+
+/* =========================
+   BẢNG
+========================= */
+
+.bang-luot-gui {
+  width: 100%;
+
+  min-width: 950px;
+
+  border-collapse: collapse;
+
+  table-layout: fixed;
+}
+
+.bang-luot-gui th {
+  padding:
+    14px
+    12px;
+
+  background: #ebf6fb;
+
+  text-align: left;
+
+  color: #2f5470;
+
+  font-size: 12px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.2px;
+
+  white-space: nowrap;
+
+  border-bottom: 1px solid #dfeaf0;
+}
+
+.bang-luot-gui td {
+  padding:
+    14px
+    12px;
+
+  border-bottom: 1px solid #edf2f5;
+
+  color: #2f5470;
+
+  font-size: 13px;
+
+  font-weight: 500;
+
+  white-space: nowrap;
+}
+
+
+/* =========================
+   CHIỀU RỘNG CỘT
+========================= */
+
+.bang-luot-gui th:nth-child(1),
+.bang-luot-gui td:nth-child(1) {
+  width: 55px;
+
+  text-align: center;
+}
+
+.bang-luot-gui th:nth-child(2),
+.bang-luot-gui td:nth-child(2) {
+  width: 120px;
+}
+
+.bang-luot-gui th:nth-child(3),
+.bang-luot-gui td:nth-child(3) {
+  width: 100px;
+}
+
+.bang-luot-gui th:nth-child(4),
+.bang-luot-gui td:nth-child(4) {
+  width: 155px;
+}
+
+.bang-luot-gui th:nth-child(5),
+.bang-luot-gui td:nth-child(5) {
+  width: 125px;
+}
+
+.bang-luot-gui th:nth-child(6),
+.bang-luot-gui td:nth-child(6) {
+  width: 155px;
+}
+
+.bang-luot-gui th:nth-child(7),
+.bang-luot-gui td:nth-child(7) {
+  width: 110px;
+}
+
+.bang-luot-gui th:nth-child(8),
+.bang-luot-gui td:nth-child(8) {
+  width: 110px;
+}
+
+
+/* =========================
+   HOVER
+========================= */
+
+.bang-luot-gui tr:last-child td {
+  border-bottom: none;
+}
+
+.bang-luot-gui tbody tr:hover td {
+  background: #fafdfe;
+}
+
+
+/* =========================
+   BẢNG TRỐNG
+========================= */
+
+.o-trong-bang-luot-gui {
+  height: 220px;
+
+  padding:
+    40px !important;
+
+  text-align: center !important;
+
+  vertical-align: middle !important;
+
+  color: #6b8fa3 !important;
+
+  font-size: 13px !important;
+
+  font-weight: 600 !important;
+}
+
+
+/* =========================
+   CHÂN BẢNG
+========================= */
+
+.chan-bang-luot-gui {
+  min-height: 60px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding:
+    0
+    18px;
+
+  color: #6b8fa3;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  border-top: 1px solid #edf2f5;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+}
+
+
+/* =========================
+   PHÂN TRANG
+========================= */
+
+.phan-trang-luot-gui {
+  display: flex;
+
+  gap: 5px;
+}
+
+.phan-trang-luot-gui button {
+  width: 32px;
+
+  height: 32px;
+
+  border: 1px solid #dce7ec;
+
+  border-radius: 6px;
+
+  background: #ffffff;
+
+  color: #2f5470;
+
+  cursor: pointer;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  transition:
+    0.15s
+    ease;
+}
+
+.phan-trang-luot-gui button:hover {
+  background: #f0f8fc;
+
+  border-color: #a8d5ea;
+}
+
+.phan-trang-luot-gui
+.trang-dang-chon-luot-gui {
+  background: #3b9fe0;
+
+  color: #ffffff;
+
+  border-color: #3b9fe0;
+}
+
+
+/* =========================
+   LỊCH SỬ
+========================= */
+
+.lich-su-trong-luot-gui {
+  min-height: 260px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  color: #6b8fa3;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1200px) {
+  .noi-dung-luot-gui {
+    width: calc(100% - 240px);
+
+    margin-left: 240px;
+
+    padding-left: 22px;
+
+    padding-right: 22px;
+  }
+}
+
+@media (max-width: 900px) {
+  .noi-dung-luot-gui {
+    width: calc(100% - 220px);
+
+    margin-left: 220px;
+
+    padding:
+      84px
+      18px
+      18px;
+  }
+
+  .tieu-de-luot-gui h1 {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 700px) {
+  .noi-dung-luot-gui {
+    width: 100%;
+
+    margin-left: 0;
+
+    padding:
+      20px
+      14px
+      14px;
+  }
+}

@@ -1,0 +1,701 @@
+/* =========================
+   TRANG PHÍ GỬI XE
+========================= */
+
+.phi-gui-xe-page {
+  width: 100%;
+  min-height: 100vh;
+
+  background: #f4f9fc;
+
+  color: #1b405a;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.header-phi-gui-xe {
+  position: fixed;
+
+  top: 0;
+  left: 240px;
+  right: 0;
+
+  height: 68px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 24px;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #dce8ee;
+
+  box-sizing: border-box;
+
+  z-index: 800;
+}
+
+
+/* LOGO */
+
+.logo-phi-gui-xe {
+  width: 310px;
+  min-width: 310px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+.logo-icon-phi-gui-xe {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #e9f6fb;
+
+  border-radius: 8px;
+
+  font-size: 20px;
+}
+
+.ten-he-thong-phi-gui-xe {
+  color: #155d8d;
+
+  font-size: 15px;
+
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+/* SEARCH */
+
+.thanh-tim-phi-gui-xe {
+  width: 370px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0 14px;
+
+  background: #f6fafc;
+
+  border: 1px solid #dce7ed;
+
+  border-radius: 22px;
+
+  box-sizing: border-box;
+}
+
+.thanh-tim-phi-gui-xe span {
+  font-size: 14px;
+}
+
+.thanh-tim-phi-gui-xe input {
+  width: 100%;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #1b405a;
+
+  font-size: 13px;
+}
+
+.thanh-tim-phi-gui-xe input::placeholder {
+  color: #93aebd;
+}
+
+
+/* ADMIN */
+
+.khu-vuc-admin-phi-gui-xe {
+  margin-left: auto;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+.nut-thong-bao-phi-gui-xe {
+  position: relative;
+
+  width: 38px;
+  height: 38px;
+
+  border: none;
+
+  background: transparent;
+
+  border-radius: 8px;
+
+  font-size: 17px;
+
+  cursor: pointer;
+}
+
+.so-thong-bao {
+  position: absolute;
+
+  top: 1px;
+  right: 1px;
+
+  width: 17px;
+  height: 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #ee5c5c;
+
+  color: #ffffff;
+
+  font-size: 10px;
+
+  font-weight: 700;
+}
+
+.anh-admin-phi-gui-xe {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e8f5fb;
+
+  font-size: 17px;
+}
+
+.thong-tin-admin-phi-gui-xe {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  color: #234b62;
+
+  font-size: 14px;
+}
+
+
+/* =========================
+   NỘI DUNG
+========================= */
+
+.noi-dung-phi-gui-xe {
+  width: calc(100% - 240px);
+
+  min-height: calc(100vh - 68px);
+
+  margin-left: 240px;
+
+  padding:
+    88px
+    28px
+    28px;
+
+  box-sizing: border-box;
+
+  background: #f4f9fc;
+}
+
+
+/* =========================
+   TIÊU ĐỀ
+========================= */
+
+.tieu-de-phi-gui-xe {
+  margin-bottom: 18px;
+}
+
+.tieu-de-phi-gui-xe h1 {
+  margin: 0;
+
+  color: #0f3b56;
+
+  font-size: 26px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.2px;
+}
+
+
+/* =========================
+   2 CARD
+========================= */
+
+.khu-vuc-tinh-phi {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.65fr)
+    minmax(300px, 0.95fr);
+
+  gap: 18px;
+
+  margin-bottom: 18px;
+}
+
+
+/* =========================
+   CARD THÔNG TIN
+========================= */
+
+.card-thong-tin-phi {
+  background: #ffffff;
+
+  border:
+    1px solid
+    #dce9ef;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+}
+
+.card-tieu-de-phi {
+  padding:
+    18px
+    22px;
+
+  border-bottom:
+    1px solid
+    #edf2f5;
+}
+
+.card-tieu-de-phi h2 {
+  margin: 0;
+
+  color: #173f58;
+
+  font-size: 20px;
+
+  font-weight: 800;
+}
+
+
+/* FORM */
+
+.noi-dung-form-phi {
+  padding:
+    18px
+    22px
+    22px;
+}
+
+.o-form-phi {
+  margin-bottom: 18px;
+}
+
+.o-form-phi label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #31566e;
+
+  font-size: 13px;
+
+  font-weight: 700;
+}
+
+.o-form-phi label span {
+  color: #e05252;
+}
+
+.o-form-phi input,
+.o-form-phi select {
+  width: 100%;
+
+  height: 44px;
+
+  padding:
+    0
+    13px;
+
+  border:
+    1px solid
+    #dce7ed;
+
+  border-radius: 8px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #1b405a;
+
+  font-size: 13px;
+
+  box-sizing: border-box;
+}
+
+.o-form-phi input:focus,
+.o-form-phi select:focus {
+  border-color: #4aa7dd;
+
+  box-shadow:
+    0
+    0
+    0
+    3px
+    rgba(74, 167, 221, 0.1);
+}
+
+
+/* NÚT TÍNH PHÍ */
+
+.nut-tinh-phi {
+  width: 100%;
+
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: #329be0;
+
+  color: #ffffff;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.nut-tinh-phi:hover {
+  background: #2388ca;
+}
+
+
+/* =========================
+   CARD KẾT QUẢ
+========================= */
+
+.card-ket-qua-phi {
+  background: #edf8fd;
+
+  border:
+    1px solid
+    #bde0f0;
+
+  border-radius: 10px;
+
+  padding:
+    20px
+    22px;
+
+  box-sizing: border-box;
+
+  min-height: 100%;
+}
+
+.tieu-de-ket-qua {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 20px;
+}
+
+.tieu-de-ket-qua > span {
+  color: #4f91b0;
+
+  font-size: 12px;
+}
+
+.tieu-de-ket-qua h2 {
+  margin: 0;
+
+  color: #183f57;
+
+  font-size: 18px;
+
+  font-weight: 800;
+}
+
+.dong-ket-qua {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  padding:
+    10px
+    0;
+
+  color: #587688;
+
+  font-size: 13px;
+}
+
+.dong-ket-qua strong {
+  color: #24516b;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  text-align: right;
+}
+
+.duong-ke-phi {
+  width: 100%;
+
+  height: 1px;
+
+  margin: 7px 0 15px;
+
+  background: #cce3ed;
+}
+
+.dong-tong-phi {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 20px;
+}
+
+.dong-tong-phi span {
+  color: #315a70;
+
+  font-size: 14px;
+
+  font-weight: 700;
+}
+
+.dong-tong-phi strong {
+  color: #07527f;
+
+  font-size: 27px;
+
+  font-weight: 800;
+}
+
+.nut-luu-giao-dich {
+  width: 100%;
+
+  height: 43px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: #37bf9a;
+
+  color: #ffffff;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.nut-luu-giao-dich:hover {
+  background: #28a984;
+}
+
+
+/* =========================
+   BẢNG GIÁ
+========================= */
+
+.card-bang-gia-phi {
+  width: 100%;
+
+  background: #ffffff;
+
+  border:
+    1px solid
+    #dce9ef;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+}
+
+.tieu-de-bang-gia-phi {
+  padding:
+    14px
+    18px;
+
+  color: #2f5470;
+
+  font-size: 13px;
+
+  font-weight: 800;
+
+  background: #fafdfe;
+
+  border-bottom:
+    1px solid
+    #edf2f5;
+}
+
+.bang-gia-phi {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+.bang-gia-phi th {
+  padding:
+    12px
+    16px;
+
+  background: #ebf6fb;
+
+  color: #2f5470;
+
+  text-align: left;
+
+  font-size: 12px;
+
+  font-weight: 800;
+}
+
+.bang-gia-phi td {
+  padding:
+    12px
+    16px;
+
+  border-bottom:
+    1px solid
+    #edf2f5;
+
+  color: #506d7e;
+
+  font-size: 12px;
+
+  font-weight: 500;
+}
+
+.bang-gia-phi tr:last-child td {
+  border-bottom: none;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1100px) {
+  .khu-vuc-tinh-phi {
+    grid-template-columns: 1fr;
+  }
+
+  .logo-phi-gui-xe {
+    width: 240px;
+    min-width: 240px;
+  }
+
+  .thanh-tim-phi-gui-xe {
+    width: 280px;
+  }
+}
+
+@media (max-width: 900px) {
+  .noi-dung-phi-gui-xe {
+    width: calc(100% - 220px);
+
+    margin-left: 220px;
+
+    padding:
+      84px
+      18px
+      18px;
+  }
+
+  .header-phi-gui-xe {
+    left: 220px;
+  }
+
+  .logo-phi-gui-xe {
+    width: 200px;
+    min-width: 200px;
+  }
+
+  .thanh-tim-phi-gui-xe {
+    width: 240px;
+  }
+}
+
+@media (max-width: 700px) {
+  .header-phi-gui-xe {
+    left: 0;
+  }
+
+  .noi-dung-phi-gui-xe {
+    width: 100%;
+
+    margin-left: 0;
+
+    padding:
+      20px
+      14px
+      14px;
+  }
+
+  .logo-phi-gui-xe {
+    display: none;
+  }
+
+  .thanh-tim-phi-gui-xe {
+    width: 250px;
+  }
+}

@@ -22,43 +22,8 @@ const QuanLyPhuongTien = () => {
 
   return (
     <div className="pt-wrapper">
-      {/* Sidebar cố định */}
+      {/* Sidebar + Header chung */}
       <SidebarAdmin />
-
-      {/* Header riêng của Phương tiện */}
-      <header className="pt-header">
-        <div className="pt-logo">
-          <div className="pt-logo-icon">🏢</div>
-          <div className="pt-logo-text">
-            <strong>Hệ thống quản lý</strong>
-            <span>phương tiện chung cư</span>
-          </div>
-        </div>
-
-        <div className="pt-tim-kiem">
-          <span className="pt-icon-search">🔍</span>
-          <input
-            type="text"
-            placeholder="Tìm kiếm biển số, tên cư dân..."
-            value={tuKhoa}
-            onChange={(e) => setTuKhoa(e.target.value)}
-          />
-          <span className="pt-icon-search">🔍</span>
-        </div>
-
-        <div className="pt-admin">
-          <button className="pt-notify" type="button">
-            🔔
-            <span className="pt-notify-badge">3</span>
-          </button>
-          <div className="pt-avatar">👤</div>
-          <div className="pt-admin-text">
-            <strong>Admin</strong>
-            <span>Quản trị viên</span>
-          </div>
-          <span className="pt-arrow">▾</span>
-        </div>
-      </header>
 
       {/* Nội dung chính */}
       <div className="pt-body">

@@ -1,0 +1,311 @@
+/* =========================
+   HEADER CHUNG (dùng cho mọi trang)
+========================= */
+.header-trang-chu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 99999;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 28px;
+  background: #ffffff;
+  border-bottom: 1px solid #dce9ef;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(35, 88, 116, 0.04);
+}
+
+/* LOGO BÊN TRÁI */
+.logo-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 240px;
+  min-width: 240px;
+  box-sizing: border-box;
+}
+
+.logo-header-icon {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  background: #eaf7fd;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.logo-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.logo-header-text strong {
+  font-size: 15px;
+  color: #0f3b56;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.logo-header-text span {
+  font-size: 11px;
+  color: #4f7a92;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* SEARCH */
+.o-tim-kiem {
+  width: 360px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border: 1px solid #dce7ed;
+  border-radius: 22px;
+  background: #f7fbfd;
+  color: #6b8fa3;
+  transition: all 0.2s ease;
+  margin-left: auto;
+}
+
+.o-tim-kiem:focus-within {
+  background: #ffffff;
+  border-color: #4aa7dd;
+  box-shadow: 0 0 0 3px rgba(74, 167, 221, 0.12);
+}
+
+.o-tim-kiem input {
+  width: 100%;
+  padding: 0 10px;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: #1b405a;
+  background: transparent;
+  font-weight: 500;
+}
+
+.o-tim-kiem input::placeholder {
+  color: #93aebd;
+  font-weight: 400;
+}
+
+.icon-tim-kiem,
+.icon-tim-cuoi {
+  font-size: 15px;
+  color: #6b8fa3;
+  flex-shrink: 0;
+}
+
+/* ACCOUNT */
+.thong-tin-admin {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.nut-thong-bao {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+
+.nut-thong-bao:hover {
+  background: #f0f8fc;
+}
+
+.so-thong-bao {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #ed4d4d;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  border: 2px solid #ffffff;
+  box-sizing: content-box;
+}
+
+.anh-admin {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #dceff8;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.thong-tin-admin-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.2;
+}
+
+.thong-tin-admin-text strong {
+  font-size: 14px;
+  color: #0f3b56;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.thong-tin-admin-text span {
+  font-size: 11px;
+  color: #6b8fa3;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.mui-ten-admin {
+  color: #4f7a92;
+  font-size: 13px;
+  cursor: pointer;
+  margin-left: 2px;
+}
+
+/* RESPONSIVE HEADER */
+@media (max-width: 1100px) {
+  .header-trang-chu { padding: 0 20px; gap: 16px; }
+  .logo-header { width: 200px; min-width: 200px; }
+  .logo-header-text span { display: none; }
+  .o-tim-kiem { width: 240px; }
+}
+
+@media (max-width: 900px) {
+  .logo-header { width: 180px; min-width: 180px; }
+  .logo-header-text strong { font-size: 13px; }
+  .o-tim-kiem { width: 180px; }
+  .thong-tin-admin-text { display: none; }
+}
+
+@media (max-width: 700px) {
+  .header-trang-chu {
+    position: relative;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px;
+  }
+  .logo-header {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+  }
+  .o-tim-kiem { width: 100%; margin-left: 0; }
+  .thong-tin-admin { justify-content: center; }
+  .thong-tin-admin-text { display: flex; }
+}
+
+/* ===== SIDEBAR CỐ ĐỊNH BÊN TRÁI ===== */
+.sidebar-admin {
+  width: 240px;
+  min-width: 240px;
+  height: calc(100vh - 68px);   /* ✅ Trừ đi chiều cao Header */
+  position: fixed;
+  top: 68px;                    /* ✅ Đẩy xuống dưới Header */
+  left: 0;
+  bottom: 0;
+  z-index: 900;
+  box-sizing: border-box;
+  padding: 18px 14px;
+  background: #eef8fd;
+  border-right: 1px solid #d8e9f1;
+  overflow-y: auto;
+}
+
+/* ===== MENU ===== */
+.menu-admin {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menu-admin-item {
+  width: 100%;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #1b405a;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  text-decoration: none;
+}
+
+.menu-admin-item:hover {
+  background: #dceff8;
+  color: #0a4f78;
+}
+
+.menu-admin-active {
+  background: #cceafa;
+  color: #0a4f78;
+  font-weight: 700;
+}
+
+.menu-admin-icon {
+  width: 24px;
+  min-width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.menu-admin-name {
+  white-space: nowrap;
+}
+
+/* ===== SCROLLBAR ===== */
+.sidebar-admin::-webkit-scrollbar {
+  width: 5px;
+}
+.sidebar-admin::-webkit-scrollbar-thumb {
+  background: #c6dce8;
+  border-radius: 10px;
+}
+.sidebar-admin::-webkit-scrollbar-track {
+  background: transparent;
+}

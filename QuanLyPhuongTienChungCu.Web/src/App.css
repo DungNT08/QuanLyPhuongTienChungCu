@@ -8,6 +8,31 @@
 }
 
 /* =========================
+   ÉP TOÀN BỘ APP DÙNG 1 FONT DUY NHẤT
+========================= */
+*,
+*::before,
+*::after,
+html,
+body,
+#root,
+button,
+input,
+textarea,
+select,
+a,
+span,
+div,
+p,
+h1, h2, h3, h4, h5, h6,
+strong, em, b, i,
+table, th, td,
+ul, ol, li,
+label, legend {
+  font-family: Inter, Helvetica, sans-serif !important;
+}
+
+/* =========================
    HTML - BODY - ROOT
 ========================= */
 html,
@@ -22,7 +47,6 @@ body,
 ========================= */
 body {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
   background: #f4f9fc;
   color: #0f3b56;
   font-size: 14px;
@@ -34,17 +58,7 @@ body {
    BUTTON
 ========================= */
 button {
-  font-family: inherit;
   cursor: pointer;
-}
-
-/* =========================
-   INPUT
-========================= */
-input,
-textarea,
-select {
-  font-family: inherit;
 }
 
 /* =========================
@@ -71,22 +85,21 @@ a {
 }
 
 /* =========================
-   LAYOUT CHÍNH: ĐẨY NỘI DUNG SANG PHẢI
+   LAYOUT CHÍNH
 ========================= */
-.app {
+.trang-wrapper {
   width: 100%;
   min-height: 100vh;
   overflow-x: hidden;
+  background: #f4f9fc;
 }
 
 /* Phần nội dung chính - nhường chỗ cho sidebar 240px */
-.main,
-.noi-dung-chinh,
-.vehicle-main-content {
+.trang-noi-dung {
   margin-left: 240px;
   width: calc(100% - 240px);
   min-height: 100vh;
-  padding: 20px 30px;
+  padding: 88px 28px 28px;
   box-sizing: border-box;
   background: #f4f9fc;
 }

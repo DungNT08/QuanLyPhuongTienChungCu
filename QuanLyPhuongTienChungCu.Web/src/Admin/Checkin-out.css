@@ -1,0 +1,361 @@
+/* =========================
+   KHUNG TRANG
+========================= */
+
+.noi-dung-checkinout {
+  width: calc(100% - 240px);
+
+  min-height: calc(100vh - 68px);
+
+  margin-left: 240px;
+
+  padding:
+    90px
+    28px
+    28px;
+
+  box-sizing: border-box;
+
+  background: #f4f9fc;
+
+  color: #1b405a;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+/* =========================
+   TIÊU ĐỀ
+========================= */
+
+.tieu-de-checkinout {
+  margin-bottom: 20px;
+}
+
+.tieu-de-checkinout h1 {
+  margin: 0;
+
+  font-size: 26px;
+
+  color: #0f3b56;
+
+  font-weight: 800;
+
+  letter-spacing: 0.2px;
+}
+
+.tieu-de-checkinout p {
+  margin: 7px 0 0;
+
+  color: #6b8fa3;
+
+  font-size: 13px;
+
+  font-weight: 500;
+}
+
+/* =========================
+   2 KHỐI
+========================= */
+
+.luoi-checkinout {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr;
+
+  gap: 18px;
+}
+
+/* =========================
+   CARD
+========================= */
+
+.the-checkinout {
+  background: #ffffff;
+
+  border:
+    1px solid
+    #dfeaf0;
+
+  border-radius: 10px;
+
+  box-shadow:
+    0
+    2px
+    8px
+    rgba(35, 88, 116, 0.03);
+
+  overflow: hidden;
+}
+
+/* =========================
+   HEADER CARD
+========================= */
+
+.tieu-de-the-checkin {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 18px 18px 16px;
+
+  border-bottom:
+    1px solid
+    #edf2f5;
+}
+
+.icon-tieu-de {
+  width: 40px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  font-size: 19px;
+}
+
+.checkin-icon {
+  background: #e1f8ee;
+}
+
+.checkout-icon {
+  background: #e3f0fb;
+}
+
+.tieu-de-the-checkin h2 {
+  margin: 0;
+
+  font-size: 17px;
+
+  font-weight: 800;
+}
+
+.tieu-de-the-checkin span {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 11px;
+
+  color: #7893a4;
+
+  font-weight: 500;
+}
+
+.the-checkin .tieu-de-the-checkin h2 {
+  color: #24a77e;
+}
+
+.the-checkout .tieu-de-the-checkin h2 {
+  color: #298bd0;
+}
+
+/* =========================
+   FORM
+========================= */
+
+.form-checkinout {
+  padding: 18px;
+}
+
+.truong-form {
+  margin-bottom: 15px;
+}
+
+.truong-form label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #2f5470;
+
+  font-size: 12px;
+
+  font-weight: 700;
+}
+
+.truong-form label span {
+  color: #e55353;
+}
+
+.truong-form input,
+.truong-form select {
+  width: 100%;
+
+  height: 42px;
+
+  padding: 0 12px;
+
+  border:
+    1px solid
+    #dce7ed;
+
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  color: #1b405a;
+
+  font-size: 12px;
+
+  font-weight: 500;
+
+  outline: none;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.truong-form input:focus,
+.truong-form select:focus {
+  border-color: #4aa7dd;
+
+  box-shadow:
+    0
+    0
+    0
+    3px
+    rgba(74, 167, 221, 0.1);
+}
+
+.truong-form input::placeholder {
+  color: #a0b3bf;
+}
+
+/* =========================
+   NGÀY GIỜ
+========================= */
+
+.o-thoi-gian {
+  position: relative;
+}
+
+.o-thoi-gian input {
+  width: 100%;
+}
+
+/* =========================
+   Ô TÍNH SẴN
+========================= */
+
+.o-chi-hien-thi {
+  background: #f1f8fb !important;
+
+  color: #315d75 !important;
+
+  font-weight: 700 !important;
+}
+
+/* =========================
+   NÚT CHECK-IN
+========================= */
+
+.nut-checkin,
+.nut-checkout {
+  width: 100%;
+
+  height: 42px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  color: #ffffff;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.nut-checkin {
+  background: #38c39a;
+}
+
+.nut-checkin:hover {
+  background: #25aa82;
+
+  transform: translateY(-1px);
+}
+
+.nut-checkout {
+  background: #258fda;
+}
+
+.nut-checkout:hover {
+  background: #147bc2;
+
+  transform: translateY(-1px);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1100px) {
+  .noi-dung-checkinout {
+    width: calc(100% - 240px);
+
+    margin-left: 240px;
+
+    padding-left: 20px;
+
+    padding-right: 20px;
+  }
+}
+
+@media (max-width: 900px) {
+  .luoi-checkinout {
+    grid-template-columns: 1fr;
+  }
+
+  .noi-dung-checkinout {
+    width: calc(100% - 220px);
+
+    margin-left: 220px;
+
+    padding:
+      88px
+      18px
+      18px;
+  }
+}
+
+@media (max-width: 700px) {
+  .noi-dung-checkinout {
+    width: 100%;
+
+    margin-left: 0;
+
+    padding:
+      20px
+      14px
+      14px;
+  }
+
+  .tieu-de-checkinout h1 {
+    font-size: 22px;
+  }
+}
