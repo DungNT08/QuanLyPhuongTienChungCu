@@ -1,0 +1,682 @@
+/* =========================================================
+   LICH GUI XE - USER
+   ========================================================= */
+
+/* =========================
+   RESET
+========================= */
+
+.lich-gui-xe-page {
+  width: calc(100% - 258px);
+  min-height: 100vh;
+
+  margin-left: 258px;
+
+  padding: 100px 30px 40px;
+
+  background: #f4f8fc;
+
+  box-sizing: border-box;
+
+  overflow-x: hidden;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.lich-gui-xe-header {
+  width: 100%;
+
+  margin: 0 0 24px;
+
+  padding: 0;
+
+  text-align: center;
+
+  box-sizing: border-box;
+}
+
+.lich-gui-xe-header h1 {
+  margin: 0;
+
+  padding: 0;
+
+  color: #183b56;
+
+  font-size: 30px;
+
+  line-height: 1.3;
+
+  font-weight: 700;
+}
+
+.lich-gui-xe-header p {
+  margin: 8px 0 0;
+
+  color: #7690a5;
+
+  font-size: 16px;
+
+  line-height: 1.5;
+}
+
+
+/* =========================
+   BỘ LỌC
+========================= */
+
+.bo-loc-lich-gui {
+  width: 100%;
+
+  min-height: 118px;
+
+  margin: 0 0 22px;
+
+  padding: 22px 24px;
+
+  background: #ffffff;
+
+  border: 1px solid #e1ebf3;
+
+  border-radius: 14px;
+
+  box-sizing: border-box;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  gap: 16px;
+
+  box-shadow: 0 3px 12px rgba(30, 90, 130, 0.04);
+
+  overflow: hidden;
+}
+
+
+/* =========================
+   Ô LỌC
+========================= */
+
+.o-loc {
+  flex: 0 0 auto;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  box-sizing: border-box;
+}
+
+.o-loc label {
+  display: block;
+
+  margin: 0;
+
+  color: #52718b;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+
+/* =========================
+   INPUT NGÀY
+========================= */
+
+.input-ngay {
+  width: 230px;
+
+  height: 44px;
+
+  position: relative;
+
+  box-sizing: border-box;
+}
+
+.input-ngay input {
+  display: block;
+
+  width: 230px;
+
+  height: 44px;
+
+  margin: 0;
+
+  padding: 0 38px 0 14px;
+
+  border: 1px solid #d7e4ed;
+
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #4e6d84;
+
+  font-family: inherit;
+
+  font-size: 14px;
+
+  outline: none;
+
+  box-sizing: border-box;
+}
+
+.input-ngay input:focus {
+  border-color: #2994dd;
+
+  box-shadow: 0 0 0 3px rgba(41, 148, 221, 0.1);
+}
+
+
+/* =========================
+   NÚT TÌM KIẾM
+========================= */
+
+.btn-tim-kiem {
+  flex: 0 0 auto;
+
+  height: 44px;
+
+  padding: 0 25px;
+
+  margin: 0;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: #258ddd;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition: 0.2s;
+}
+
+.btn-tim-kiem:hover {
+  background: #197fc9;
+}
+
+.btn-tim-kiem:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================
+   NÚT XÓA LỌC
+========================= */
+
+.btn-xoa-loc {
+  flex: 0 0 auto;
+
+  height: 44px;
+
+  padding: 0 18px;
+
+  margin: 0;
+
+  border: 1px solid #d8e4ed;
+
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #6c8294;
+
+  font-family: inherit;
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition: 0.2s;
+}
+
+.btn-xoa-loc:hover {
+  background: #f5f8fa;
+}
+
+
+/* =========================================================
+   BẢNG
+========================================================= */
+
+.bang-lich-gui {
+  width: 100%;
+
+  margin: 0;
+
+  padding: 0;
+
+  background: #ffffff;
+
+  border: 1px solid #e0eaf2;
+
+  border-radius: 14px;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  box-shadow: 0 3px 12px rgba(30, 90, 130, 0.04);
+}
+
+
+/* =========================
+   SCROLL
+========================= */
+
+.bang-scroll {
+  width: 100%;
+
+  margin: 0;
+
+  padding: 0;
+
+  overflow-x: auto;
+
+  overflow-y: hidden;
+
+  box-sizing: border-box;
+}
+
+.bang-scroll table {
+  width: 100%;
+
+  min-width: 1000px;
+
+  margin: 0;
+
+  padding: 0;
+
+  border-collapse: collapse;
+
+  border-spacing: 0;
+
+  table-layout: fixed;
+}
+
+
+/* =========================================================
+   HEADER TABLE
+========================================================= */
+
+.bang-scroll thead {
+  background: #f5f9fc;
+}
+
+.bang-scroll th {
+  height: 52px;
+
+  padding: 0 10px;
+
+  border-bottom: 1px solid #dce7ef;
+
+  color: #52718b;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  text-align: center;
+
+  white-space: nowrap;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   BODY TABLE
+========================================================= */
+
+.bang-scroll td {
+  height: 62px;
+
+  padding: 8px 10px;
+
+  border-bottom: 1px solid #edf2f6;
+
+  color: #58758c;
+
+  font-size: 13px;
+
+  text-align: center;
+
+  white-space: nowrap;
+
+  box-sizing: border-box;
+}
+
+.bang-scroll tbody tr:hover {
+  background: #f9fcff;
+}
+
+.bang-scroll tbody tr:last-child td {
+  border-bottom: none;
+}
+
+
+/* =========================
+   BIỂN SỐ
+========================= */
+
+.bang-scroll td.bien-so {
+  color: #315f7d;
+
+  font-weight: 700;
+}
+
+
+/* =========================
+   TRẠNG THÁI
+========================= */
+
+.trang-thai-da-thanh-toan,
+.trang-thai-dang-gui {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-width: 88px;
+
+  padding: 6px 10px;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  box-sizing: border-box;
+}
+
+.trang-thai-da-thanh-toan {
+  background: #dff7eb;
+
+  color: #1ca66a;
+}
+
+.trang-thai-dang-gui {
+  background: #e8f3ff;
+
+  color: #248bd2;
+}
+
+
+/* =========================
+   NÚT XEM
+========================= */
+
+.btn-xem {
+  height: 32px;
+
+  padding: 0 12px;
+
+  border: 1px solid #d7e6f0;
+
+  border-radius: 6px;
+
+  background: #ffffff;
+
+  color: #258ddd;
+
+  font-family: inherit;
+
+  font-size: 12px;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition: 0.2s;
+}
+
+.btn-xem:hover {
+  background: #eef7ff;
+
+  border-color: #bcdff4;
+}
+
+
+/* =========================================================
+   KHÔNG CÓ DỮ LIỆU
+========================================================= */
+
+.khong-co-du-lieu {
+  height: 220px !important;
+
+  padding: 20px !important;
+
+  text-align: center !important;
+
+  vertical-align: middle;
+
+  color: #91a5b5 !important;
+
+  box-sizing: border-box;
+}
+
+.icon-khong-co {
+  margin-bottom: 10px;
+
+  font-size: 34px;
+
+  line-height: 1;
+}
+
+.khong-co-du-lieu p {
+  margin: 0;
+
+  color: #91a5b5;
+
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.bang-footer {
+  width: 100%;
+
+  min-height: 62px;
+
+  padding: 0 22px;
+
+  border-top: 1px solid #e8eef3;
+
+  background: #ffffff;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  box-sizing: border-box;
+
+  color: #8aa0b1;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   PHÂN TRANG
+========================================================= */
+
+.phan-trang {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+}
+
+.phan-trang button {
+  width: 34px;
+
+  height: 34px;
+
+  padding: 0;
+
+  border: 1px solid #dce7ef;
+
+  border-radius: 6px;
+
+  background: #ffffff;
+
+  color: #7892a8;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+}
+
+.phan-trang button:hover:not(:disabled) {
+  background: #f0f7fc;
+}
+
+.phan-trang button:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+}
+
+.trang-hien-tai {
+  width: 34px;
+
+  height: 34px;
+
+  border-radius: 6px;
+
+  background: #258ddd;
+
+  color: #ffffff;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+  .lich-gui-xe-page {
+    width: calc(100% - 258px);
+
+    margin-left: 258px;
+
+    padding: 95px 20px 30px;
+  }
+
+  .bo-loc-lich-gui {
+    flex-wrap: wrap;
+
+    align-items: flex-end;
+  }
+
+  .input-ngay,
+  .input-ngay input {
+    width: 210px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .lich-gui-xe-page {
+    width: 100%;
+
+    margin-left: 0;
+
+    padding: 90px 14px 30px;
+  }
+
+  .lich-gui-xe-header {
+    text-align: left;
+  }
+
+  .lich-gui-xe-header h1 {
+    font-size: 25px;
+  }
+
+  .lich-gui-xe-header p {
+    font-size: 14px;
+  }
+
+  .bo-loc-lich-gui {
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 14px;
+  }
+
+  .o-loc {
+    width: 100%;
+  }
+
+  .input-ngay,
+  .input-ngay input {
+    width: 100%;
+  }
+
+  .btn-tim-kiem,
+  .btn-xoa-loc {
+    width: 100%;
+  }
+
+  .bang-footer {
+    flex-direction: column;
+
+    gap: 12px;
+
+    padding: 15px;
+  }
+}

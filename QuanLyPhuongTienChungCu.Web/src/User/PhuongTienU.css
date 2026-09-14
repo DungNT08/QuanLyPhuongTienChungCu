@@ -1,0 +1,726 @@
+/* =========================
+   CONTAINER
+========================= */
+
+.phuong-tien-container {
+  margin-left: 258px;
+  min-height: 100vh;
+  padding: 100px 30px 40px;
+  background: #f4f8fc;
+  box-sizing: border-box;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.phuong-tien-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.phuong-tien-header h1 {
+  margin: 0 0 8px;
+  font-size: 30px;
+  font-weight: 700;
+  color: #183b56;
+}
+
+.phuong-tien-header p {
+  margin: 0;
+  color: #7690a5;
+  font-size: 15px;
+}
+
+
+/* =========================
+   BUTTON THÊM
+========================= */
+
+.btn-them-phuong-tien {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  border: none;
+  border-radius: 10px;
+
+  padding: 13px 20px;
+
+  background: #1877e8;
+  color: white;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.btn-them-phuong-tien:hover {
+  background: #0f66cc;
+  transform: translateY(-1px);
+}
+
+.btn-them-phuong-tien span {
+  font-size: 20px;
+  line-height: 1;
+}
+
+
+/* =========================
+   DANH SÁCH
+========================= */
+
+.danh-sach-phuong-tien {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+
+/* =========================
+   CARD
+========================= */
+
+.phuong-tien-card {
+  display: flex;
+  align-items: center;
+
+  min-height: 160px;
+
+  padding: 24px;
+
+  background: white;
+
+  border: 1px solid #e3ebf2;
+  border-radius: 14px;
+
+  box-shadow: 0 4px 14px rgba(30, 80, 120, 0.06);
+
+  box-sizing: border-box;
+}
+
+
+/* =========================
+   ICON
+========================= */
+
+.phuong-tien-icon {
+  width: 70px;
+  height: 70px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-right: 22px;
+
+  background: #eaf5ff;
+
+  border-radius: 14px;
+
+  font-size: 35px;
+}
+
+
+/* =========================
+   THÔNG TIN
+========================= */
+
+.phuong-tien-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dong-dau {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dong-dau h2 {
+  margin: 0;
+
+  color: #173b56;
+
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.trang-thai {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 6px 11px;
+
+  border-radius: 20px;
+
+  background: #dff7e9;
+  color: #159447;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.trang-thai::before {
+  content: "●";
+  margin-right: 5px;
+  font-size: 9px;
+}
+
+.loai-xe {
+  margin: 8px 0 14px;
+
+  color: #668299;
+
+  font-size: 15px;
+}
+
+.thong-tin-dang-ky {
+  margin: 5px 0;
+
+  color: #8aa0b3;
+
+  font-size: 14px;
+}
+
+.thong-tin-dang-ky strong {
+  color: #35536b;
+}
+
+
+/* =========================
+   CHỨC NĂNG
+========================= */
+
+.phuong-tien-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  margin-left: 20px;
+}
+
+.phuong-tien-actions button {
+  min-width: 80px;
+
+  padding: 9px 13px;
+
+  border-radius: 8px;
+
+  background: white;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.btn-sua {
+  border: 1px solid #d7e5f0;
+  color: #42647b;
+}
+
+.btn-sua:hover {
+  background: #eef7ff;
+  border-color: #b9d8ef;
+}
+
+.btn-xoa {
+  border: 1px solid #f2d4d4;
+  color: #e34b4b;
+}
+
+.btn-xoa:hover {
+  background: #fff3f3;
+  border-color: #efb6b6;
+}
+
+.phuong-tien-actions span {
+  margin-right: 5px;
+}
+
+
+/* =========================
+   KHÔNG CÓ PHƯƠNG TIỆN
+========================= */
+
+.khong-co-phuong-tien {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 350px;
+
+  padding: 40px;
+
+  background: white;
+
+  border: 1px solid #e3ebf2;
+  border-radius: 14px;
+
+  text-align: center;
+
+  box-shadow: 0 4px 14px rgba(30, 80, 120, 0.05);
+}
+
+.khong-co-icon {
+  width: 80px;
+  height: 80px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 15px;
+
+  border-radius: 50%;
+
+  background: #edf6fd;
+
+  font-size: 38px;
+}
+
+.khong-co-phuong-tien h3 {
+  margin: 5px 0 8px;
+
+  color: #294b63;
+
+  font-size: 20px;
+}
+
+.khong-co-phuong-tien p {
+  margin: 0 0 20px;
+
+  color: #8aa0b3;
+
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   LỚP PHỦ POPUP
+   SỬA LỖI FORM BỊ HEADER CHE
+========================================================= */
+
+.lop-phu {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  width: 100%;
+  height: 100%;
+
+  z-index: 999999;
+
+  display: flex;
+
+  align-items: flex-start;
+  justify-content: center;
+
+  padding: 90px 20px 30px;
+
+  background: rgba(15, 35, 50, 0.45);
+
+  box-sizing: border-box;
+
+  overflow-y: auto;
+}
+
+
+/* =========================================================
+   FORM POPUP
+   QUAN TRỌNG: GIỚI HẠN CHIỀU CAO
+========================================================= */
+
+.form-phuong-tien {
+  width: 100%;
+
+  max-width: 500px;
+
+  /*
+    Không cho form cao hơn màn hình.
+  */
+  max-height: calc(100vh - 120px);
+
+  background: white;
+
+  border-radius: 16px;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  box-sizing: border-box;
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   THANH CUỘN FORM
+========================================================= */
+
+.form-phuong-tien::-webkit-scrollbar {
+  width: 7px;
+}
+
+.form-phuong-tien::-webkit-scrollbar-track {
+  background: #f5f7f9;
+  border-radius: 10px;
+}
+
+.form-phuong-tien::-webkit-scrollbar-thumb {
+  background: #c7d7e3;
+  border-radius: 10px;
+}
+
+.form-phuong-tien::-webkit-scrollbar-thumb:hover {
+  background: #aebfcd;
+}
+
+
+/* =========================
+   FORM HEADER
+========================= */
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  padding: 22px 24px;
+
+  border-bottom: 1px solid #edf1f4;
+
+  box-sizing: border-box;
+
+  position: sticky;
+  top: 0;
+
+  background: white;
+
+  z-index: 5;
+}
+
+.form-header h2 {
+  margin: 0 0 6px;
+
+  color: #183b56;
+
+  font-size: 21px;
+}
+
+.form-header p {
+  margin: 0;
+
+  color: #8aa0b3;
+
+  font-size: 13px;
+}
+
+.btn-dong-form {
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #f2f5f7;
+
+  color: #6d8293;
+
+  font-size: 24px;
+
+  cursor: pointer;
+}
+
+.btn-dong-form:hover {
+  background: #e8edf1;
+}
+
+
+/* =========================
+   FORM BODY
+========================= */
+
+.form-phuong-tien form {
+  padding: 24px;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================
+   FORM GROUP
+========================= */
+
+.form-group {
+  width: 100%;
+
+  margin-bottom: 18px;
+
+  box-sizing: border-box;
+}
+
+.form-group label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #294b63;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+/* =========================
+   INPUT + SELECT
+========================= */
+
+.form-group input,
+.form-group select {
+  display: block;
+
+  width: 100%;
+
+  max-width: 100%;
+
+  height: 46px;
+
+  padding: 0 13px;
+
+  border: 1px solid #d8e3eb;
+
+  border-radius: 9px;
+
+  outline: none;
+
+  background: white;
+
+  color: #294b63;
+
+  font-family: inherit;
+
+  font-size: 14px;
+
+  box-sizing: border-box;
+
+  transition: 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #2684df;
+
+  box-shadow: 0 0 0 3px rgba(38, 132, 223, 0.1);
+}
+
+.form-group input::placeholder {
+  color: #aab9c4;
+}
+
+
+/* =========================
+   INPUT FILE
+========================= */
+
+.form-group input[type="file"] {
+  height: auto;
+
+  min-height: 46px;
+
+  padding: 10px 12px;
+
+  cursor: pointer;
+}
+
+
+/* =========================
+   FORM BUTTON
+========================= */
+
+.form-actions {
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  margin-top: 25px;
+
+  padding-bottom: 2px;
+}
+
+.form-actions button {
+  height: 44px;
+
+  padding: 0 18px;
+
+  border-radius: 9px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+}
+
+.btn-huy {
+  border: 1px solid #d9e3ea;
+
+  background: white;
+
+  color: #60788a;
+}
+
+.btn-huy:hover {
+  background: #f5f7f9;
+}
+
+.btn-luu {
+  border: none;
+
+  background: #1877e8;
+
+  color: white;
+}
+
+.btn-luu:hover {
+  background: #0f66cc;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .phuong-tien-container {
+    margin-left: 0;
+
+    padding: 90px 20px 30px;
+  }
+
+  .phuong-tien-header {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .btn-them-phuong-tien {
+    width: 100%;
+  }
+
+  /* POPUP */
+
+  .lop-phu {
+    padding: 80px 15px 20px;
+  }
+
+  .form-phuong-tien {
+    max-width: 500px;
+
+    max-height: calc(100vh - 100px);
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+  .phuong-tien-card {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .phuong-tien-icon {
+    margin-right: 0;
+
+    margin-bottom: 15px;
+  }
+
+  .phuong-tien-actions {
+    width: 100%;
+
+    flex-direction: row;
+
+    margin-left: 0;
+
+    margin-top: 18px;
+  }
+
+  .phuong-tien-actions button {
+    flex: 1;
+  }
+
+  .dong-dau h2 {
+    font-size: 18px;
+  }
+
+
+  /* =========================
+     POPUP MOBILE
+  ========================= */
+
+  .lop-phu {
+    align-items: flex-start;
+
+    padding: 70px 10px 15px;
+  }
+
+  .form-phuong-tien {
+    width: 100%;
+
+    max-width: none;
+
+    max-height: calc(100vh - 85px);
+
+    border-radius: 14px;
+  }
+
+  .form-header {
+    padding: 18px 18px;
+  }
+
+  .form-phuong-tien form {
+    padding: 18px;
+  }
+
+  .form-actions {
+    flex-direction: row;
+
+    width: 100%;
+  }
+
+  .form-actions button {
+    flex: 1;
+  }
+}
