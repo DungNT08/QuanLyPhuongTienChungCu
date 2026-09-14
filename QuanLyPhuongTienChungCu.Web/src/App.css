@@ -8,7 +8,7 @@
 }
 
 /* =========================
-   ÉP TOÀN BỘ APP DÙNG 1 FONT DUY NHẤT
+   FONT CHUNG
 ========================= */
 *,
 *::before,
@@ -42,9 +42,6 @@ body,
   min-height: 100vh;
 }
 
-/* =========================
-   BODY
-========================= */
 body {
   margin: 0;
   background: #f4f9fc;
@@ -55,15 +52,12 @@ body {
 }
 
 /* =========================
-   BUTTON
+   BUTTON / LINK
 ========================= */
 button {
   cursor: pointer;
 }
 
-/* =========================
-   LINK
-========================= */
 a {
   text-decoration: none;
   color: inherit;
@@ -86,7 +80,25 @@ a {
 
 /* =========================
    LAYOUT CHÍNH
+   - Mỗi trang con (TrangChu, PhuongTien...) ĐÃ tự set
+     margin-left: 240px + padding-top: 68px trong CSS riêng.
+   - Nên .noi-dung-app KHÔNG được thêm margin/padding
+     → tránh cộng dồn gây trắng trang.
 ========================= */
+.app {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #f4f9fc;
+}
+
+.noi-dung-app {
+  width: 100%;
+  min-height: 100vh;
+  background: #f4f9fc;
+}
+
+/* Wrapper cũ (giữ để tương thích) */
 .trang-wrapper {
   width: 100%;
   min-height: 100vh;
@@ -94,7 +106,7 @@ a {
   background: #f4f9fc;
 }
 
-/* Phần nội dung chính - nhường chỗ cho sidebar 240px */
+/* Dùng cho trang nào KHÔNG tự set margin-left */
 .trang-noi-dung {
   margin-left: 240px;
   width: calc(100% - 240px);
@@ -102,4 +114,23 @@ a {
   padding: 88px 28px 28px;
   box-sizing: border-box;
   background: #f4f9fc;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 900px) {
+  .trang-noi-dung {
+    margin-left: 220px;
+    width: calc(100% - 220px);
+    padding: 84px 18px 18px;
+  }
+}
+
+@media (max-width: 700px) {
+  .trang-noi-dung {
+    margin-left: 0;
+    width: 100%;
+    padding: 20px 14px 14px;
+  }
 }

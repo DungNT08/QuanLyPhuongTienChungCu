@@ -31,9 +31,9 @@ import QLyUser from "./Admin/QLyUser";
 import TrangChuUser from "./User/TrangChu";
 import PhuongTienU from "./User/PhuongTienU";
 import LichGuiXeU from "./User/LichGuiXeU";
-import HoaDon from "./User/HoaDon";         
-import ThongBao from "./User/ThongBao";     
-import HoSo from "./User/HoSo"; 
+import HoaDon from "./User/HoaDon";
+import ThongBao from "./User/ThongBao";
+import HoSo from "./User/HoSo";
 
 import "./App.css";
 
@@ -44,10 +44,7 @@ function LayoutAdmin({ children }) {
   return (
     <div className="app">
       <SidebarAdmin />
-
-      <div className="noi-dung-app">
-        {children}
-      </div>
+      <div className="noi-dung-app">{children}</div>
     </div>
   );
 }
@@ -59,10 +56,7 @@ function LayoutUser({ children }) {
   return (
     <div className="app">
       <SidebarUser />
-
-      <div className="noi-dung-app">
-        {children}
-      </div>
+      <div className="noi-dung-app">{children}</div>
     </div>
   );
 }
@@ -79,7 +73,6 @@ function App() {
             USER - CƯ DÂN
         ================================================= */}
 
-        {/* Trang chủ */}
         <Route
           path="/"
           element={
@@ -89,7 +82,6 @@ function App() {
           }
         />
 
-        {/* Phương tiện của tôi */}
         <Route
           path="/phuong-tien-cua-toi"
           element={
@@ -99,7 +91,6 @@ function App() {
           }
         />
 
-        {/* Lịch gửi xe */}
         <Route
           path="/lich-su-gui-xe"
           element={
@@ -108,7 +99,7 @@ function App() {
             </LayoutUser>
           }
         />
-         {/* Hóa đơn & thanh toán */}
+
         <Route
           path="/hoa-don"
           element={
@@ -118,7 +109,6 @@ function App() {
           }
         />
 
-        {/* Thông báo */}
         <Route
           path="/thong-bao"
           element={
@@ -128,7 +118,6 @@ function App() {
           }
         />
 
-        {/* Hồ sơ cá nhân */}
         <Route
           path="/ho-so"
           element={
@@ -142,7 +131,6 @@ function App() {
             ADMIN
         ================================================= */}
 
-        {/* Trang chủ Admin */}
         <Route
           path="/admin"
           element={
@@ -152,7 +140,6 @@ function App() {
           }
         />
 
-        {/* Phương tiện */}
         <Route
           path="/admin/phuong-tien"
           element={
@@ -162,7 +149,6 @@ function App() {
           }
         />
 
-        {/* Xe khách */}
         <Route
           path="/admin/xe-khach"
           element={
@@ -172,7 +158,6 @@ function App() {
           }
         />
 
-        {/* Check-in / Check-out */}
         <Route
           path="/admin/check-in-out"
           element={
@@ -182,7 +167,6 @@ function App() {
           }
         />
 
-        {/* Lượt gửi xe */}
         <Route
           path="/admin/luot-gui-xe"
           element={
@@ -192,7 +176,6 @@ function App() {
           }
         />
 
-        {/* Phí gửi xe */}
         <Route
           path="/admin/phi-gui-xe"
           element={
@@ -202,7 +185,6 @@ function App() {
           }
         />
 
-        {/* Bảng giá */}
         <Route
           path="/admin/bang-gia"
           element={
@@ -212,7 +194,6 @@ function App() {
           }
         />
 
-        {/* Lịch sử */}
         <Route
           path="/admin/lich-su"
           element={
@@ -222,7 +203,6 @@ function App() {
           }
         />
 
-        {/* Báo cáo */}
         <Route
           path="/admin/bao-cao"
           element={
@@ -232,9 +212,9 @@ function App() {
           }
         />
 
-        {/* Quản lý người dùng */}
+        {/* Quản lý người dùng — URL khớp sidebarAdmin.jsx */}
         <Route
-          path="/admin/ql-user"
+          path="/admin/nguoi-dung"
           element={
             <LayoutAdmin>
               <QLyUser />

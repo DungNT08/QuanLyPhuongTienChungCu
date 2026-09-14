@@ -1,122 +1,208 @@
-import React, { useState } from "react";
-import "./LuotGui.css";
+import React, { useState, useRef } from "react";
+import "./LichSu.css";
 
-const danhSachLuotGui = [
-  {
-    stt: 1,
-    bienSo: "30A-123.45",
-    loaiXe: "Ô tô",
-    cuDan: "Nguyễn Văn A",
-    thoiGianVao: "07:45",
-    thoiGianRa: "—",
-    thoiGianGui: "2h 15p",
-  },
-  {
-    stt: 2,
-    bienSo: "51A-678.90",
-    loaiXe: "Xe máy",
-    cuDan: "Trần Thị B",
-    thoiGianVao: "08:20",
-    thoiGianRa: "—",
-    thoiGianGui: "1h 10p",
-  },
-  {
-    stt: 3,
-    bienSo: "29B-111.22",
-    loaiXe: "Ô tô",
-    cuDan: "Lê Văn C",
-    thoiGianVao: "09:10",
-    thoiGianRa: "—",
-    thoiGianGui: "80p",
-  },
-  {
-    stt: 4,
-    bienSo: "50A-332.44",
-    loaiXe: "Xe máy",
-    cuDan: "Phạm Thị D",
-    thoiGianVao: "10:05",
-    thoiGianRa: "—",
-    thoiGianGui: "25p",
-  },
-  {
-    stt: 5,
-    bienSo: "51C-555.66",
-    loaiXe: "Ô tô",
-    cuDan: "Hoàng Văn E",
-    thoiGianVao: "11:20",
-    thoiGianRa: "—",
-    thoiGianGui: "10p",
-  },
-];
+/* Icon cuốn lịch xanh nước */
+const IconLichXanh = ({ size = 18 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ flexShrink: 0, display: "block" }}
+  >
+    <rect x="3" y="5" width="18" height="16" rx="2" stroke="#1d7fb0" strokeWidth="2" fill="none" />
+    <path d="M3 9H21" stroke="#1d7fb0" strokeWidth="2" />
+    <path d="M8 3V7M16 3V7" stroke="#1d7fb0" strokeWidth="2" strokeLinecap="round" />
+    <circle cx="8"  cy="13" r="1.2" fill="#1d7fb0" />
+    <circle cx="12" cy="13" r="1.2" fill="#1d7fb0" />
+    <circle cx="16" cy="13" r="1.2" fill="#1d7fb0" />
+    <circle cx="8"  cy="17" r="1.2" fill="#1d7fb0" />
+    <circle cx="12" cy="17" r="1.2" fill="#1d7fb0" />
+    <circle cx="16" cy="17" r="1.2" fill="#1d7fb0" />
+  </svg>
+);
 
-function LuotGui() {
-  const [tabDangChon, setTabDangChon] = useState("dang-gui");
+const LichSu = () => {
+  const [tab, setTab] = useState("phuongtien");
+
+  // Từ khóa
+  const [tuKhoa, setTuKhoa] = useState("");
+  const [tuKhoaApDung, setTuKhoaApDung] = useState("");
+
+  // Ngày
+  const [tuNgay, setTuNgay] = useState("2025-04-01");
+  const [denNgay, setDenNgay] = useState("2025-05-07");
+  const [tuNgayApDung, setTuNgayApDung] = useState("2025-04-01");
+  const [denNgayApDung, setDenNgayApDung] = useState("2025-05-07");
+
+  // Dữ liệu rỗng — sẽ nối SQL sau
+  const [danhSachPhuongTien] = useState([]);
+  const [danhSachLuotGui] = useState([]);
+
+  const refTuNgay = useRef(null);
+  const refDenNgay = useRef(null);
+
+  const danhSachHienThi =
+    tab === "phuongtien" ? danhSachPhuongTien : danhSachLuotGui;
+
+  const danhSachLoc = danhSachHienThi.filter((item) => {
+    const khopTuKhoa =
+      item.bienSo?.toLowerCase().includes(tuKhoaApDung.toLowerCase()) ||
+      item.cuDan?.toLowerCase().includes(tuKhoaApDung.toLowerCase());
+
+    let khopNgay = true;
+    if (item.ngayISO) {
+      khopNgay = item.ngayISO >= tuNgayApDung && item.ngayISO <= denNgayApDung;
+    }
+
+    return khopTuKhoa && khopNgay;
+  });
+
+  const formatNgay = (iso) => {
+    if (!iso) return "";
+    const [y, m, d] = iso.split("-");
+    return `${d}/${m}/${y}`;
+  };
+
+  const xuLyTimKiem = () => {
+    setTuKhoaApDung(tuKhoa);
+    setTuNgayApDung(tuNgay);
+    setDenNgayApDung(denNgay);
+  };
+
+  const moDatePicker = (ref) => {
+    if (ref.current) {
+      if (ref.current.showPicker) ref.current.showPicker();
+      else ref.current.focus();
+    }
+  };
 
   return (
-    <div className="luot-gui-page">
-      {/* HEADER */}
-      <header className="header-luot-gui">
-        <div className="logo-luot-gui">
-          <div className="logo-icon-luot-gui">🏢</div>
-          <span>Hệ thống quản lý phương tiện chung cư</span>
-        </div>
-
-        <div className="thanh-tim-luot-gui">
-          <span>🔍</span>
-          <input
-            type="text"
-            placeholder="Tìm kiếm biển số, tên cư dân..."
-          />
-        </div>
-
-        <div className="khu-vuc-tai-khoan">
-          <button className="nut-thong-bao-luot-gui" type="button">
-            🔔
-            <span className="cham-thong-bao"></span>
-          </button>
-
-          <div className="anh-dai-dien-luot-gui">👤</div>
-
-          <div className="thong-tin-admin-luot-gui">
-            <span className="ten-admin-luot-gui">Admin</span>
-            <span className="muiten-admin">⌄</span>
-          </div>
-        </div>
-      </header>
-
-      {/* NỘI DUNG */}
-      <main className="noi-dung-luot-gui">
-        <div className="tieu-de-luot-gui">
-          <h1>Lượt gửi xe đang hoạt động</h1>
+    <div className="ls-wrapper">
+      <div className="ls-body">
+        {/* TIÊU ĐỀ */}
+        <div className="ls-title-bar">
+          <h2>Lịch sử phương tiện và lượt gửi xe</h2>
         </div>
 
         {/* TAB */}
-        <div className="thanh-tab-luot-gui">
+        <div className="ls-tabs">
           <button
-            type="button"
-            className={`tab-luot-gui ${
-              tabDangChon === "dang-gui" ? "tab-dang-chon" : ""
-            }`}
-            onClick={() => setTabDangChon("dang-gui")}
+            className={`ls-tab ${tab === "phuongtien" ? "ls-tab-active" : ""}`}
+            onClick={() => setTab("phuongtien")}
           >
-            Đang gửi (5)
+            Lịch sử phương tiện
           </button>
-
           <button
-            type="button"
-            className={`tab-luot-gui ${
-              tabDangChon === "lich-su" ? "tab-dang-chon" : ""
-            }`}
-            onClick={() => setTabDangChon("lich-su")}
+            className={`ls-tab ${tab === "luotgui" ? "ls-tab-active" : ""}`}
+            onClick={() => setTab("luotgui")}
           >
-            Lịch sử
+            Lịch sử gửi xe
           </button>
         </div>
 
-        {/* BẢNG */}
-        <div className="khung-bang-luot-gui">
-          {tabDangChon === "dang-gui" ? (
-            <table className="bang-luot-gui">
+        <div className="ls-table-box">
+          {/* BỘ LỌC */}
+          <div className="ls-filter-bar">
+            <div className="ls-search">
+              <span>🔍</span>
+              <input
+                type="text"
+                placeholder="Tìm kiếm theo biển số, tên cư dân..."
+                value={tuKhoa}
+                onChange={(e) => setTuKhoa(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") xuLyTimKiem();
+                }}
+              />
+            </div>
+
+            {/* Ô chọn ngày */}
+            <div className="ls-date-range">
+              <div
+                className="ls-date-item"
+                onClick={() => moDatePicker(refTuNgay)}
+              >
+                <IconLichXanh size={16} />
+                <span className="ls-date-text">{formatNgay(tuNgay)}</span>
+                <input
+                  ref={refTuNgay}
+                  type="date"
+                  value={tuNgay}
+                  onChange={(e) => setTuNgay(e.target.value)}
+                  className="ls-date-hidden"
+                />
+              </div>
+
+              <span className="ls-date-sep">-</span>
+
+              <div
+                className="ls-date-item"
+                onClick={() => moDatePicker(refDenNgay)}
+              >
+                <IconLichXanh size={16} />
+                <span className="ls-date-text">{formatNgay(denNgay)}</span>
+                <input
+                  ref={refDenNgay}
+                  type="date"
+                  value={denNgay}
+                  onChange={(e) => setDenNgay(e.target.value)}
+                  className="ls-date-hidden"
+                />
+              </div>
+            </div>
+
+            <button className="ls-btn-search" onClick={xuLyTimKiem}>
+              Tìm kiếm
+            </button>
+          </div>
+
+          {/* BẢNG PHƯƠNG TIỆN */}
+          {tab === "phuongtien" && (
+            <table className="ls-table">
+              <thead>
+                <tr>
+                  <th>STT</th>
+                  <th>Biển số xe</th>
+                  <th>Loại xe</th>
+                  <th>Cư dân</th>
+                  <th>Căn hộ</th>
+                  <th>Hành động</th>
+                  <th>Thời gian</th>
+                </tr>
+              </thead>
+              <tbody>
+                {danhSachLoc.length === 0 ? (
+                  <tr>
+                    <td colSpan="7" style={{ textAlign: "center", padding: 30, color: "#6b8fa3" }}>
+                      Chưa có dữ liệu
+                    </td>
+                  </tr>
+                ) : (
+                  danhSachLoc.map((item, index) => (
+                    <tr key={item.id}>
+                      <td>{index + 1}</td>
+                      <td>{item.bienSo}</td>
+                      <td>{item.loaiXe}</td>
+                      <td>{item.cuDan}</td>
+                      <td>{item.canHo}</td>
+                      <td>
+                        <span className={`ls-event ${item.hanhDong === "Thêm mới" ? "ls-event-in" : "ls-event-out"}`}>
+                          {item.hanhDong}
+                        </span>
+                      </td>
+                      <td>{item.thoiGian}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          )}
+
+          {/* BẢNG LƯỢT GỬI */}
+          {tab === "luotgui" && (
+            <table className="ls-table">
               <thead>
                 <tr>
                   <th>STT</th>
@@ -124,56 +210,61 @@ function LuotGui() {
                   <th>Loại xe</th>
                   <th>Cư dân / Khách</th>
                   <th>Thời gian vào</th>
-                  <th>Thời gian ra dự kiến</th>
-                  <th>Thời gian gửi</th>
-                  <th>Trạng thái</th>
+                  <th>Thời gian ra</th>
+                  <th>Sự kiện</th>
+                  <th>Ghi chú</th>
                 </tr>
               </thead>
-
               <tbody>
-                {danhSachLuotGui.map((item) => (
-                  <tr key={item.stt}>
-                    <td>{item.stt}</td>
-                    <td className="bien-so">{item.bienSo}</td>
-                    <td>{item.loaiXe}</td>
-                    <td>{item.cuDan}</td>
-                    <td>{item.thoiGianVao}</td>
-                    <td>{item.thoiGianRa}</td>
-                    <td>{item.thoiGianGui}</td>
-                    <td>
-                      <span className="trang-thai-dang-gui">
-                        Đang gửi
-                      </span>
+                {danhSachLoc.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" style={{ textAlign: "center", padding: 30, color: "#6b8fa3" }}>
+                      Chưa có dữ liệu
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  danhSachLoc.map((item, index) => (
+                    <tr key={item.id}>
+                      <td>{index + 1}</td>
+                      <td>{item.bienSo}</td>
+                      <td>{item.loaiXe}</td>
+                      <td>{item.cuDan}</td>
+                      <td>{item.thoiGianVao}</td>
+                      <td>{item.thoiGianRa || "-"}</td>
+                      <td>
+                        <span className={`ls-event ${item.suKien === "Check-in" ? "ls-event-in" : "ls-event-out"}`}>
+                          {item.suKien}
+                        </span>
+                      </td>
+                      <td>
+                        {item.ghiChu && item.ghiChu !== "-" ? (
+                          <span className={`ls-note ${item.ghiChu === "Đã thanh toán" ? "ls-note-paid" : ""}`}>
+                            {item.ghiChu}
+                          </span>
+                        ) : ("-")}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
-          ) : (
-            <div className="lich-su-trong">
-              Chưa có dữ liệu lịch sử
-            </div>
           )}
 
-          {/* CHÂN BẢNG */}
-          <div className="chan-bang-luot-gui">
-            <span>Hiển thị 1 - 5 trong 5 lượt gửi</span>
-
-            <div className="phan-trang-luot-gui">
-              <button type="button">‹</button>
-              <button
-                type="button"
-                className="trang-dang-chon-luot-gui"
-              >
-                1
-              </button>
-              <button type="button">›</button>
+          {/* PHÂN TRANG */}
+          <div className="ls-pagination">
+            <span>
+              Hiển thị {danhSachLoc.length > 0 ? 1 : 0} - {danhSachLoc.length} trong {danhSachHienThi.length} kết quả
+            </span>
+            <div className="ls-pages">
+              <button className="ls-page-prev">‹</button>
+              <button className="ls-page-active">1</button>
+              <button className="ls-page-next">›</button>
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
-}
+};
 
-export default LuotGui;
+export default LichSu;
