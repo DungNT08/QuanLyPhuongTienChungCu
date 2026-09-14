@@ -1,0 +1,381 @@
+/* =========================
+   WRAPPER TỔNG
+========================= */
+.hd-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background: #f4f9fc;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.hd-body {
+  margin-left: 240px;
+  width: calc(100% - 240px);
+  min-height: 100vh;
+  padding-top: 68px;
+  box-sizing: border-box;
+  background: #f4f9fc;
+}
+
+/* TIÊU ĐỀ */
+.hd-title-bar {
+  padding: 25px 30px 15px 30px;
+}
+.hd-title-bar h1 {
+  font-size: 24px;
+  color: #0f3b56;
+  font-weight: 800;
+  margin: 0;
+}
+
+/* KHUNG BẢNG */
+.hd-table-box {
+  background-color: #ffffff;
+  margin: 0 30px 30px 30px;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #dfeaf0;
+  box-shadow: 0 2px 8px rgba(35, 88, 116, 0.03);
+  overflow-x: auto;
+}
+
+/* TAB */
+.hd-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #edf2f5;
+}
+
+.hd-tab {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  color: #6b8fa3;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s ease;
+}
+
+.hd-tab:hover { color: #1d7fb0; }
+.hd-tab-active { color: #1d7fb0; border-bottom-color: #1d7fb0; }
+
+/* BẢNG */
+.hd-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+.hd-table th {
+  text-align: left;
+  padding: 12px 15px;
+  background-color: #ebf6fb;
+  color: #2f5470;
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  border-bottom: 2px solid #dce9ef;
+  white-space: nowrap;
+}
+
+.hd-table td {
+  padding: 15px;
+  border-bottom: 1px solid #edf2f5;
+  color: #2f5470;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.hd-empty {
+  text-align: center;
+  padding: 40px !important;
+  color: #6b8fa3 !important;
+  font-weight: 500 !important;
+}
+
+/* TRẠNG THÁI */
+.hd-status {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.hd-status-paid { background: #d5f2e6; color: #1e7a54; }
+.hd-status-pending { background: #fef3d6; color: #96690b; }
+
+/* NÚT XEM */
+.hd-btn-view {
+  padding: 6px 16px;
+  border: 1px solid #b8d9ea;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1d7fb0;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hd-btn-view:hover {
+  background: #e8f4fb;
+  border-color: #1d7fb0;
+}
+
+/* PHÂN TRANG */
+.hd-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  color: #6b8fa3;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.hd-pages { display: flex; gap: 5px; }
+
+.hd-pages button {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid #dce7ec;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #2f5470;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.hd-pages button:hover { background: #f0f8fc; border-color: #a8d5ea; }
+.hd-pages .hd-page-active { background: #1d7fb0; color: #ffffff; border-color: #1d7fb0; }
+
+/* =========================
+   TRANG CHI TIẾT HÓA ĐƠN
+========================= */
+
+/* Nút quay lại */
+.hd-btn-back {
+  margin: 0 30px 16px 30px;
+  padding: 8px 16px;
+  border: 1px solid #dce7ed;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1d7fb0;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hd-btn-back:hover {
+  background: #e8f4fb;
+  border-color: #1d7fb0;
+}
+
+/* Card (khung trắng) */
+.hd-card {
+  background: #ffffff;
+  margin: 0 30px 16px 30px;
+  padding: 24px;
+  border-radius: 10px;
+  border: 1px solid #dfeaf0;
+  box-shadow: 0 2px 8px rgba(35, 88, 116, 0.03);
+}
+
+.hd-card-title {
+  margin: 0 0 20px 0;
+  font-size: 15px;
+  color: #0f3b56;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+/* Khối header thông tin hóa đơn */
+.hd-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.hd-info-row {
+  margin-bottom: 10px;
+}
+
+.hd-info-row:last-child {
+  margin-bottom: 0;
+}
+
+.hd-info-label {
+  display: inline-block;
+  width: 130px;
+  color: #4f7a92;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.hd-info-value {
+  color: #1b405a;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Lưới 2 cột thông tin phương tiện */
+.hd-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 30px;
+}
+
+.hd-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hd-field-full {
+  grid-column: span 2;
+}
+
+.hd-field label {
+  font-size: 12px;
+  color: #4f7a92;
+  font-weight: 700;
+}
+
+.hd-field span {
+  font-size: 14px;
+  color: #1b405a;
+  font-weight: 600;
+}
+
+/* Bảng chi tiết phí */
+.hd-table-detail {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+
+.hd-table-detail th {
+  text-align: left;
+  padding: 10px 14px;
+  background-color: #f4f9fc;
+  color: #4f7a92;
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  border-bottom: 1px solid #edf2f5;
+  white-space: nowrap;
+}
+
+.hd-table-detail td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #edf2f5;
+  color: #2f5470;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Tổng tiền */
+.hd-total-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 14px 0;
+}
+
+.hd-total-label {
+  color: #4f7a92;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.hd-total-value {
+  color: #0f3b56;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+}
+
+/* 2 nút dưới */
+.hd-actions {
+  display: flex;
+  gap: 12px;
+  margin: 0 30px 30px 30px;
+  justify-content: flex-end;
+}
+
+.hd-btn-download {
+  padding: 11px 24px;
+  border: none;
+  border-radius: 8px;
+  background: #1a73e8;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hd-btn-download:hover { background: #1557b0; }
+
+.hd-btn-cancel {
+  padding: 11px 24px;
+  border: 1px solid #dce7ed;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #4f7a92;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hd-btn-cancel:hover {
+  background: #f4f9fc;
+  border-color: #a8d5ea;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 900px) {
+  .hd-table-box,
+  .hd-card,
+  .hd-btn-back,
+  .hd-actions {
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+  .hd-title-bar {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  .hd-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .hd-field-full {
+    grid-column: span 1;
+  }
+  .hd-actions {
+    flex-direction: column-reverse;
+  }
+  .hd-btn-download,
+  .hd-btn-cancel {
+    width: 100%;
+    justify-content: center;
+  }
+}

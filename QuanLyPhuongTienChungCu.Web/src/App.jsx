@@ -31,6 +31,9 @@ import QLyUser from "./Admin/QLyUser";
 import TrangChuUser from "./User/TrangChu";
 import PhuongTienU from "./User/PhuongTienU";
 import LichGuiXeU from "./User/LichGuiXeU";
+import HoaDon from "./User/HoaDon";         
+import ThongBao from "./User/ThongBao";     
+import HoSo from "./User/HoSo"; 
 
 import "./App.css";
 
@@ -102,6 +105,35 @@ function App() {
           element={
             <LayoutUser>
               <LichGuiXeU />
+            </LayoutUser>
+          }
+        />
+         {/* Hóa đơn & thanh toán */}
+        <Route
+          path="/hoa-don"
+          element={
+            <LayoutUser>
+              <HoaDon />
+            </LayoutUser>
+          }
+        />
+
+        {/* Thông báo */}
+        <Route
+          path="/thong-bao"
+          element={
+            <LayoutUser>
+              <ThongBao />
+            </LayoutUser>
+          }
+        />
+
+        {/* Hồ sơ cá nhân */}
+        <Route
+          path="/ho-so"
+          element={
+            <LayoutUser>
+              <HoSo />
             </LayoutUser>
           }
         />

@@ -1,0 +1,372 @@
+/* =========================
+   WRAPPER TỔNG
+========================= */
+.hs-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background: #f4f9fc;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.hs-body {
+  margin-left: 240px;
+  width: calc(100% - 240px);
+  min-height: 100vh;
+  padding-top: 68px;
+  box-sizing: border-box;
+  background: #f4f9fc;
+}
+
+/* TIÊU ĐỀ */
+.hs-title-bar {
+  padding: 25px 30px 15px 30px;
+}
+.hs-title-bar h1 {
+  font-size: 24px;
+  color: #0f3b56;
+  font-weight: 800;
+  margin: 0;
+}
+
+/* LƯỚI 2 CỘT */
+.hs-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  margin: 0 30px 20px 30px;
+}
+
+/* CARD CHUNG */
+.hs-card {
+  background: #ffffff;
+  border: 1px solid #dfeaf0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(35, 88, 116, 0.03);
+  padding: 24px;
+}
+
+/* =========================
+   CARD TRÁI — AVATAR
+========================= */
+.hs-card-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 30px 24px;
+}
+
+/* Wrapper avatar — có thể click */
+.hs-avatar-wrap {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 18px;
+  cursor: pointer;
+}
+
+.hs-avatar-wrap:hover .hs-avatar {
+  border-color: #1d7fb0;
+}
+
+.hs-avatar-wrap:hover .hs-avatar-camera {
+  transform: scale(1.1);
+}
+
+.hs-avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: #e8f4fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #cce4f0;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+/* Ảnh đại diện */
+.hs-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.hs-avatar-icon {
+  font-size: 52px;
+  color: #4a8db0;
+}
+
+/* Icon máy ảnh ở góc avatar */
+.hs-avatar-camera {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1d7fb0;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 14px;
+  border: 3px solid #ffffff;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  box-shadow: 0 2px 6px rgba(29, 127, 176, 0.4);
+}
+
+.hs-name {
+  font-size: 18px;
+  color: #0f3b56;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+}
+
+.hs-role {
+  font-size: 13px;
+  color: #6b8fa3;
+  font-weight: 500;
+  margin: 0 0 20px 0;
+}
+
+.hs-info-mini {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: #f7fbfd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.hs-info-mini-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.hs-info-mini-label {
+  color: #6b8fa3;
+  font-weight: 600;
+}
+
+.hs-info-mini-value {
+  color: #1b405a;
+  font-weight: 700;
+}
+
+.hs-btn-edit {
+  width: 100%;
+  padding: 11px 20px;
+  border: 1px solid #1d7fb0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1d7fb0;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hs-btn-edit:hover {
+  background: #e8f4fb;
+  border-color: #1557b0;
+  color: #1557b0;
+}
+
+/* =========================
+   CARD PHẢI — LIÊN HỆ
+========================= */
+.hs-card-right {
+  padding: 28px;
+  text-align: left;      
+}
+
+.hs-card-title {
+  font-size: 16px;
+  color: #0f3b56;
+  font-weight: 800;
+  margin: 0 0 24px 0;
+  letter-spacing: 0.2px;
+  text-align: left;      
+}
+
+.hs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 22px;
+  text-align: left;  
+}
+
+.hs-field:last-child {
+  margin-bottom: 0;
+}
+
+.hs-field label {
+  font-size: 13px;
+  color: #6b8fa3;
+  font-weight: 600;
+}
+
+.hs-field span {
+  font-size: 15px;
+  color: #1b405a;
+  font-weight: 700;
+}
+
+/* =========================
+   CARD ĐỔI MẬT KHẨU
+========================= */
+.hs-card-password {
+  margin: 0 30px 30px 30px;
+  padding: 18px 24px;
+}
+
+.hs-btn-password {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border: none;
+  background: transparent;
+  color: #1d7fb0;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.hs-btn-password:hover {
+  color: #1557b0;
+}
+
+.hs-lock-icon {
+  font-size: 18px;
+}
+
+/* =========================
+   MODAL CHỈNH SỬA
+========================= */
+.hs-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.hs-modal {
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 12px;
+  min-width: 460px;
+  max-width: 92vw;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.hs-modal-title {
+  font-size: 18px;
+  color: #0f3b56;
+  font-weight: 800;
+  margin: 0 0 22px 0;
+}
+
+.hs-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.hs-modal-field label {
+  font-size: 13px;
+  color: #4f7a92;
+  font-weight: 700;
+}
+
+.hs-modal-field input {
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid #dce7ed;
+  border-radius: 8px;
+  background: #f7fbfd;
+  font-size: 14px;
+  color: #1b405a;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.hs-modal-field input:focus {
+  border-color: #4aa7dd;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(74, 167, 221, 0.12);
+}
+
+.hs-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.hs-btn-cancel {
+  padding: 10px 22px;
+  border: 1px solid #dce7ed;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #4f7a92;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hs-btn-cancel:hover {
+  background: #f4f9fc;
+}
+
+.hs-btn-save {
+  padding: 10px 22px;
+  border: none;
+  border-radius: 8px;
+  background: #1a73e8;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hs-btn-save:hover {
+  background: #1557b0;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 900px) {
+  .hs-grid {
+    grid-template-columns: 1fr;
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+  .hs-card-password {
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+  .hs-title-bar {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  .hs-modal {
+    min-width: auto;
+    width: 92%;
+  }
+}
