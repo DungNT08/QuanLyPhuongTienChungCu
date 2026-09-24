@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using QuanLyPhuongTienChungCu.Data;
 using QuanLyPhuongTienChungCu.Dtos;
 using QuanLyPhuongTienChungCu.Models;
+using QuanLyPhuongTienChungCu.Services;
+using System.Security.Claims;
 
 namespace QuanLyPhuongTienChungCu.Controllers;
 
@@ -13,17 +15,44 @@ namespace QuanLyPhuongTienChungCu.Controllers;
 public class BangGiaController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly AuditLogService _auditLogService;
 
-    public BangGiaController(AppDbContext context)
+    public BangGiaController(
+        AppDbContext context,
+        AuditLogService auditLogService)
     {
         _context = context;
+        _auditLogService = auditLogService;
+    }
+
+    // =========================================================
+    // HELPER
+    // =========================================================
+
+    private string? LayRole()
+    {
+        return User.FindFirst(ClaimTypes.Role)?.Value;
+    }
+
+    private long? LayUserId()
+    {
+        var userIdClaim = User.FindFirst(
+            ClaimTypes.NameIdentifier
+        )?.Value;
+
+        if (long.TryParse(userIdClaim, out var userId))
+        {
+            return userId;
+        }
+
+        return null;
     }
 
     // =========================================================
     // GET: api/BangGia
     // Xem danh sach bang gia
-    // Tat ca tai khoan da dang nhap deu duoc xem
     // =========================================================
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<BangGiaDto>>> GetAll()
     {
@@ -47,8 +76,8 @@ public class BangGiaController : ControllerBase
 
     // =========================================================
     // GET: api/BangGia/{id}
-    // Xem chi tiet mot bang gia
     // =========================================================
+
     [HttpGet("{id}")]
     public async Task<ActionResult<BangGiaDto>> GetById(long id)
     {
@@ -77,39 +106,25 @@ public class BangGiaController : ControllerBase
 
     // =========================================================
     // POST: api/BangGia
-    // Tao bang gia moi
-    // Chi Admin va BanQuanLy duoc thuc hien
     // =========================================================
+
     [Authorize(Roles = "Admin,BanQuanLy")]
     [HttpPost]
     public async Task<ActionResult<BangGiaDto>> Create(BangGia bangGia)
     {
-        // -----------------------------------------------------
-        // Kiem tra loai phuong tien
-        // -----------------------------------------------------
         var loaiPhuongTien = await _context.LoaiPhuongTiens
             .FindAsync(bangGia.LoaiPhuongTienId);
 
         if (loaiPhuongTien == null)
         {
-            return BadRequest(
-                "Loai phuong tien khong ton tai."
-            );
+            return BadRequest("Loai phuong tien khong ton tai.");
         }
 
-        // -----------------------------------------------------
-        // Kiem tra don gia
-        // -----------------------------------------------------
         if (bangGia.DonGia < 0)
         {
-            return BadRequest(
-                "Don gia khong duoc am."
-            );
+            return BadRequest("Don gia khong duoc am.");
         }
 
-        // -----------------------------------------------------
-        // Kiem tra thoi gian hieu luc
-        // -----------------------------------------------------
         if (bangGia.HieuLucDen.HasValue &&
             bangGia.HieuLucDen.Value <= bangGia.HieuLucTu)
         {
@@ -118,21 +133,14 @@ public class BangGiaController : ControllerBase
             );
         }
 
-        // -----------------------------------------------------
-        // Mac dinh ACTIVE neu khong truyen trang thai
-        // -----------------------------------------------------
         if (string.IsNullOrWhiteSpace(bangGia.TrangThai))
         {
             bangGia.TrangThai = "ACTIVE";
         }
 
-        // Chuan hoa trang thai
         bangGia.TrangThai =
             bangGia.TrangThai.Trim().ToUpper();
 
-        // -----------------------------------------------------
-        // Chi kiem tra trung khoang thoi gian neu ACTIVE
-        // -----------------------------------------------------
         if (bangGia.TrangThai == "ACTIVE")
         {
             var biTrung = await KiemTraTrungBangGiaActive(
@@ -151,16 +159,20 @@ public class BangGiaController : ControllerBase
             }
         }
 
-        // -----------------------------------------------------
-        // Them bang gia
-        // -----------------------------------------------------
         _context.BangGias.Add(bangGia);
 
         await _context.SaveChangesAsync();
 
-        // -----------------------------------------------------
-        // Tao DTO tra ve
-        // -----------------------------------------------------
+        var currentUserId = LayUserId();
+
+        await _auditLogService.GhiLog(
+            currentUserId,
+            "CREATE",
+            "BangGia",
+            bangGia.BangGiaId,
+            $"Tao bang gia cho loai phuong tien {loaiPhuongTien.TenLoai}"
+        );
+
         var ketQua = new BangGiaDto
         {
             BangGiaId = bangGia.BangGiaId,
@@ -181,64 +193,40 @@ public class BangGiaController : ControllerBase
 
     // =========================================================
     // PUT: api/BangGia/{id}
-    // Cap nhat bang gia
-    // Chi Admin va BanQuanLy duoc thuc hien
     // =========================================================
+
     [Authorize(Roles = "Admin,BanQuanLy")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(
         long id,
         BangGia bangGia)
     {
-        // -----------------------------------------------------
-        // Kiem tra ID
-        // -----------------------------------------------------
         if (id != bangGia.BangGiaId)
         {
-            return BadRequest(
-                "Id khong khop."
-            );
+            return BadRequest("Id khong khop.");
         }
 
-        // -----------------------------------------------------
-        // Tim bang gia cu
-        // -----------------------------------------------------
         var bangGiaCu = await _context.BangGias
             .FindAsync(id);
 
         if (bangGiaCu == null)
         {
-            return NotFound(
-                "Bang gia khong ton tai."
-            );
+            return NotFound("Bang gia khong ton tai.");
         }
 
-        // -----------------------------------------------------
-        // Kiem tra loai phuong tien
-        // -----------------------------------------------------
         var loaiPhuongTien = await _context.LoaiPhuongTiens
             .FindAsync(bangGia.LoaiPhuongTienId);
 
         if (loaiPhuongTien == null)
         {
-            return BadRequest(
-                "Loai phuong tien khong ton tai."
-            );
+            return BadRequest("Loai phuong tien khong ton tai.");
         }
 
-        // -----------------------------------------------------
-        // Kiem tra don gia
-        // -----------------------------------------------------
         if (bangGia.DonGia < 0)
         {
-            return BadRequest(
-                "Don gia khong duoc am."
-            );
+            return BadRequest("Don gia khong duoc am.");
         }
 
-        // -----------------------------------------------------
-        // Kiem tra thoi gian hieu luc
-        // -----------------------------------------------------
         if (bangGia.HieuLucDen.HasValue &&
             bangGia.HieuLucDen.Value <= bangGia.HieuLucTu)
         {
@@ -247,23 +235,14 @@ public class BangGiaController : ControllerBase
             );
         }
 
-        // -----------------------------------------------------
-        // Neu trang thai rong thi giu trang thai hien tai
-        // -----------------------------------------------------
         if (string.IsNullOrWhiteSpace(bangGia.TrangThai))
         {
             bangGia.TrangThai = bangGiaCu.TrangThai;
         }
 
-        // Chuan hoa trang thai
         bangGia.TrangThai =
             bangGia.TrangThai.Trim().ToUpper();
 
-        // -----------------------------------------------------
-        // Kiem tra trung bang gia ACTIVE
-        //
-        // Truyen id hien tai vao de khong tu kiem tra chinh no
-        // -----------------------------------------------------
         if (bangGia.TrangThai == "ACTIVE")
         {
             var biTrung = await KiemTraTrungBangGiaActive(
@@ -282,9 +261,6 @@ public class BangGiaController : ControllerBase
             }
         }
 
-        // -----------------------------------------------------
-        // Cap nhat du lieu
-        // -----------------------------------------------------
         bangGiaCu.LoaiPhuongTienId =
             bangGia.LoaiPhuongTienId;
 
@@ -302,59 +278,88 @@ public class BangGiaController : ControllerBase
 
         await _context.SaveChangesAsync();
 
+        var currentUserId = LayUserId();
+
+        await _auditLogService.GhiLog(
+            currentUserId,
+            "UPDATE",
+            "BangGia",
+            bangGiaCu.BangGiaId,
+            $"Cap nhat bang gia cho loai phuong tien {loaiPhuongTien.TenLoai}"
+        );
+
         return NoContent();
     }
 
     // =========================================================
     // DELETE: api/BangGia/{id}
-    // Xoa bang gia
-    // Chi Admin va BanQuanLy duoc thuc hien
+    //
+    // QUY TẮC:
+    // - "Chưa hoạt động" (HieuLucTu > Hôm nay) => CHO PHÉP XÓA
+    // - "Đang hoạt động" hoặc "Ngừng hoạt động" => CHẶN XÓA
+    //
+    // Lý do:
+    // - Chưa hoạt động: chưa ảnh hưởng nghiệp vụ, có thể xóa an toàn.
+    // - Đang hoạt động: đang được dùng để tính phí.
+    // - Ngừng hoạt động: đã từng được dùng, cần giữ lịch sử.
     // =========================================================
+
     [Authorize(Roles = "Admin,BanQuanLy")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(long id)
     {
         var bangGia = await _context.BangGias
-            .FindAsync(id);
+            .FirstOrDefaultAsync(x => x.BangGiaId == id);
 
         if (bangGia == null)
         {
-            return NotFound(
-                "Bang gia khong ton tai."
-            );
+            return NotFound(new
+            {
+                message = "Bảng giá không tồn tại."
+            });
         }
 
-        // -----------------------------------------------------
-        // Khong cho xoa bang gia ACTIVE
-        // -----------------------------------------------------
-        if (bangGia.TrangThai == "ACTIVE")
+        // Kiểm tra: Chỉ cho phép xóa khi bảng giá "Chưa hoạt động"
+        // Tức là ngày bắt đầu (HieuLucTu) > ngày hôm nay
+        var homNay = DateTime.Today;
+
+        if (bangGia.HieuLucTu.Date <= homNay)
         {
-            return BadRequest(
-                "Khong the xoa bang gia dang ACTIVE. " +
-                "Hay chuyen sang INACTIVE truoc."
-            );
+            // Đã/đang hoạt động => CHẶN XÓA
+            return BadRequest(new
+            {
+                message = "Không thể xóa bảng giá đã/đang hoạt động. " +
+                          "Vui lòng chuyển sang trạng thái 'Ngừng hoạt động' " +
+                          "thay vì xóa để giữ lịch sử."
+            });
         }
 
+        // Chưa hoạt động => CHO PHÉP XÓA
         _context.BangGias.Remove(bangGia);
 
         await _context.SaveChangesAsync();
 
-        return NoContent();
+        var currentUserId = LayUserId();
+
+        await _auditLogService.GhiLog(
+            currentUserId,
+            "DELETE",
+            "BangGia",
+            id,
+            $"Xoa bang gia {id}"
+        );
+
+        return Ok(new
+        {
+            message = "Xóa bảng giá thành công.",
+            bangGiaId = id
+        });
     }
 
     // =========================================================
     // HAM KIEM TRA TRUNG BANG GIA ACTIVE
-    //
-    // Hai khoang thoi gian bi xem la trung neu:
-    //
-    // Khoang A: HieuLucTuA -> HieuLucDenA
-    // Khoang B: HieuLucTuB -> HieuLucDenB
-    //
-    // co phan giao nhau.
-    //
-    // Neu HieuLucDen = null:
-    // => Bang gia co hieu luc vo thoi han.
     // =========================================================
+
     private async Task<bool> KiemTraTrungBangGiaActive(
         long loaiPhuongTienId,
         DateTime hieuLucTu,
@@ -367,7 +372,6 @@ public class BangGiaController : ControllerBase
                 x.LoaiPhuongTienId == loaiPhuongTienId &&
                 x.TrangThai == "ACTIVE");
 
-        // Khi Update, bo qua chinh bang gia dang sua
         if (boQuaBangGiaId.HasValue)
         {
             query = query.Where(
@@ -379,10 +383,6 @@ public class BangGiaController : ControllerBase
 
         foreach (var bangGia in danhSach)
         {
-            // -------------------------------------------------
-            // Truong hop bang gia hien tai khong co HieuLucDen
-            // => hieu luc vo thoi han
-            // -------------------------------------------------
             if (!hieuLucDen.HasValue &&
                 bangGia.HieuLucDen.HasValue)
             {
@@ -391,21 +391,11 @@ public class BangGiaController : ControllerBase
                     return true;
                 }
             }
-
-            // -------------------------------------------------
-            // Ca hai deu khong co HieuLucDen
-            // => deu vo thoi han va chac chan trung
-            // -------------------------------------------------
             else if (!hieuLucDen.HasValue &&
                      !bangGia.HieuLucDen.HasValue)
             {
                 return true;
             }
-
-            // -------------------------------------------------
-            // Bang gia moi co HieuLucDen
-            // Bang gia cu khong co HieuLucDen
-            // -------------------------------------------------
             else if (hieuLucDen.HasValue &&
                      !bangGia.HieuLucDen.HasValue)
             {
@@ -414,10 +404,6 @@ public class BangGiaController : ControllerBase
                     return true;
                 }
             }
-
-            // -------------------------------------------------
-            // Ca hai deu co HieuLucDen
-            // -------------------------------------------------
             else if (hieuLucDen.HasValue &&
                      bangGia.HieuLucDen.HasValue)
             {
