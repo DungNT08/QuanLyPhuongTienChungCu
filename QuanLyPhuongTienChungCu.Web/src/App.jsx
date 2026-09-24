@@ -24,6 +24,7 @@ import BangGia from "./Admin/BangGia";
 import LichSu from "./Admin/LichSu";
 import BaoCao from "./Admin/BaoCao";
 import QLyUser from "./Admin/QLyUser";
+import Login from "./Login/Login";
 
 // =====================================================
 // TRANG USER - CƯ DÂN
@@ -68,7 +69,10 @@ function App() {
   return (
     <Router>
       <Routes>
-
+        <Route
+          path="/login"
+          element={<Login />}
+        />
         {/* =================================================
             USER - CƯ DÂN
         ================================================= */}

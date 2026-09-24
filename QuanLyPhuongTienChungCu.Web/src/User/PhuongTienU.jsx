@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./PhuongTienU.css";
+import { apiFetch } from "../api/api";
 
 function PhuongTienU() {
   // =========================
@@ -37,15 +38,7 @@ function PhuongTienU() {
       setLoading(true);
       setLoi("");
 
-      const response = await fetch("/api/phuongtien");
-
-      if (!response.ok) {
-        throw new Error(
-          `Không thể lấy dữ liệu. Mã lỗi: ${response.status}`
-        );
-      }
-
-      const data = await response.json();
+      const data = await apiFetch("/PhuongTien");
 
       // Backend có thể trả về mảng trực tiếp
       // hoặc { data: [...] }
@@ -76,11 +69,9 @@ function PhuongTienU() {
   // =========================================================
   // CHẠY KHI MỞ TRANG
   // =========================================================
-
-  useEffect(() => {
-    layDanhSachPhuongTien();
-  }, []);
-
+      useEffect(() => {
+        layDanhSachPhuongTien();
+      }, []);
 
   // =========================================================
   // MỞ FORM THÊM
