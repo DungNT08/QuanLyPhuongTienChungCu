@@ -18,7 +18,6 @@ import TrangChuAdmin from "./Admin/TrangChu";
 import PhuongTien from "./Admin/PhuongTien";
 import XeKhach from "./Admin/XeKhach";
 import LuotGui from "./Admin/LuotGui";
-import PhiGuiXe from "./Admin/PhiGuiXe";
 import BangGia from "./Admin/BangGia";
 import LichSu from "./Admin/LichSu";
 import BaoCao from "./Admin/BaoCao";
@@ -171,14 +170,6 @@ function App() {
           }
         />
 
-        <Route
-          path="/admin/phi-gui-xe"
-          element={
-            <LayoutAdmin>
-              <PhiGuiXe />
-            </LayoutAdmin>
-          }
-        />
 
         <Route
           path="/admin/bang-gia"
