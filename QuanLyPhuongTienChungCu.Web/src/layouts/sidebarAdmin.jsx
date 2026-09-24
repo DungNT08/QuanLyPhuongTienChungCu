@@ -11,6 +11,7 @@ const danhSachMenu = [
   { icon: "◴", ten: "Lịch sử", duongDan: "/admin/lich-su" },
   { icon: "▥", ten: "Báo cáo", duongDan: "/admin/bao-cao" },
   { icon: "♙", ten: "Quản lý người dùng", duongDan: "/admin/nguoi-dung" },
+   { icon: "♙", ten: "Quản lý cư dân", duongDan: "/admin/cu-dan" },
 ];
 
 function SidebarAdmin({ duLieuTimKiem = [], onTimKiem }) {
