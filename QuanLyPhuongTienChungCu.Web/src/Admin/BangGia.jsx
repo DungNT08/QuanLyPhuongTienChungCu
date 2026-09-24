@@ -5,7 +5,7 @@ const API_URL = "http://localhost:5022/api";
 
 const FORM_MAC_DINH = {
   loaiPhuongTienId: "",
-  donGia: 0,
+  donGia: "",
   hieuLucTu: "",
   hieuLucDen: "",
   trangThai: "ACTIVE",
@@ -42,12 +42,9 @@ function BangGia() {
 
   const taoHeaders = (coBody = false) => {
     const token = layToken();
-
     const headers = { Accept: "application/json" };
-
     if (coBody) headers["Content-Type"] = "application/json";
     if (token) headers["Authorization"] = `Bearer ${token}`;
-
     return headers;
   };
 
@@ -59,12 +56,9 @@ function BangGia() {
     try {
       const text = await response.text();
       if (!text) return `HTTP ${response.status}`;
-
       try {
         const data = JSON.parse(text);
-
         if (typeof data === "string") return data;
-
         if (data.errors) {
           const messages = [];
           Object.values(data.errors).forEach((value) => {
@@ -72,12 +66,8 @@ function BangGia() {
           });
           if (messages.length > 0) return messages.join(", ");
         }
-
         return (
-          data.message ||
-          data.title ||
-          data.error ||
-          `HTTP ${response.status}`
+          data.message || data.title || data.error || `HTTP ${response.status}`
         );
       } catch {
         return text;
@@ -95,16 +85,11 @@ function BangGia() {
     try {
       setLoading(true);
       setLoi("");
-
       const response = await fetch(`${API_URL}/BangGia`, {
         method: "GET",
         headers: taoHeaders(),
       });
-
-      if (!response.ok) {
-        throw new Error(await layNoiDungLoi(response));
-      }
-
+      if (!response.ok) throw new Error(await layNoiDungLoi(response));
       const data = await response.json();
       setDanhSach(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -122,19 +107,11 @@ function BangGia() {
   const taiDanhSachLoaiXe = async () => {
     try {
       setLoadingLoaiXe(true);
-
-      const response = await fetch(
-        `${API_URL}/PhuongTien/loai-phuong-tien`,
-        {
-          method: "GET",
-          headers: taoHeaders(),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(await layNoiDungLoi(response));
-      }
-
+      const response = await fetch(`${API_URL}/PhuongTien/loai-phuong-tien`, {
+        method: "GET",
+        headers: taoHeaders(),
+      });
+      if (!response.ok) throw new Error(await layNoiDungLoi(response));
       const data = await response.json();
       setDanhSachLoaiXe(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -146,10 +123,6 @@ function BangGia() {
     }
   };
 
-  // =====================================================
-  // LOAD BAN ĐẦU
-  // =====================================================
-
   useEffect(() => {
     taiDanhSach();
     taiDanhSachLoaiXe();
@@ -157,9 +130,6 @@ function BangGia() {
 
   // =====================================================
   // LẤY TÊN LOẠI XE
-  //
-  // QUAN TRỌNG: Khai báo TRƯỚC useMemo để tránh lỗi
-  // "Cannot access 'layTenLoaiXe' before initialization"
   // =====================================================
 
   const layTenLoaiXe = (id) => {
@@ -177,7 +147,6 @@ function BangGia() {
   const danhSachLoc = useMemo(() => {
     const keyword = tuKhoa.trim().toLowerCase();
     if (!keyword) return danhSach;
-
     return danhSach.filter((item) => {
       const tenLoai = layTenLoaiXe(item.loaiPhuongTienId);
       return (
@@ -188,6 +157,152 @@ function BangGia() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [danhSach, tuKhoa, danhSachLoaiXe]);
+
+  // =====================================================
+  // HELPER: LẤY NGÀY HÔM NAY (DẠNG YYYY-MM-DD)
+  // =====================================================
+
+  const layNgayHomNay = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  // =====================================================
+  // HELPER: LẤY NGÀY MAI (DẠNG YYYY-MM-DD)
+  // Dùng để chặn ngày kết thúc phải lớn hơn ngày bắt đầu
+  // =====================================================
+
+  const layNgayMai = (ngayBatDau) => {
+    const base = ngayBatDau ? new Date(ngayBatDau) : new Date();
+    base.setDate(base.getDate() + 1);
+    const yyyy = base.getFullYear();
+    const mm = String(base.getMonth() + 1).padStart(2, "0");
+    const dd = String(base.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  // =====================================================
+  // KIỂM TRA TÌNH TRẠNG THỜI GIAN CỦA 1 BẢNG GIÁ
+  // Trả về: 'CHUA_BAT_DAU' | 'DANG_HIEU_LUC' | 'DEN_NGAY' | 'HET_HAN'
+  // =====================================================
+
+  const kiemTraTinhTrangThoiGian = (item) => {
+    const homNay = new Date();
+    homNay.setHours(0, 0, 0, 0);
+
+    if (item.hieuLucTu) {
+      const ngayBatDau = new Date(item.hieuLucTu);
+      ngayBatDau.setHours(0, 0, 0, 0);
+      if (ngayBatDau > homNay) return "CHUA_BAT_DAU";
+    }
+
+    if (item.hieuLucDen) {
+      const ngayKetThuc = new Date(item.hieuLucDen);
+      ngayKetThuc.setHours(0, 0, 0, 0);
+
+      if (ngayKetThuc < homNay) return "HET_HAN";
+      if (ngayKetThuc.getTime() === homNay.getTime()) return "DEN_NGAY";
+    }
+
+    return "DANG_HIEU_LUC";
+  };
+
+  // =====================================================
+  // KIỂM TRA XEM 1 BẢNG GIÁ CÓ PHẢI "CHƯA HOẠT ĐỘNG" KHÔNG
+  // =====================================================
+
+  const laChuaHoatDong = (item) => {
+    const tinhTrang = kiemTraTinhTrangThoiGian(item);
+    if (tinhTrang === "CHUA_BAT_DAU") return true;
+
+    const conGiaCuHoatDong = danhSach.some((khac) => {
+      const cungLoaiXe =
+        Number(khac.loaiPhuongTienId) === Number(item.loaiPhuongTienId);
+      if (!cungLoaiXe) return false;
+      if (khac.bangGiaId === item.bangGiaId) return false;
+
+      const ngayBatDauKhac = khac.hieuLucTu
+        ? new Date(khac.hieuLucTu).getTime()
+        : 0;
+      const ngayBatDauItem = item.hieuLucTu
+        ? new Date(item.hieuLucTu).getTime()
+        : 0;
+
+      if (ngayBatDauKhac >= ngayBatDauItem) return false;
+
+      const tinhTrangKhac = kiemTraTinhTrangThoiGian(khac);
+      return tinhTrangKhac === "DANG_HIEU_LUC" || tinhTrangKhac === "DEN_NGAY";
+    });
+
+    return conGiaCuHoatDong;
+  };
+
+  // =====================================================
+  // KIỂM TRA XEM BẢNG GIÁ NÀY ĐÃ CÓ GIÁ MỚI THAY THẾ CHƯA
+  // =====================================================
+
+  const daCoGiaMoiThayThe = (item) => {
+    return danhSach.some((khac) => {
+      const cungLoaiXe =
+        Number(khac.loaiPhuongTienId) === Number(item.loaiPhuongTienId);
+      if (!cungLoaiXe) return false;
+      if (khac.bangGiaId === item.bangGiaId) return false;
+
+      const ngayBatDauKhac = khac.hieuLucTu
+        ? new Date(khac.hieuLucTu).getTime()
+        : 0;
+      const ngayBatDauItem = item.hieuLucTu
+        ? new Date(item.hieuLucTu).getTime()
+        : 0;
+
+      return ngayBatDauKhac > ngayBatDauItem;
+    });
+  };
+
+  // =====================================================
+  // DANH SÁCH CẢNH BÁO VÀNG
+  // =====================================================
+
+  const danhSachCanhBao = useMemo(() => {
+    return danhSach.filter((item) => {
+      const tinhTrang = kiemTraTinhTrangThoiGian(item);
+      if (tinhTrang !== "DEN_NGAY") return false;
+      return !daCoGiaMoiThayThe(item);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [danhSach]);
+
+  // =====================================================
+  // LẤY NGÀY KẾT THÚC LỚN NHẤT CỦA GIÁ CŨ (CÙNG LOẠI XE)
+  // =====================================================
+
+  const layNgayKetThucLonNhatCuaGiaCu = (loaiPhuongTienId) => {
+    if (!loaiPhuongTienId) return null;
+
+    const cacGiaCu = danhSach.filter(
+      (item) =>
+        Number(item.loaiPhuongTienId) === Number(loaiPhuongTienId) &&
+        item.hieuLucDen
+    );
+
+    if (cacGiaCu.length === 0) return null;
+
+    const ngayLonNhat = cacGiaCu.reduce((max, item) => {
+      const ngay = new Date(item.hieuLucDen).getTime();
+      return ngay > max ? ngay : max;
+    }, 0);
+
+    if (ngayLonNhat === 0) return null;
+
+    const date = new Date(ngayLonNhat);
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
 
   // =====================================================
   // MỞ MODAL THÊM
@@ -206,18 +321,16 @@ function BangGia() {
 
   const moSua = (item) => {
     setDangSua(item);
-
     setForm({
       loaiPhuongTienId:
         item.loaiPhuongTienId !== null && item.loaiPhuongTienId !== undefined
           ? String(item.loaiPhuongTienId)
           : "",
-      donGia: item.donGia ?? 0,
+      donGia: item.donGia ?? "",
       hieuLucTu: item.hieuLucTu ? item.hieuLucTu.split("T")[0] : "",
       hieuLucDen: item.hieuLucDen ? item.hieuLucDen.split("T")[0] : "",
       trangThai: item.trangThai || "ACTIVE",
     });
-
     setLoi("");
     setHienThiModal(true);
   };
@@ -228,7 +341,6 @@ function BangGia() {
 
   const dongModal = () => {
     if (dangLuu) return;
-
     setHienThiModal(false);
     setDangSua(null);
     setForm({ ...FORM_MAC_DINH });
@@ -249,6 +361,16 @@ function BangGia() {
 
     if (!form.donGia || Number(form.donGia) <= 0) {
       setLoi("Đơn giá phải lớn hơn 0.");
+      return false;
+    }
+
+    if (!dangSua && !form.hieuLucTu) {
+      setLoi("Vui lòng nhập ngày hiệu lực bắt đầu.");
+      return false;
+    }
+
+    if (!dangSua && !form.hieuLucDen) {
+      setLoi("Vui lòng nhập ngày hiệu lực kết thúc.");
       return false;
     }
 
@@ -279,7 +401,6 @@ function BangGia() {
       const url = dangSua
         ? `${API_URL}/BangGia/${dangSua.bangGiaId}`
         : `${API_URL}/BangGia`;
-
       const method = dangSua ? "PUT" : "POST";
 
       const response = await fetch(url, {
@@ -288,9 +409,7 @@ function BangGia() {
         body: JSON.stringify(body),
       });
 
-      if (!response.ok) {
-        throw new Error(await layNoiDungLoi(response));
-      }
+      if (!response.ok) throw new Error(await layNoiDungLoi(response));
 
       const laSua = Boolean(dangSua);
 
@@ -319,30 +438,19 @@ function BangGia() {
   // =====================================================
 
   const xoa = async (item) => {
-    const dongY = window.confirm(
-      `Bạn chắc chắn muốn xóa bảng giá này?`
-    );
+    const dongY = window.confirm(`Bạn chắc chắn muốn xóa bảng giá này?`);
     if (!dongY) return;
 
     try {
       setLoi("");
-
-      const response = await fetch(
-        `${API_URL}/BangGia/${item.bangGiaId}`,
-        {
-          method: "DELETE",
-          headers: taoHeaders(),
-        }
-      );
-
+      const response = await fetch(`${API_URL}/BangGia/${item.bangGiaId}`, {
+        method: "DELETE",
+        headers: taoHeaders(),
+      });
       const data = await response.json().catch(() => ({}));
-
       if (!response.ok) {
-        throw new Error(
-          data.message || `HTTP ${response.status}`
-        );
+        throw new Error(data.message || `HTTP ${response.status}`);
       }
-
       await taiDanhSach();
       alert(data.message || "Xóa bảng giá thành công.");
     } catch (error) {
@@ -355,16 +463,44 @@ function BangGia() {
   // FORMAT
   // =====================================================
 
-  const formatGia = (n) =>
-    Number(n || 0).toLocaleString("vi-VN") + "đ";
+  const formatGia = (n) => Number(n || 0).toLocaleString("vi-VN") + "đ";
+  const formatNgay = (d) => (d ? new Date(d).toLocaleDateString("vi-VN") : "—");
 
-  const formatNgay = (d) =>
-    d ? new Date(d).toLocaleDateString("vi-VN") : "—";
+  // =====================================================
+  // LOGIC HIỂN THỊ TRẠNG THÁI
+  // =====================================================
 
-  const hienThiTrangThai = (trangThai) =>
-    String(trangThai).toUpperCase() === "ACTIVE"
-      ? "Đang hoạt động"
-      : "Ngừng hoạt động";
+  const hienThiTrangThai = (item) => {
+    const tinhTrang = kiemTraTinhTrangThoiGian(item);
+
+    if (tinhTrang === "HET_HAN") {
+      return { text: "Ngừng hoạt động", class: "bg-status bg-status-inactive" };
+    }
+
+    if (tinhTrang === "DEN_NGAY") {
+      const coCanhBao = danhSachCanhBao.some(
+        (x) => x.bangGiaId === item.bangGiaId
+      );
+      if (coCanhBao) {
+        return { text: "Sắp hết hạn", class: "bg-status bg-status-warning" };
+      }
+    }
+
+    if (laChuaHoatDong(item)) {
+      return {
+        text: "Chưa hoạt động",
+        class: "bg-status bg-status-pending",
+      };
+    }
+
+    const isActive = String(item.trangThai).toUpperCase() === "ACTIVE";
+    return {
+      text: isActive ? "Đang hoạt động" : "Ngừng hoạt động",
+      class: isActive
+        ? "bg-status bg-status-active"
+        : "bg-status bg-status-inactive",
+    };
+  };
 
   // =====================================================
   // RENDER
@@ -378,25 +514,42 @@ function BangGia() {
         <div className="bg-title-bar">
           <div>
             <h2>Bảng giá gửi xe</h2>
-            <p className="bg-subtitle">
-              Quản lý đơn giá theo loại phương tiện
-            </p>
+            <p className="bg-subtitle">Quản lý đơn giá theo loại phương tiện</p>
           </div>
 
-          <button
-            type="button"
-            className="bg-btn-add"
-            onClick={moThem}
-          >
+          <button type="button" className="bg-btn-add" onClick={moThem}>
             <span>＋</span>
             Thêm bảng giá
           </button>
         </div>
 
-        {/* ERROR GLOBAL */}
-        {loi && !hienThiModal && (
-          <div className="bg-error">⚠️ {loi}</div>
+        {/* THANH CẢNH BÁO VÀNG */}
+        {danhSachCanhBao.length > 0 && (
+          <div
+            className="bg-warning-bar"
+            style={{
+              backgroundColor: "#fff3cd",
+              color: "#856404",
+              padding: "12px 16px",
+              borderRadius: "6px",
+              border: "1px solid #ffeeba",
+              marginBottom: "16px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
+            <span style={{ fontSize: "20px" }}>⚠️</span>
+            <div>
+              <strong>Cảnh báo:</strong> Có <strong>{danhSachCanhBao.length}</strong>{" "}
+              bảng giá đến ngày hết hạn hôm nay. Vui lòng thêm bảng giá mới cho
+              loại xe tương ứng để hệ thống tính phí chính xác!
+            </div>
+          </div>
         )}
+
+        {/* ERROR GLOBAL */}
+        {loi && !hienThiModal && <div className="bg-error">⚠️ {loi}</div>}
 
         {/* TABLE */}
         <div className="bg-table-box">
@@ -421,9 +574,7 @@ function BangGia() {
               )}
             </div>
 
-            <div className="bg-total">
-              {danhSachLoc.length} bảng giá
-            </div>
+            <div className="bg-total">{danhSachLoc.length} bảng giá</div>
           </div>
 
           <div className="bg-table-scroll">
@@ -462,55 +613,52 @@ function BangGia() {
                     </td>
                   </tr>
                 ) : (
-                  danhSachLoc.map((item, index) => (
-                    <tr key={item.bangGiaId}>
-                      <td>{index + 1}</td>
-                      <td>
-                        <span className="bg-type">
-                          {layTenLoaiXe(item.loaiPhuongTienId)}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="bg-price">
-                          {formatGia(item.donGia)}
-                        </span>
-                      </td>
-                      <td>{formatNgay(item.hieuLucTu)}</td>
-                      <td>{formatNgay(item.hieuLucDen)}</td>
-                      <td>
-                        <span
-                          className={
-                            String(item.trangThai).toUpperCase() === "ACTIVE"
-                              ? "bg-status bg-status-active"
-                              : "bg-status bg-status-inactive"
-                          }
-                        >
-                          <span className="bg-status-dot" />
-                          {hienThiTrangThai(item.trangThai)}
-                        </span>
-                      </td>
-                      <td>
-                        <div className="bg-actions">
-                          <button
-                            type="button"
-                            className="bg-action-edit"
-                            title="Sửa"
-                            onClick={() => moSua(item)}
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            type="button"
-                            className="bg-action-delete"
-                            title="Xóa"
-                            onClick={() => xoa(item)}
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                  danhSachLoc.map((item, index) => {
+                    const trangThaiHienThi = hienThiTrangThai(item);
+                    return (
+                      <tr key={item.bangGiaId}>
+                        <td>{index + 1}</td>
+                        <td>
+                          <span className="bg-type">
+                            {layTenLoaiXe(item.loaiPhuongTienId)}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="bg-price">
+                            {formatGia(item.donGia)}
+                          </span>
+                        </td>
+                        <td>{formatNgay(item.hieuLucTu)}</td>
+                        <td>{formatNgay(item.hieuLucDen)}</td>
+                        <td>
+                          <span className={trangThaiHienThi.class}>
+                            <span className="bg-status-dot" />
+                            {trangThaiHienThi.text}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="bg-actions">
+                            <button
+                              type="button"
+                              className="bg-action-edit"
+                              title="Sửa"
+                              onClick={() => moSua(item)}
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              type="button"
+                              className="bg-action-delete"
+                              title="Xóa"
+                              onClick={() => xoa(item)}
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -542,13 +690,11 @@ function BangGia() {
             {/* HEADER */}
             <div className="bg-modal-header">
               <div>
-                <h3>
-                  {dangSua ? "Cập nhật bảng giá" : "Thêm bảng giá"}
-                </h3>
+                <h3>{dangSua ? "Cập nhật bảng giá" : "Thêm bảng giá"}</h3>
                 <p>
                   {dangSua
-                    ? "Chỉnh sửa thông tin bảng giá"
-                    : "Nhập thông tin bảng giá bên dưới"}
+                    ? "Chỉ được sửa ngày hết hạn và trạng thái"
+                    : "Nhập đầy đủ thông tin bảng giá bên dưới"}
                 </p>
               </div>
 
@@ -571,7 +717,6 @@ function BangGia() {
                 <label>
                   Loại phương tiện <span>*</span>
                 </label>
-
                 <div className="bg-select-wrapper">
                   <select
                     value={form.loaiPhuongTienId}
@@ -579,20 +724,21 @@ function BangGia() {
                       setForm((prev) => ({
                         ...prev,
                         loaiPhuongTienId: e.target.value,
+                        // Reset ngày bắt đầu và kết thúc khi đổi loại xe
+                        hieuLucTu: "",
+                        hieuLucDen: "",
                       }))
                     }
-                    disabled={dangLuu || loadingLoaiXe}
+                    disabled={dangLuu || loadingLoaiXe || Boolean(dangSua)}
                   >
                     <option value="">
                       {loadingLoaiXe
                         ? "Đang tải loại xe..."
                         : "-- Chọn loại xe --"}
                     </option>
-
                     {danhSachLoaiXe.map((item) => {
                       const id = item.loaiPhuongTienId ?? item.id;
-                      const ten =
-                        item.tenLoai ?? item.ten ?? item.name;
+                      const ten = item.tenLoai ?? item.ten ?? item.name;
                       return (
                         <option key={id} value={id}>
                           {ten}
@@ -619,32 +765,74 @@ function BangGia() {
                     }))
                   }
                   placeholder="Ví dụ: 5000"
-                  disabled={dangLuu}
+                  disabled={dangLuu || Boolean(dangSua)}
                 />
               </div>
 
-              {/* HIỆU LỰC TỪ */}
+              {/* HIỆU LỰC TỪ - RÀNG BUỘC 3 TẦNG */}
               <div className="bg-form-group">
-                <label>Hiệu lực từ</label>
+                <label>
+                  Hiệu lực từ <span>*</span>
+                </label>
                 <input
                   type="date"
                   value={form.hieuLucTu}
+                  min={
+                    // Tầng 1: Nếu có giá cũ cùng loại xe, ngày bắt đầu phải > ngày kết thúc lớn nhất của giá cũ
+                    // Tầng 2: Nếu không có giá cũ, ngày bắt đầu phải >= ngày hôm nay
+                    (() => {
+                      const ngayKetThucGiaCu = layNgayKetThucLonNhatCuaGiaCu(
+                        form.loaiPhuongTienId
+                      );
+                      if (ngayKetThucGiaCu) {
+                        return layNgayMai(ngayKetThucGiaCu);
+                      }
+                      return layNgayHomNay();
+                    })()
+                  }
                   onChange={(e) =>
                     setForm((prev) => ({
                       ...prev,
                       hieuLucTu: e.target.value,
+                      // Reset ngày kết thúc nếu nó nhỏ hơn hoặc bằng ngày bắt đầu mới
+                      hieuLucDen:
+                        prev.hieuLucDen &&
+                        new Date(prev.hieuLucDen) <= new Date(e.target.value)
+                          ? ""
+                          : prev.hieuLucDen,
                     }))
                   }
-                  disabled={dangLuu}
+                  disabled={dangLuu || Boolean(dangSua)}
                 />
+                <small
+                  style={{
+                    color: "#dc3545",
+                    marginTop: "4px",
+                    display: "block",
+                    fontSize: "12px",
+                  }}
+                >
+                  {layNgayKetThucLonNhatCuaGiaCu(form.loaiPhuongTienId)
+                    ? `Phải lớn hơn ngày kết thúc của giá cũ (${new Date(
+                        layNgayKetThucLonNhatCuaGiaCu(form.loaiPhuongTienId)
+                      ).toLocaleDateString("vi-VN")}).`
+                    : "Chỉ được chọn từ ngày hôm nay trở đi."}
+                </small>
               </div>
 
-              {/* HIỆU LỰC ĐẾN */}
+              {/* HIỆU LỰC ĐẾN - PHẢI LỚN HƠN NGÀY BẮT ĐẦU */}
               <div className="bg-form-group">
-                <label>Hiệu lực đến</label>
+                <label>
+                  Hiệu lực đến <span>*</span>
+                </label>
                 <input
                   type="date"
                   value={form.hieuLucDen}
+                  min={
+                    form.hieuLucTu
+                      ? layNgayMai(form.hieuLucTu)
+                      : layNgayMai(layNgayHomNay())
+                  }
                   onChange={(e) =>
                     setForm((prev) => ({
                       ...prev,
@@ -653,12 +841,23 @@ function BangGia() {
                   }
                   disabled={dangLuu}
                 />
+                <small
+                  style={{
+                    color: "#666",
+                    marginTop: "4px",
+                    display: "block",
+                    fontSize: "12px",
+                  }}
+                >
+                  {dangSua
+                    ? "Có thể gia hạn thêm ngày kết thúc (phải lớn hơn ngày bắt đầu)."
+                    : "Phải lớn hơn ngày bắt đầu."}
+                </small>
               </div>
 
               {/* TRẠNG THÁI */}
               <div className="bg-form-group">
                 <label>Trạng thái</label>
-
                 <div className="bg-status-options">
                   <label
                     className={
@@ -719,18 +918,13 @@ function BangGia() {
               >
                 Hủy
               </button>
-
               <button
                 type="button"
                 className="bg-btn-save"
                 onClick={luu}
                 disabled={dangLuu || loadingLoaiXe}
               >
-                {dangLuu
-                  ? "Đang lưu..."
-                  : dangSua
-                  ? "Lưu thay đổi"
-                  : "Lưu"}
+                {dangLuu ? "Đang lưu..." : dangSua ? "Lưu thay đổi" : "Lưu"}
               </button>
             </div>
           </div>
