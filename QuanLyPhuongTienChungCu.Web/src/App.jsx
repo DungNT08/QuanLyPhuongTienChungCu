@@ -17,7 +17,6 @@ import SidebarUser from "./layouts/sidebarUser";
 import TrangChuAdmin from "./Admin/TrangChu";
 import PhuongTien from "./Admin/PhuongTien";
 import XeKhach from "./Admin/XeKhach";
-import CheckinOut from "./Admin/Checkin-out";
 import LuotGui from "./Admin/LuotGui";
 import PhiGuiXe from "./Admin/PhiGuiXe";
 import BangGia from "./Admin/BangGia";
@@ -69,10 +68,15 @@ function App() {
   return (
     <Router>
       <Routes>
+
+        {/* =================================================
+            ĐĂNG NHẬP
+        ================================================= */}
         <Route
           path="/login"
           element={<Login />}
         />
+
         {/* =================================================
             USER - CƯ DÂN
         ================================================= */}
@@ -163,15 +167,6 @@ function App() {
         />
 
         <Route
-          path="/admin/check-in-out"
-          element={
-            <LayoutAdmin>
-              <CheckinOut />
-            </LayoutAdmin>
-          }
-        />
-
-        <Route
           path="/admin/luot-gui-xe"
           element={
             <LayoutAdmin>
@@ -216,7 +211,7 @@ function App() {
           }
         />
 
-        {/* Quản lý người dùng — URL khớp sidebarAdmin.jsx */}
+        {/* Quản lý người dùng */}
         <Route
           path="/admin/nguoi-dung"
           element={
