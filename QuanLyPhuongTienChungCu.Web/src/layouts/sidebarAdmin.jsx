@@ -7,7 +7,6 @@ const danhSachMenu = [
   { icon: "🚗", ten: "Phương tiện cư dân", duongDan: "/admin/phuong-tien" },
   { icon: "🚙", ten: "Xe khách", duongDan: "/admin/xe-khach" },
   { icon: "◷", ten: "Lượt gửi xe", duongDan: "/admin/luot-gui-xe" },
-  { icon: "ⓢ", ten: "Phí gửi xe", duongDan: "/admin/phi-gui-xe" },
   { icon: "◇", ten: "Bảng giá", duongDan: "/admin/bang-gia" },
   { icon: "◴", ten: "Lịch sử", duongDan: "/admin/lich-su" },
   { icon: "▥", ten: "Báo cáo", duongDan: "/admin/bao-cao" },
