@@ -1,453 +1,1766 @@
-/* =========================
-   KHUNG NỘI DUNG TRANG
-========================= */
+/* =========================================================
+   ROOT
+========================================================= */
 
-.noi-dung-luot-gui {
-  width: calc(100% - 240px);
+:root {
+  --lg-bg: #f4f9fc;
+  --lg-white: #ffffff;
 
-  min-height: calc(100vh - 68px);
+  --lg-primary: #2563eb;
+  --lg-primary-hover: #1d4ed8;
 
-  margin-left: 240px;
+  --lg-text: #172033;
+  --lg-text-secondary: #475467;
+  --lg-text-muted: #667085;
 
-  padding:
-    88px
-    28px
-    28px;
+  --lg-border: #e5e9f0;
+  --lg-border-light: #edf0f4;
 
-  box-sizing: border-box;
+  --lg-success-bg: #ecfdf3;
+  --lg-success-text: #027a48;
 
-  background: #f4f9fc;
+  --lg-info-bg: #eff6ff;
+  --lg-info-text: #1d4ed8;
 
-  color: #1b405a;
+  --lg-muted-bg: #f2f4f7;
 
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
+  --lg-header-height: 68px;
 }
 
 
-/* =========================
-   TIÊU ĐỀ
-========================= */
+/* =========================================================
+   RESET
+========================================================= */
 
-.tieu-de-luot-gui {
+.lg-wrapper,
+.lg-wrapper *,
+.lg-wrapper *::before,
+.lg-wrapper *::after {
+  box-sizing: border-box;
+}
+
+.lg-wrapper button,
+.lg-wrapper input,
+.lg-wrapper select {
+  font-family: inherit;
+}
+
+
+/* =========================================================
+   WRAPPER
+========================================================= */
+
+.lg-wrapper {
+  position: relative;
+
+  width: 100%;
+  min-height: calc(100vh - var(--lg-header-height));
+
+  margin: 0;
+  padding: 0;
+
+  background: var(--lg-bg);
+
+  overflow-x: hidden;
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+.lg-body {
+  position: relative;
+
+  width: 100%;
+  max-width: 1500px;
+
+  margin: 0 auto;
+
+  padding: 28px;
+}
+
+
+/* =========================================================
+   HEADER - CỐ ĐỊNH KHI LƯỚT
+========================================================= */
+
+.lg-title-bar {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 1000;
+
+  width: calc(100% + 56px);
+
+  min-height: 86px;
+
+  margin-top: -28px;
+  margin-left: -28px;
+
+  margin-bottom: 24px;
+
+  padding: 20px 28px;
+
   display: flex;
-
   align-items: center;
+  justify-content: space-between;
 
+  gap: 20px;
+
+  background: rgba(244, 249, 252, 0.96);
+
+  border-bottom: 1px solid rgba(229, 233, 240, 0.9);
+
+  box-shadow:
+    0 4px 12px rgba(15, 23, 42, 0.04);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.lg-title-bar h2 {
+  margin: 0;
+
+  color: var(--lg-text);
+
+  font-size: 27px;
+  font-weight: 700;
+
+  line-height: 1.25;
+}
+
+.lg-subtitle {
+  margin: 7px 0 0;
+
+  color: #7a8497;
+
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   ADD BUTTON
+========================================================= */
+
+.lg-btn-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  min-height: 42px;
+
+  padding: 0 18px;
+
+  flex-shrink: 0;
+
+  border: 0;
+  border-radius: 9px;
+
+  background: var(--lg-primary);
+
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+.lg-btn-add span {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.lg-btn-add:hover {
+  background: var(--lg-primary-hover);
+
+  box-shadow:
+    0 5px 15px rgba(37, 99, 235, 0.2);
+}
+
+.lg-btn-add:active {
+  transform: translateY(1px);
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.lg-alert-error {
+  margin-bottom: 16px;
+
+  padding: 11px 14px;
+
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+
+  background: #fef2f2;
+
+  color: #b42318;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.lg-alert-success {
+  margin-bottom: 16px;
+
+  padding: 11px 14px;
+
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+
+  background: var(--lg-success-bg);
+
+  color: var(--lg-success-text);
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   TABLE BOX
+========================================================= */
+
+.lg-table-box {
+  width: 100%;
+
+  overflow: hidden;
+
+  border: 1px solid var(--lg-border);
+  border-radius: 13px;
+
+  background: var(--lg-white);
+
+  box-shadow:
+    0 2px 10px rgba(15, 23, 42, 0.04);
+}
+
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.lg-table-toolbar {
+  width: 100%;
+
+  min-height: 61px;
+
+  display: flex;
+  align-items: center;
   justify-content: space-between;
 
   gap: 16px;
 
-  margin-bottom: 20px;
+  padding: 0 18px;
 
-  flex-wrap: wrap;
-}
+  border-bottom: 1px solid var(--lg-border-light);
 
-.tieu-de-luot-gui h1 {
-  margin: 0;
-
-  font-size: 26px;
-
-  color: #0f3b56;
-
-  font-weight: 800;
-
-  letter-spacing: 0.2px;
-
-  white-space: nowrap;
+  background: #ffffff;
 }
 
 
-/* =========================
-   TAB
-========================= */
+/* =========================================================
+   TOOLBAR TITLE
+========================================================= */
 
-.thanh-tab-luot-gui {
-  display: flex;
+.lg-toolbar-title {
+  color: var(--lg-text);
 
-  align-items: center;
-
-  gap: 5px;
-
-  margin-bottom: 16px;
-
-  border-bottom: 1px solid #dce7ed;
+  font-size: 14px;
+  font-weight: 700;
 }
 
-.tab-luot-gui {
+
+/* =========================================================
+   TOOLBAR DOT
+========================================================= */
+
+.lg-toolbar-dot {
+  display: inline-block;
+
+  width: 8px;
+  height: 8px;
+
+  margin-right: 7px;
+
+  border-radius: 50%;
+
+  background: #22c55e;
+
+  vertical-align: middle;
+
+  box-shadow:
+    0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.lg-toolbar-search {
   position: relative;
 
-  padding:
-    11px
-    17px
-    12px;
+  width: min(360px, 100%);
 
-  border: none;
+  height: 38px;
 
-  background: transparent;
+  display: flex;
+  align-items: center;
 
-  color: #718c9d;
+  margin-left: auto;
+  margin-right: 4px;
+}
+
+
+.lg-search-icon {
+  position: absolute;
+
+  left: 12px;
+
+  z-index: 2;
+
+  color: #98a2b3;
 
   font-size: 14px;
 
-  font-weight: 700;
+  line-height: 1;
+
+  pointer-events: none;
+}
+
+
+.lg-toolbar-search input {
+  width: 100%;
+  height: 38px;
+
+  padding:
+    0
+    38px
+    0
+    36px;
+
+  border: 1px solid #d7dce4;
+  border-radius: 8px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #1d2939;
+
+  font-size: 13px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.lg-toolbar-search input::placeholder {
+  color: #98a2b3;
+}
+
+
+.lg-toolbar-search input:hover {
+  border-color: #c4cad4;
+}
+
+
+.lg-toolbar-search input:focus {
+  border-color: var(--lg-primary);
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+
+.lg-search-clear {
+  position: absolute;
+
+  right: 7px;
+
+  top: 50%;
+
+  width: 25px;
+  height: 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 6px;
+
+  transform: translateY(-50%);
+
+  background: transparent;
+
+  color: #98a2b3;
+
+  font-size: 20px;
+  font-weight: 400;
+
+  line-height: 1;
 
   cursor: pointer;
 
   transition:
-    color
-    0.2s
-    ease;
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
-.tab-luot-gui:hover {
-  color: #1b80b8;
+
+.lg-search-clear:hover {
+  background: #f2f4f7;
+
+  color: #344054;
 }
 
-.tab-luot-gui-dang-chon {
-  color: #147db5;
+
+/* =========================================================
+   TABS
+========================================================= */
+
+.lg-tabs {
+  height: 61px;
+
+  display: flex;
+  align-items: stretch;
+
+  gap: 4px;
 }
 
-.tab-luot-gui-dang-chon::after {
+.lg-tab {
+  position: relative;
+
+  min-width: 105px;
+
+  padding: 0 15px;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #667085;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.lg-tab:hover {
+  color: var(--lg-primary);
+
+  background: #fafcff;
+}
+
+.lg-tab-active {
+  color: var(--lg-primary);
+}
+
+.lg-tab-active::after {
   content: "";
 
   position: absolute;
 
-  left: 0;
-
-  right: 0;
-
-  bottom: -1px;
+  left: 12px;
+  right: 12px;
+  bottom: 0;
 
   height: 3px;
 
-  background: #3b9fe0;
+  border-radius: 4px 4px 0 0;
 
-  border-radius:
-    4px
-    4px
-    0
-    0;
+  background: var(--lg-primary);
 }
 
 
-/* =========================
-   KHUNG BẢNG
-========================= */
+/* =========================================================
+   TOTAL
+========================================================= */
 
-.o-dashboard-luot-gui {
-  width: 100%;
-
-  background: #ffffff;
-
-  border: 1px solid #dfeaf0;
-
-  border-radius: 10px;
-
-  box-shadow:
-    0
-    2px
-    8px
-    rgba(35, 88, 116, 0.03);
-
-  overflow: hidden;
-
-  box-sizing: border-box;
-}
-
-
-/* =========================
-   VÙNG BẢNG
-========================= */
-
-.vung-bang-luot-gui {
-  width: 100%;
-
-  overflow-x: auto;
-}
-
-
-/* =========================
-   BẢNG
-========================= */
-
-.bang-luot-gui {
-  width: 100%;
-
-  min-width: 950px;
-
-  border-collapse: collapse;
-
-  table-layout: fixed;
-}
-
-.bang-luot-gui th {
-  padding:
-    14px
-    12px;
-
-  background: #ebf6fb;
-
-  text-align: left;
-
-  color: #2f5470;
-
-  font-size: 12px;
-
-  font-weight: 800;
-
-  letter-spacing: 0.2px;
-
-  white-space: nowrap;
-
-  border-bottom: 1px solid #dfeaf0;
-}
-
-.bang-luot-gui td {
-  padding:
-    14px
-    12px;
-
-  border-bottom: 1px solid #edf2f5;
-
-  color: #2f5470;
+.lg-total {
+  color: var(--lg-text-muted);
 
   font-size: 13px;
 
-  font-weight: 500;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   TABLE SCROLL
+========================================================= */
+
+.lg-table-scroll {
+  width: 100%;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.lg-table {
+  width: 100%;
+
+  min-width: 1080px;
+
+  border-collapse: collapse;
+
+  table-layout: auto;
+}
+
+
+/* =========================================================
+   TABLE HEADER
+========================================================= */
+
+.lg-table thead {
+  background: #f8fafc;
+}
+
+.lg-table th {
+  height: 48px;
+
+  padding: 0 16px;
+
+  border-bottom: 1px solid var(--lg-border);
+
+  color: #667085;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  line-height: 1.2;
+
+  text-align: left;
+  text-transform: uppercase;
 
   white-space: nowrap;
 }
 
 
-/* =========================
-   CHIỀU RỘNG CỘT
-========================= */
+/* =========================================================
+   TABLE BODY
+========================================================= */
 
-.bang-luot-gui th:nth-child(1),
-.bang-luot-gui td:nth-child(1) {
-  width: 55px;
+.lg-table td {
+  height: 62px;
+
+  padding: 0 16px;
+
+  border-bottom: 1px solid var(--lg-border-light);
+
+  color: #344054;
+
+  font-size: 14px;
+
+  line-height: 1.4;
+
+  vertical-align: middle;
+
+  white-space: nowrap;
+}
+
+.lg-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.lg-table tbody tr:hover {
+  background: #fafcff;
+}
+
+.lg-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+
+/* =========================================================
+   STT
+========================================================= */
+
+.lg-col-stt {
+  width: 65px;
+
+  text-align: center !important;
+}
+
+.lg-stt {
+  width: 65px;
+
+  color: #667085 !important;
+
+  font-size: 13px !important;
 
   text-align: center;
 }
 
-.bang-luot-gui th:nth-child(2),
-.bang-luot-gui td:nth-child(2) {
+
+/* =========================================================
+   ACTION COLUMN
+========================================================= */
+
+.lg-col-action {
   width: 120px;
-}
 
-.bang-luot-gui th:nth-child(3),
-.bang-luot-gui td:nth-child(3) {
-  width: 100px;
-}
+  min-width: 120px;
 
-.bang-luot-gui th:nth-child(4),
-.bang-luot-gui td:nth-child(4) {
-  width: 155px;
-}
-
-.bang-luot-gui th:nth-child(5),
-.bang-luot-gui td:nth-child(5) {
-  width: 125px;
-}
-
-.bang-luot-gui th:nth-child(6),
-.bang-luot-gui td:nth-child(6) {
-  width: 155px;
-}
-
-.bang-luot-gui th:nth-child(7),
-.bang-luot-gui td:nth-child(7) {
-  width: 110px;
-}
-
-.bang-luot-gui th:nth-child(8),
-.bang-luot-gui td:nth-child(8) {
-  width: 110px;
+  text-align: center !important;
 }
 
 
-/* =========================
-   HOVER
-========================= */
+/* =========================================================
+   LICENSE PLATE
+========================================================= */
 
-.bang-luot-gui tr:last-child td {
-  border-bottom: none;
+.lg-license {
+  display: inline-flex;
+  align-items: center;
+
+  color: var(--lg-text);
+
+  font-weight: 700;
+
+  letter-spacing: 0.2px;
+
+  white-space: nowrap;
 }
 
-.bang-luot-gui tbody tr:hover td {
-  background: #fafdfe;
+
+/* =========================================================
+   VEHICLE TYPE
+========================================================= */
+
+.lg-type {
+  color: var(--lg-text-secondary);
+
+  white-space: nowrap;
 }
 
 
-/* =========================
-   BẢNG TRỐNG
-========================= */
+/* =========================================================
+   RESIDENT
+========================================================= */
 
-.o-trong-bang-luot-gui {
-  height: 220px;
+.lg-resident {
+  color: #344054;
 
-  padding:
-    40px !important;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   APARTMENT
+========================================================= */
+
+.lg-apartment {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 26px;
+
+  padding: 5px 9px;
+
+  border-radius: 6px;
+
+  background: var(--lg-muted-bg);
+
+  color: #344054;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   ENTRY TIME
+========================================================= */
+
+.lg-entry-time {
+  color: #475467;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.lg-status {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  min-height: 27px;
+
+  padding: 6px 10px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  line-height: 1;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   STATUS ACTIVE
+========================================================= */
+
+.lg-status-active {
+  background: var(--lg-success-bg);
+
+  color: var(--lg-success-text);
+}
+
+
+/* =========================================================
+   STATUS DONE
+========================================================= */
+
+.lg-status-done {
+  background: var(--lg-muted-bg);
+
+  color: #475467;
+}
+
+
+/* =========================================================
+   STATUS DOT
+========================================================= */
+
+.lg-status-dot {
+  width: 6px;
+  height: 6px;
+
+  flex: 0 0 6px;
+
+  border-radius: 50%;
+
+  background: currentColor;
+}
+
+
+/* =========================================================
+   XE RA
+========================================================= */
+
+.lg-btn-out {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 74px;
+  height: 34px;
+
+  padding: 0 12px;
+
+  border: 1px solid #bfdbfe;
+  border-radius: 7px;
+
+  background: var(--lg-info-bg);
+
+  color: var(--lg-info-text);
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.lg-btn-out:hover {
+  border-color: #93c5fd;
+
+  background: #dbeafe;
+
+  box-shadow:
+    0 2px 6px rgba(37, 99, 235, 0.08);
+}
+
+.lg-btn-out:active {
+  transform: scale(0.97);
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.lg-empty {
+  height: 230px !important;
+
+  padding: 35px !important;
 
   text-align: center !important;
 
-  vertical-align: middle !important;
-
-  color: #6b8fa3 !important;
+  color: #8a94a6 !important;
 
   font-size: 13px !important;
 
-  font-weight: 600 !important;
+  font-weight: 500;
 }
 
+.lg-empty-icon {
+  margin-bottom: 10px;
 
-/* =========================
-   CHÂN BẢNG
-========================= */
+  font-size: 34px;
 
-.chan-bang-luot-gui {
-  min-height: 60px;
+  line-height: 1;
 
-  display: flex;
+  opacity: 0.65;
+}
 
-  align-items: center;
+.lg-empty small {
+  display: block;
 
-  justify-content: space-between;
+  margin-top: 6px;
 
-  padding:
-    0
-    18px;
-
-  color: #6b8fa3;
+  color: #98a2b3;
 
   font-size: 12px;
 
-  font-weight: 600;
-
-  border-top: 1px solid #edf2f5;
-
-  flex-wrap: wrap;
-
-  gap: 10px;
+  font-weight: 400;
 }
 
 
-/* =========================
-   PHÂN TRANG
-========================= */
+/* =========================================================
+   LOADING
+========================================================= */
 
-.phan-trang-luot-gui {
+.lg-loading {
   display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 10px;
+}
+
+
+/* =========================================================
+   SPINNER
+========================================================= */
+
+.lg-spinner {
+  display: inline-block;
+
+  width: 25px;
+  height: 25px;
+
+  border: 3px solid #dbeafe;
+  border-top-color: var(--lg-primary);
+
+  border-radius: 50%;
+
+  animation: lg-spin 0.8s linear infinite;
+}
+
+@keyframes lg-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   BUTTON SPINNER
+========================================================= */
+
+.lg-button-spinner {
+  display: inline-block;
+
+  width: 15px;
+  height: 15px;
+
+  margin-right: 7px;
+
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+
+  border-radius: 50%;
+
+  vertical-align: -2px;
+
+  animation: lg-spin 0.7s linear infinite;
+}
+
+
+/* =========================================================
+   PAGE SUCCESS
+========================================================= */
+
+.lg-page-success {
+  margin-bottom: 16px;
+}
+
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+.lg-pagination {
+  min-height: 56px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 0 18px;
+
+  border-top: 1px solid var(--lg-border-light);
+
+  background: #ffffff;
+
+  color: var(--lg-text-muted);
+
+  font-size: 13px;
+}
+
+.lg-pagination strong {
+  color: #344054;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   PAGINATION BUTTONS
+========================================================= */
+
+.lg-pagination-buttons {
+  display: flex;
+  align-items: center;
 
   gap: 5px;
 }
 
-.phan-trang-luot-gui button {
+.lg-pagination-buttons button {
   width: 32px;
-
   height: 32px;
 
-  border: 1px solid #dce7ec;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-  border-radius: 6px;
+  padding: 0;
+
+  border: 1px solid #e4e7ec;
+  border-radius: 7px;
 
   background: #ffffff;
 
-  color: #2f5470;
+  color: #475467;
+
+  font-size: 13px;
+  font-weight: 600;
 
   cursor: pointer;
 
-  font-size: 12px;
-
-  font-weight: 700;
-
   transition:
-    0.15s
-    ease;
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
-.phan-trang-luot-gui button:hover {
-  background: #f0f8fc;
+.lg-pagination-buttons button:hover:not(:disabled) {
+  border-color: #bfdbfe;
 
-  border-color: #a8d5ea;
+  background: #eff6ff;
+
+  color: var(--lg-primary);
 }
 
-.phan-trang-luot-gui
-.trang-dang-chon-luot-gui {
-  background: #3b9fe0;
+.lg-pagination-buttons button:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+}
+
+.lg-pagination-buttons .lg-page-active {
+  border-color: var(--lg-primary);
+
+  background: var(--lg-primary);
 
   color: #ffffff;
-
-  border-color: #3b9fe0;
 }
 
 
-/* =========================
-   LỊCH SỬ
-========================= */
+/* =========================================================
+   MODAL OVERLAY
+========================================================= */
 
-.lich-su-trong-luot-gui {
-  min-height: 260px;
+.lg-modal-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 2147483647;
 
   display: flex;
-
   align-items: center;
-
   justify-content: center;
 
-  color: #6b8fa3;
+  padding: 20px;
+
+  background: rgba(15, 23, 42, 0.48);
+
+  animation: lg-fade-in 0.15s ease;
+}
+
+@keyframes lg-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.lg-modal {
+  position: relative;
+
+  width: min(520px, 100%);
+
+  max-height: calc(100vh - 40px);
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 24px 70px rgba(15, 23, 42, 0.25);
+
+  animation: lg-modal-in 0.18s ease;
+}
+
+@keyframes lg-modal-in {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(8px)
+      scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* =========================================================
+   MODAL HEADER
+========================================================= */
+
+.lg-modal-header {
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 21px 23px;
+
+  border-bottom: 1px solid var(--lg-border-light);
+
+  background: #ffffff;
+}
+
+.lg-modal-header h3 {
+  margin: 0;
+
+  color: var(--lg-text);
+
+  font-size: 19px;
+  font-weight: 700;
+
+  line-height: 1.3;
+}
+
+.lg-modal-header p {
+  margin: 6px 0 0;
+
+  color: #7a8497;
 
   font-size: 13px;
 
+  line-height: 1.45;
+}
+
+
+/* =========================================================
+   CLOSE
+========================================================= */
+
+.lg-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
+  margin-top: -3px;
+
+  flex: 0 0 32px;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #667085;
+
+  font-size: 25px;
+  font-weight: 300;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.lg-close:hover {
+  background: #f2f4f7;
+
+  color: #1d2939;
+}
+
+.lg-close:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   MODAL BODY
+========================================================= */
+
+.lg-modal-body {
+  position: relative;
+
+  flex: 1 1 auto;
+
+  min-height: 0;
+
+  padding: 21px 23px;
+
+  overflow-y: auto;
+
+  background: #ffffff;
+}
+
+
+/* =========================================================
+   FORM GROUP
+========================================================= */
+
+.lg-form-group {
+  position: relative;
+
+  margin-bottom: 19px;
+}
+
+.lg-form-group:last-of-type {
+  margin-bottom: 0;
+}
+
+.lg-form-group label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #344054;
+
+  font-size: 13px;
   font-weight: 600;
 }
 
+.lg-form-group label span {
+  margin-left: 3px;
 
-/* =========================
-   RESPONSIVE
-========================= */
+  color: #dc2626;
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.lg-form-group input,
+.lg-form-group select {
+  width: 100%;
+  height: 42px;
+
+  padding: 0 12px;
+
+  border: 1px solid #d7dce4;
+  border-radius: 8px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #1d2939;
+
+  font-size: 14px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.lg-form-group input:hover,
+.lg-form-group select:hover {
+  border-color: #c4cad4;
+}
+
+.lg-form-group input:focus,
+.lg-form-group select:focus {
+  border-color: var(--lg-primary);
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.lg-form-group input:disabled,
+.lg-form-group select:disabled {
+  background: #f8fafc;
+
+  color: #98a2b3;
+
+  cursor: not-allowed;
+}
+
+.lg-form-group input::placeholder {
+  color: #98a2b3;
+}
+
+
+/* =========================================================
+   NOTE
+========================================================= */
+
+.lg-modal-note {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 9px;
+
+  margin-top: 20px;
+
+  padding: 11px 13px;
+
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+
+  background: #eff6ff;
+
+  color: #475467;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+}
+
+.lg-note-icon {
+  flex: 0 0 auto;
+
+  font-size: 15px;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   MODAL FOOTER
+========================================================= */
+
+.lg-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  margin-top: 22px;
+
+  padding-top: 15px;
+
+  border-top: 1px solid var(--lg-border-light);
+}
+
+
+/* =========================================================
+   MODAL BUTTONS
+========================================================= */
+
+.lg-btn-cancel,
+.lg-btn-save {
+  min-width: 100px;
+
+  height: 40px;
+
+  padding: 0 17px;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+
+/* =========================================================
+   CANCEL
+========================================================= */
+
+.lg-btn-cancel {
+  border: 1px solid #d7dce4;
+
+  background: #ffffff;
+
+  color: #475467;
+}
+
+.lg-btn-cancel:hover:not(:disabled) {
+  background: #f8fafc;
+
+  border-color: #cbd2dc;
+}
+
+
+/* =========================================================
+   SAVE
+========================================================= */
+
+.lg-btn-save {
+  border: 1px solid var(--lg-primary);
+
+  background: var(--lg-primary);
+
+  color: #ffffff;
+}
+
+.lg-btn-save:hover:not(:disabled) {
+  border-color: var(--lg-primary-hover);
+
+  background: var(--lg-primary-hover);
+}
+
+.lg-btn-save:disabled,
+.lg-btn-cancel:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+.lg-btn-save:active:not(:disabled),
+.lg-btn-cancel:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+.lg-table-scroll::-webkit-scrollbar,
+.lg-modal-body::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+.lg-table-scroll::-webkit-scrollbar-track,
+.lg-modal-body::-webkit-scrollbar-track {
+  background: #f5f6f8;
+}
+
+.lg-table-scroll::-webkit-scrollbar-thumb,
+.lg-modal-body::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+
+  background: #cbd2dc;
+}
+
+.lg-table-scroll::-webkit-scrollbar-thumb:hover,
+.lg-modal-body::-webkit-scrollbar-thumb:hover {
+  background: #aeb7c5;
+}
+
+
+/* =========================================================
+   RESPONSIVE - DESKTOP NHỎ
+========================================================= */
 
 @media (max-width: 1200px) {
-  .noi-dung-luot-gui {
-    width: calc(100% - 240px);
+  .lg-body {
+    padding: 24px;
+  }
 
-    margin-left: 240px;
+  .lg-title-bar {
+    width: calc(100% + 48px);
 
-    padding-left: 22px;
+    min-height: 82px;
 
-    padding-right: 22px;
+    margin-top: -24px;
+    margin-left: -24px;
+
+    padding: 18px 24px;
+  }
+
+  .lg-table {
+    min-width: 1080px;
   }
 }
+
+
+/* =========================================================
+   TABLET
+========================================================= */
 
 @media (max-width: 900px) {
-  .noi-dung-luot-gui {
-    width: calc(100% - 220px);
-
-    margin-left: 220px;
-
-    padding:
-      84px
-      18px
-      18px;
-  }
-
-  .tieu-de-luot-gui h1 {
-    font-size: 22px;
-  }
-}
-
-@media (max-width: 700px) {
-  .noi-dung-luot-gui {
+  .lg-wrapper {
     width: 100%;
 
     margin-left: 0;
+  }
+
+  .lg-body {
+    padding: 20px;
+  }
+
+  .lg-title-bar {
+    width: calc(100% + 40px);
+
+    min-height: auto;
+
+    margin-top: -20px;
+    margin-left: -20px;
+
+    padding: 17px 20px;
+
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 14px;
+  }
+
+  .lg-btn-add {
+    width: 100%;
+  }
+
+  .lg-table-toolbar {
+    align-items: stretch;
+
+    flex-direction: column;
+
+    gap: 0;
 
     padding:
-      20px
+      0
       14px
+      10px;
+  }
+
+  .lg-toolbar-search {
+  width: 100%;
+
+  margin:
+    10px
+    0
+    0;
+}
+
+.lg-toolbar-title {
+  padding-top: 10px;
+}
+
+  .lg-tabs {
+    width: 100%;
+  }
+
+  .lg-tab {
+    flex: 1;
+
+    min-width: 0;
+  }
+
+  .lg-total {
+    padding: 8px 0;
+
+    text-align: right;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+  .lg-body {
+    padding: 18px 14px;
+  }
+
+  .lg-title-bar {
+    width: calc(100% + 28px);
+
+    margin-top: -18px;
+    margin-left: -14px;
+
+    padding:
+      15px
+      14px
+      16px;
+
+    margin-bottom: 18px;
+  }
+
+  .lg-title-bar h2 {
+    font-size: 23px;
+  }
+
+  .lg-subtitle {
+    font-size: 13px;
+  }
+
+  .lg-table-box {
+    border-radius: 10px;
+  }
+
+  .lg-table-toolbar {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .lg-pagination {
+    padding:
+      0
       14px;
+  }
+
+  .lg-modal-overlay {
+    align-items: flex-start;
+
+    padding: 10px;
+  }
+
+  .lg-modal {
+    width: 100%;
+
+    max-height: calc(100vh - 20px);
+
+    border-radius: 12px;
+  }
+
+  .lg-modal-header {
+    padding: 17px;
+  }
+
+  .lg-modal-body {
+    padding: 17px;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+  .lg-body {
+    padding: 16px 10px;
+  }
+
+  .lg-title-bar {
+    width: calc(100% + 20px);
+
+    margin-top: -16px;
+    margin-left: -10px;
+
+    padding:
+      14px
+      10px
+      15px;
+  }
+
+  .lg-title-bar h2 {
+    font-size: 21px;
+  }
+
+  .lg-subtitle {
+    font-size: 12px;
+  }
+
+  .lg-pagination {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .lg-pagination-buttons {
+    align-self: flex-end;
+  }
+
+  .lg-modal-footer {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .lg-btn-cancel,
+  .lg-btn-save {
+    min-width: 0;
+
+    width: 100%;
+  }
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+.lg-wrapper button:focus-visible,
+.lg-wrapper input:focus-visible,
+.lg-wrapper select:focus-visible {
+  outline: 2px solid rgba(37, 99, 235, 0.35);
+
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   SAFETY FOR STICKY HEADER
+========================================================= */
+
+.lg-title-bar {
+  isolation: isolate;
+}
+
+.lg-title-bar > * {
+  position: relative;
+
+  z-index: 1;
+}
+
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+@media print {
+  .lg-title-bar {
+    position: static;
+
+    width: 100%;
+
+    margin: 0 0 24px;
+
+    padding: 0;
+
+    background: #ffffff;
+
+    box-shadow: none;
+
+    backdrop-filter: none;
+  }
+
+  .lg-btn-add,
+  .lg-col-action,
+  .lg-pagination {
+    display: none !important;
+  }
+
+  .lg-table-scroll {
+    overflow: visible;
+  }
+
+  .lg-table {
+    min-width: 0;
   }
 }

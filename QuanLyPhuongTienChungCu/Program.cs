@@ -11,11 +11,13 @@ var builder = WebApplication.CreateBuilder(args);
 // =====================================================
 // CONTROLLERS
 // =====================================================
+
 builder.Services.AddControllers();
 
 // =====================================================
 // CORS
 // =====================================================
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact", policy =>
@@ -32,31 +34,57 @@ builder.Services.AddCors(options =>
 // =====================================================
 // JWT
 // =====================================================
+
+var jwtKey =
+    builder.Configuration["Jwt:Key"];
+
+if (string.IsNullOrWhiteSpace(jwtKey))
+{
+    throw new InvalidOperationException(
+        "Chưa cấu hình Jwt:Key trong appsettings.json"
+    );
+}
+
 builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddAuthentication(
+        JwtBearerDefaults.AuthenticationScheme
+    )
     .AddJwtBearer(options =>
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
+        options.TokenValidationParameters =
+            new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
 
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
+                ValidIssuer =
+                    builder.Configuration["Jwt:Issuer"],
 
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(
-                    builder.Configuration["Jwt:Key"]!
-                )
-            )
-        };
+                ValidAudience =
+                    builder.Configuration["Jwt:Audience"],
+
+                IssuerSigningKey =
+                    new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtKey)
+                    ),
+
+                ClockSkew =
+                    TimeSpan.Zero
+            };
     });
+
+// =====================================================
+// AUTHORIZATION
+// =====================================================
+
+builder.Services.AddAuthorization();
 
 // =====================================================
 // SWAGGER
 // =====================================================
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
@@ -66,11 +94,17 @@ builder.Services.AddSwaggerGen(options =>
         new OpenApiSecurityScheme
         {
             Name = "Authorization",
+
             Type = SecuritySchemeType.Http,
+
             Scheme = "bearer",
+
             BearerFormat = "JWT",
+
             In = ParameterLocation.Header,
-            Description = "Nhap JWT token theo dang: Bearer {token}"
+
+            Description =
+                "Nhap JWT token theo dang: Bearer {token}"
         }
     );
 
@@ -90,35 +124,51 @@ builder.Services.AddSwaggerGen(options =>
 // =====================================================
 // DATABASE
 // =====================================================
+
 var connectionString =
     builder.Configuration.GetConnectionString(
         "DefaultConnection"
     );
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(
-        connectionString,
-        ServerVersion.AutoDetect(connectionString)
-    )
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException(
+        "Chưa cấu hình DefaultConnection."
+    );
+}
+
+builder.Services.AddDbContext<AppDbContext>(
+    options =>
+        options.UseMySql(
+            connectionString,
+            ServerVersion.AutoDetect(
+                connectionString
+            )
+        )
 );
 
 // =====================================================
 // SERVICES
 // =====================================================
+
 builder.Services.AddScoped<PasswordService>();
+
 builder.Services.AddScoped<AuditLogService>();
 
 // =====================================================
 // BUILD
 // =====================================================
+
 var app = builder.Build();
 
 // =====================================================
 // SWAGGER
 // =====================================================
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
+
     app.UseSwaggerUI();
 }
 
@@ -128,10 +178,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// CORS phải trước Authentication / Authorization
 app.UseCors("AllowReact");
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();

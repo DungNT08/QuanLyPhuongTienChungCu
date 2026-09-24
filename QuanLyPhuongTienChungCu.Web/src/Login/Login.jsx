@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
@@ -25,7 +26,7 @@ function Login() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          tenDangNhap,
+          tenDangNhap: tenDangNhap.trim(),
           matKhau,
         }),
       });
@@ -34,35 +35,86 @@ function Login() {
 
       if (!response.ok) {
         throw new Error(
-          data.message || "Tên đăng nhập hoặc mật khẩu không đúng"
+          data.message ||
+            "Tên đăng nhập hoặc mật khẩu không đúng."
         );
       }
 
-      // Lưu token
-      localStorage.setItem("token", data.token);
+      if (!data.token) {
+        throw new Error(
+          "Đăng nhập thành công nhưng không nhận được token."
+        );
+      }
 
-      // Lưu thông tin người dùng
+      if (!data.vaiTro) {
+        throw new Error(
+          "Đăng nhập thành công nhưng tài khoản chưa có vai trò."
+        );
+      }
+
+      // =====================================================
+      // XÓA SESSION CŨ
+      // =====================================================
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      // =====================================================
+      // LƯU TOKEN
+      // =====================================================
+
       localStorage.setItem(
-        "user",
-        JSON.stringify({
-          userId: data.userId,
-          hoTen: data.hoTen,
-          tenDangNhap: data.tenDangNhap,
-          email: data.email,
-          roleId: data.roleId,
-          tenRole: data.tenRole,
-        })
+        "token",
+        data.token
       );
 
-      // Chuyển trang theo quyền
-      if (data.tenRole === "Admin") {
-        navigate("/admin");
-      } else {
-        navigate("/");
+      // =====================================================
+      // LƯU THÔNG TIN USER
+      // =====================================================
+
+      const user = {
+        userId: data.userId,
+        hoTen: data.hoTen,
+        tenDangNhap: data.tenDangNhap,
+        email: data.email,
+        vaiTro: data.vaiTro,
+      };
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(user)
+      );
+
+      // =====================================================
+      // ĐIỀU HƯỚNG
+      // =====================================================
+
+      switch (data.vaiTro) {
+        case "Admin":
+          navigate("/admin");
+          break;
+
+        case "BaoVe":
+        case "KeToan":
+        case "CuDan":
+          navigate("/");
+          break;
+
+        default:
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+
+          throw new Error(
+            `Vai trò "${data.vaiTro}" không được hỗ trợ.`
+          );
       }
     } catch (error) {
       console.error("Lỗi đăng nhập:", error);
-      setLoi(error.message);
+
+      setLoi(
+        error.message ||
+          "Đăng nhập thất bại."
+      );
     } finally {
       setDangNhap(false);
     }
@@ -71,39 +123,73 @@ function Login() {
   return (
     <div className="login-page">
       <div className="login-box">
-        <div className="login-icon">🏢</div>
+
+        <div className="login-icon">
+          🏢
+        </div>
 
         <h1>Chung cư Sunrise</h1>
-        <p>Đăng nhập hệ thống quản lý phương tiện</p>
+
+        <p>
+          Đăng nhập hệ thống quản lý
+          phương tiện
+        </p>
 
         <form onSubmit={xuLyDangNhap}>
+
           <div className="login-field">
-            <label>Tên đăng nhập</label>
+            <label>
+              Tên đăng nhập
+            </label>
+
             <input
               type="text"
               value={tenDangNhap}
-              onChange={(e) => setTenDangNhap(e.target.value)}
+              onChange={(e) =>
+                setTenDangNhap(
+                  e.target.value
+                )
+              }
               placeholder="Nhập tên đăng nhập"
+              autoComplete="username"
               required
             />
           </div>
 
           <div className="login-field">
-            <label>Mật khẩu</label>
+            <label>
+              Mật khẩu
+            </label>
+
             <input
               type="password"
               value={matKhau}
-              onChange={(e) => setMatKhau(e.target.value)}
+              onChange={(e) =>
+                setMatKhau(
+                  e.target.value
+                )
+              }
               placeholder="Nhập mật khẩu"
+              autoComplete="current-password"
               required
             />
           </div>
 
-          {loi && <div className="login-error">{loi}</div>}
+          {loi && (
+            <div className="login-error">
+              {loi}
+            </div>
+          )}
 
-          <button type="submit" disabled={dangNhap}>
-            {dangNhap ? "Đang đăng nhập..." : "Đăng nhập"}
+          <button
+            type="submit"
+            disabled={dangNhap}
+          >
+            {dangNhap
+              ? "Đang đăng nhập..."
+              : "Đăng nhập"}
           </button>
+
         </form>
       </div>
     </div>

@@ -52,9 +52,12 @@ public class ParkingController : ControllerBase
 
     // =====================================================
     // XE CƯ DÂN - CHECK IN
+    // ADMIN / BẢO VỆ
+    //
+    // POST: /api/Parking/check-in
     // =====================================================
 
-    [Authorize(Roles = "Admin,BanQuanLy,BaoVe")]
+    [Authorize(Roles = "Admin,BaoVe")]
     [HttpPost("check-in")]
     public async Task<ActionResult<LuotGuiXe>> CheckIn(
         CheckInDto dto)
@@ -63,15 +66,17 @@ public class ParkingController : ControllerBase
         {
             return BadRequest(new
             {
-                message = "Biển số không được để trống."
+                message =
+                    "Biển số không được để trống."
             });
         }
 
         var bienSo = dto.BienSo.Trim();
 
-        var phuongTien = await _context.PhuongTiens
-            .FirstOrDefaultAsync(x =>
-                x.BienSo == bienSo);
+        var phuongTien =
+            await _context.PhuongTiens
+                .FirstOrDefaultAsync(x =>
+                    x.BienSo == bienSo);
 
         if (phuongTien == null)
         {
@@ -91,12 +96,13 @@ public class ParkingController : ControllerBase
             });
         }
 
-        var dangGui = await _context.LuotGuiXes
-            .AnyAsync(x =>
-                x.PhuongTienId ==
-                    phuongTien.PhuongTienId
-                &&
-                x.TrangThai == "ACTIVE");
+        var dangGui =
+            await _context.LuotGuiXes
+                .AnyAsync(x =>
+                    x.PhuongTienId ==
+                        phuongTien.PhuongTienId
+                    &&
+                    x.TrangThai == "ACTIVE");
 
         if (dangGui)
         {
@@ -111,7 +117,11 @@ public class ParkingController : ControllerBase
 
         if (userId == null)
         {
-            return Unauthorized();
+            return Unauthorized(new
+            {
+                message =
+                    "Không xác định được người dùng."
+            });
         }
 
         var luotGuiXe = new LuotGuiXe
@@ -127,6 +137,10 @@ public class ParkingController : ControllerBase
 
             ThoiGianVao =
                 DateTime.Now,
+
+            ThoiGianRa = null,
+
+            SoTien = null,
 
             TrangThai =
                 "ACTIVE",
@@ -153,23 +167,14 @@ public class ParkingController : ControllerBase
     // =====================================================
     // XE KHÁCH - CHECK IN
     //
-    // XE KHÁCH:
-    // PhuongTienId = NULL
-    //
-    // Chỉ cần:
-    // - Biển số
-    // - Loại phương tiện
+    // POST: /api/Parking/guest-check-in
     // =====================================================
 
-    [Authorize(Roles = "Admin,BanQuanLy,BaoVe")]
+    [Authorize(Roles = "Admin,BaoVe")]
     [HttpPost("guest-check-in")]
     public async Task<ActionResult<object>> GuestCheckIn(
         GuestCheckInDto dto)
     {
-        // -------------------------------------------------
-        // VALIDATE BIỂN SỐ
-        // -------------------------------------------------
-
         if (string.IsNullOrWhiteSpace(dto.BienSo))
         {
             return BadRequest(new
@@ -180,10 +185,6 @@ public class ParkingController : ControllerBase
         }
 
         var bienSo = dto.BienSo.Trim();
-
-        // -------------------------------------------------
-        // VALIDATE LOẠI PHƯƠNG TIỆN
-        // -------------------------------------------------
 
         var loaiXe =
             await _context.LoaiPhuongTiens
@@ -200,10 +201,6 @@ public class ParkingController : ControllerBase
             });
         }
 
-        // -------------------------------------------------
-        // XE KHÁCH KHÔNG ĐƯỢC TRÙNG XE CƯ DÂN
-        // -------------------------------------------------
-
         var trungXeCuDan =
             await _context.PhuongTiens
                 .AnyAsync(x =>
@@ -218,13 +215,6 @@ public class ParkingController : ControllerBase
                     "Không thể ghi nhận là xe khách."
             });
         }
-
-        // -------------------------------------------------
-        // XE KHÁCH ĐANG GỬI
-        //
-        // Quan trọng:
-        // Xe khách luôn có PhuongTienId = NULL
-        // -------------------------------------------------
 
         var xeKhachDangGui =
             await _context.LuotGuiXes
@@ -244,23 +234,16 @@ public class ParkingController : ControllerBase
             });
         }
 
-        // -------------------------------------------------
-        // USER
-        // -------------------------------------------------
-
         var userId = LayUserId();
 
         if (userId == null)
         {
-            return Unauthorized();
+            return Unauthorized(new
+            {
+                message =
+                    "Không xác định được người dùng."
+            });
         }
-
-        // -------------------------------------------------
-        // TẠO XE KHÁCH
-        //
-        // KHÔNG gán PhuongTienId
-        // => EF lưu NULL
-        // -------------------------------------------------
 
         var luotGuiXe = new LuotGuiXe
         {
@@ -297,10 +280,6 @@ public class ParkingController : ControllerBase
             $"Check-in xe khach {luotGuiXe.BienSo}"
         );
 
-        // -------------------------------------------------
-        // RESPONSE
-        // -------------------------------------------------
-
         return Ok(new
         {
             luotGuiXeId =
@@ -330,28 +309,49 @@ public class ParkingController : ControllerBase
             trangThai =
                 luotGuiXe.TrangThai,
 
+            cuDan =
+                (string?)null,
+
+            canHo =
+                (string?)null,
+
             laXeKhach = true
         });
     }
 
     // =====================================================
     // ACTIVE
+    //
+    // GET: /api/Parking/active
+    //
+    // Trả về:
+    // - Biển số
+    // - Loại xe
+    // - Cư dân
+    // - Căn hộ
+    // - Thời gian vào
+    // - Trạng thái
     // =====================================================
 
     [HttpGet("active")]
     public async Task<ActionResult<IEnumerable<object>>>
         GetActive()
     {
-        var query = _context.LuotGuiXes
-            .Include(x => x.PhuongTien)
-            .Include(x => x.LoaiPhuongTien)
-            .AsQueryable();
+        var query =
+            _context.LuotGuiXes
+                .AsNoTracking()
+                .Include(x => x.PhuongTien)
+                .Include(x => x.LoaiPhuongTien)
+                .Where(x =>
+                    x.TrangThai == "ACTIVE")
+                .AsQueryable();
+
+        // =================================================
+        // NẾU LÀ CƯ DÂN
+        // Chỉ xem xe của chính mình
+        // =================================================
 
         var role = LayRole();
-
-        // -------------------------------------------------
-        // CƯ DÂN CHỈ XEM XE CỦA MÌNH
-        // -------------------------------------------------
 
         if (role == "CuDan")
         {
@@ -359,7 +359,11 @@ public class ParkingController : ControllerBase
 
             if (userId == null)
             {
-                return Unauthorized();
+                return Unauthorized(new
+                {
+                    message =
+                        "Không xác định được người dùng."
+                });
             }
 
             query = query.Where(x =>
@@ -367,50 +371,107 @@ public class ParkingController : ControllerBase
                 x.PhuongTien.UserId == userId);
         }
 
-        // -------------------------------------------------
-        // ACTIVE
-        // -------------------------------------------------
+        // =================================================
+        // LẤY DỮ LIỆU
+        // =================================================
 
-        var danhSach = await query
-            .Where(x =>
-                x.TrangThai == "ACTIVE")
-            .OrderByDescending(x =>
-                x.ThoiGianVao)
-            .Select(x => new
-            {
-                luotGuiXeId =
-                    x.LuotGuiXeId,
+        var danhSach =
+            await query
+                .OrderByDescending(x =>
+                    x.ThoiGianVao)
+                .Select(x => new
+                {
+                    // ==============================
+                    // ID
+                    // ==============================
 
-                phuongTienId =
-                    x.PhuongTienId,
+                    luotGuiXeId =
+                        x.LuotGuiXeId,
 
-                bienSo =
-                    x.BienSo,
+                    phuongTienId =
+                        x.PhuongTienId,
 
-                loaiPhuongTienId =
-                    x.LoaiPhuongTienId,
+                    // ==============================
+                    // BIỂN SỐ
+                    // ==============================
 
-                loaiXe =
-                    x.LoaiPhuongTien != null
-                        ? x.LoaiPhuongTien.TenLoai
-                        : "",
+                    bienSo =
+                        x.BienSo,
 
-                thoiGianVao =
-                    x.ThoiGianVao,
+                    // ==============================
+                    // LOẠI PHƯƠNG TIỆN
+                    // ==============================
 
-                thoiGianRa =
-                    x.ThoiGianRa,
+                    loaiPhuongTienId =
+                        x.LoaiPhuongTienId,
 
-                soTien =
-                    x.SoTien,
+                    loaiXe =
+                        x.LoaiPhuongTien != null
+                            ? x.LoaiPhuongTien.TenLoai
+                            : "",
 
-                trangThai =
-                    x.TrangThai,
+                    // ==============================
+                    // CƯ DÂN
+                    // ==============================
 
-                laXeKhach =
-                    x.PhuongTienId == null
-            })
-            .ToListAsync();
+                    cuDan =
+                        x.PhuongTien != null
+                            ? _context.Users
+                                .Where(u =>
+                                    u.UserId ==
+                                    x.PhuongTien.UserId)
+                                .Select(u =>
+                                    u.HoTen)
+                                .FirstOrDefault()
+                            : null,
+
+                    // ==============================
+                    // CĂN HỘ
+                    // ==============================
+
+                    canHo =
+                        x.PhuongTien != null
+                            ? _context.CanHos
+                                .Where(c =>
+                                    c.UserId ==
+                                    x.PhuongTien.UserId)
+                                .Select(c =>
+                                    c.MaCanHo)
+                                .FirstOrDefault()
+                            : null,
+
+                    // ==============================
+                    // THỜI GIAN
+                    // ==============================
+
+                    thoiGianVao =
+                        x.ThoiGianVao,
+
+                    thoiGianRa =
+                        x.ThoiGianRa,
+
+                    // ==============================
+                    // TIỀN
+                    // ==============================
+
+                    soTien =
+                        x.SoTien,
+
+                    // ==============================
+                    // TRẠNG THÁI
+                    // ==============================
+
+                    trangThai =
+                        x.TrangThai,
+
+                    // ==============================
+                    // XE KHÁCH
+                    // ==============================
+
+                    laXeKhach =
+                        x.PhuongTienId == null
+                })
+                .ToListAsync();
 
         return Ok(danhSach);
     }
@@ -418,68 +479,73 @@ public class ParkingController : ControllerBase
     // =====================================================
     // XE KHÁCH - DANH SÁCH
     //
-    // GET:
-    // api/Parking/guest
-    //
-    // QUY ƯỚC:
-    // PhuongTienId == NULL => XE KHÁCH
+    // GET: /api/Parking/guest
     // =====================================================
 
-    [Authorize(Roles = "Admin,BanQuanLy,BaoVe")]
+    [Authorize(Roles = "Admin,BaoVe")]
     [HttpGet("guest")]
     public async Task<ActionResult<IEnumerable<object>>>
         GetGuest()
     {
-        var danhSach = await _context.LuotGuiXes
-            .AsNoTracking()
-            .Include(x => x.LoaiPhuongTien)
-            .Where(x =>
-                x.PhuongTienId == null)
-            .OrderByDescending(x =>
-                x.ThoiGianVao)
-            .Select(x => new
-            {
-                luotGuiXeId =
-                    x.LuotGuiXeId,
+        var danhSach =
+            await _context.LuotGuiXes
+                .AsNoTracking()
+                .Include(x => x.LoaiPhuongTien)
+                .Where(x =>
+                    x.PhuongTienId == null)
+                .OrderByDescending(x =>
+                    x.ThoiGianVao)
+                .Select(x => new
+                {
+                    luotGuiXeId =
+                        x.LuotGuiXeId,
 
-                phuongTienId =
-                    x.PhuongTienId,
+                    phuongTienId =
+                        x.PhuongTienId,
 
-                bienSo =
-                    x.BienSo,
+                    bienSo =
+                        x.BienSo,
 
-                loaiPhuongTienId =
-                    x.LoaiPhuongTienId,
+                    loaiPhuongTienId =
+                        x.LoaiPhuongTienId,
 
-                loaiXe =
-                    x.LoaiPhuongTien != null
-                        ? x.LoaiPhuongTien.TenLoai
-                        : "",
+                    loaiXe =
+                        x.LoaiPhuongTien != null
+                            ? x.LoaiPhuongTien.TenLoai
+                            : "",
 
-                thoiGianVao =
-                    x.ThoiGianVao,
+                    thoiGianVao =
+                        x.ThoiGianVao,
 
-                thoiGianRa =
-                    x.ThoiGianRa,
+                    thoiGianRa =
+                        x.ThoiGianRa,
 
-                soTien =
-                    x.SoTien,
+                    soTien =
+                        x.SoTien,
 
-                trangThai =
-                    x.TrangThai,
+                    trangThai =
+                        x.TrangThai,
 
-                laXeKhach = true
-            })
-            .ToListAsync();
+                    cuDan =
+                        (string?)null,
+
+                    canHo =
+                        (string?)null,
+
+                    laXeKhach = true
+                })
+                .ToListAsync();
 
         return Ok(danhSach);
     }
 
     // =====================================================
     // CHECK OUT
+    //
+    // POST: /api/Parking/check-out
     // =====================================================
 
-    [Authorize(Roles = "Admin,BanQuanLy,BaoVe")]
+    [Authorize(Roles = "Admin,BaoVe")]
     [HttpPost("check-out")]
     public async Task<ActionResult<object>> CheckOut(
         CheckOutDto dto)
@@ -512,11 +578,8 @@ public class ParkingController : ControllerBase
             });
         }
 
-        var thoiGianRa = DateTime.Now;
-
-        // -------------------------------------------------
-        // TÌM BẢNG GIÁ
-        // -------------------------------------------------
+        var thoiGianRa =
+            DateTime.Now;
 
         var bangGia =
             await _context.BangGias
@@ -546,16 +609,13 @@ public class ParkingController : ControllerBase
             });
         }
 
-        // -------------------------------------------------
-        // TÍNH GIỜ
-        // -------------------------------------------------
-
-        var soGio = Math.Ceiling(
-            (
-                thoiGianRa -
-                luotGuiXe.ThoiGianVao
-            ).TotalHours
-        );
+        var soGio =
+            Math.Ceiling(
+                (
+                    thoiGianRa -
+                    luotGuiXe.ThoiGianVao
+                ).TotalHours
+            );
 
         if (soGio < 1)
         {
@@ -566,12 +626,12 @@ public class ParkingController : ControllerBase
 
         if (userId == null)
         {
-            return Unauthorized();
+            return Unauthorized(new
+            {
+                message =
+                    "Không xác định được người dùng."
+            });
         }
-
-        // -------------------------------------------------
-        // UPDATE
-        // -------------------------------------------------
 
         luotGuiXe.ThoiGianRa =
             thoiGianRa;
@@ -628,17 +688,20 @@ public class ParkingController : ControllerBase
 
     // =====================================================
     // HISTORY
+    //
+    // GET: /api/Parking/history
     // =====================================================
 
     [HttpGet("history")]
     public async Task<ActionResult<IEnumerable<object>>>
         GetHistory()
     {
-        var query = _context.LuotGuiXes
-            .AsNoTracking()
-            .Include(x => x.PhuongTien)
-            .Include(x => x.LoaiPhuongTien)
-            .AsQueryable();
+        var query =
+            _context.LuotGuiXes
+                .AsNoTracking()
+                .Include(x => x.PhuongTien)
+                .Include(x => x.LoaiPhuongTien)
+                .AsQueryable();
 
         var role = LayRole();
 
@@ -656,50 +719,53 @@ public class ParkingController : ControllerBase
                 x.PhuongTien.UserId == userId);
         }
 
-        var danhSach = await query
-            .OrderByDescending(x =>
-                x.ThoiGianVao)
-            .Select(x => new
-            {
-                luotGuiXeId =
-                    x.LuotGuiXeId,
+        var danhSach =
+            await query
+                .OrderByDescending(x =>
+                    x.ThoiGianVao)
+                .Select(x => new
+                {
+                    luotGuiXeId =
+                        x.LuotGuiXeId,
 
-                phuongTienId =
-                    x.PhuongTienId,
+                    phuongTienId =
+                        x.PhuongTienId,
 
-                bienSo =
-                    x.BienSo,
+                    bienSo =
+                        x.BienSo,
 
-                loaiPhuongTienId =
-                    x.LoaiPhuongTienId,
+                    loaiPhuongTienId =
+                        x.LoaiPhuongTienId,
 
-                loaiXe =
-                    x.LoaiPhuongTien != null
-                        ? x.LoaiPhuongTien.TenLoai
-                        : "",
+                    loaiXe =
+                        x.LoaiPhuongTien != null
+                            ? x.LoaiPhuongTien.TenLoai
+                            : "",
 
-                thoiGianVao =
-                    x.ThoiGianVao,
+                    thoiGianVao =
+                        x.ThoiGianVao,
 
-                thoiGianRa =
-                    x.ThoiGianRa,
+                    thoiGianRa =
+                        x.ThoiGianRa,
 
-                soTien =
-                    x.SoTien,
+                    soTien =
+                        x.SoTien,
 
-                trangThai =
-                    x.TrangThai,
+                    trangThai =
+                        x.TrangThai,
 
-                laXeKhach =
-                    x.PhuongTienId == null
-            })
-            .ToListAsync();
+                    laXeKhach =
+                        x.PhuongTienId == null
+                })
+                .ToListAsync();
 
         return Ok(danhSach);
     }
 
     // =====================================================
     // LOẠI PHƯƠNG TIỆN
+    //
+    // GET: /api/Parking/loai-phuong-tien
     // =====================================================
 
     [HttpGet("loai-phuong-tien")]

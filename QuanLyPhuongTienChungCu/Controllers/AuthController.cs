@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuanLyPhuongTienChungCu.Data;
@@ -28,110 +29,225 @@ public class AuthController : ControllerBase
         _configuration = configuration;
     }
 
+    // =====================================================
+    // LOGIN
+    // POST: api/Auth/login
+    // =====================================================
+
     [HttpPost("login")]
-    public async Task<IActionResult> Login(DangNhapDto dto)
+    public async Task<IActionResult> Login(
+        DangNhapDto dto)
     {
+        // -------------------------------------------------
+        // VALIDATE INPUT
+        // -------------------------------------------------
+
         if (string.IsNullOrWhiteSpace(dto.TenDangNhap))
         {
-            return BadRequest("Ten dang nhap khong duoc de trong.");
+            return BadRequest(new
+            {
+                message =
+                    "Tên đăng nhập không được để trống."
+            });
         }
 
         if (string.IsNullOrWhiteSpace(dto.MatKhau))
         {
-            return BadRequest("Mat khau khong duoc de trong.");
+            return BadRequest(new
+            {
+                message =
+                    "Mật khẩu không được để trống."
+            });
         }
 
-        var user = await _context.Users
-            .Include(x => x.Role)
-            .FirstOrDefaultAsync(x =>
-                x.TenDangNhap == dto.TenDangNhap);
+        // -------------------------------------------------
+        // TÌM USER + ROLE
+        // -------------------------------------------------
+
+        var tenDangNhap =
+            dto.TenDangNhap.Trim();
+
+        var user =
+            await _context.Users
+                .Include(x => x.Role)
+                .FirstOrDefaultAsync(x =>
+                    x.TenDangNhap == tenDangNhap);
 
         if (user == null)
         {
-            return Unauthorized(
-                "Ten dang nhap hoac mat khau khong dung."
-            );
+            return Unauthorized(new
+            {
+                message =
+                    "Tên đăng nhập hoặc mật khẩu không đúng."
+            });
         }
+
+        // -------------------------------------------------
+        // KIỂM TRA TRẠNG THÁI
+        // -------------------------------------------------
 
         if (user.TrangThai != "ACTIVE")
         {
-            return Unauthorized("Tai khoan dang bi khoa.");
+            return Unauthorized(new
+            {
+                message =
+                    "Tài khoản đang bị khóa hoặc không hoạt động."
+            });
         }
 
-        var matKhauDung = _passwordService.VerifyPassword(
-            dto.MatKhau,
-            user.MatKhau
-        );
+        // -------------------------------------------------
+        // KIỂM TRA MẬT KHẨU
+        // -------------------------------------------------
+
+        var matKhauDung =
+            _passwordService.VerifyPassword(
+                dto.MatKhau,
+                user.MatKhau
+            );
 
         if (!matKhauDung)
         {
-            return Unauthorized(
-                "Ten dang nhap hoac mat khau khong dung."
-            );
+            return Unauthorized(new
+            {
+                message =
+                    "Tên đăng nhập hoặc mật khẩu không đúng."
+            });
         }
+
+        // -------------------------------------------------
+        // KIỂM TRA ROLE
+        // -------------------------------------------------
 
         if (user.Role == null)
         {
-            return BadRequest("Tai khoan chua duoc gan Role.");
+            return BadRequest(new
+            {
+                message =
+                    "Tài khoản chưa được gán vai trò."
+            });
         }
 
-        var claims = new[]
+        var vaiTro =
+            user.Role.TenRole?.Trim();
+
+        if (string.IsNullOrWhiteSpace(vaiTro))
         {
-            new Claim(
-                ClaimTypes.NameIdentifier,
-                user.UserId.ToString()
-            ),
+            return BadRequest(new
+            {
+                message =
+                    "Vai trò của tài khoản không hợp lệ."
+            });
+        }
 
-            new Claim(
-                ClaimTypes.Name,
-                user.TenDangNhap
-            ),
+        // -------------------------------------------------
+        // JWT CONFIG
+        // -------------------------------------------------
 
-            new Claim(
-                ClaimTypes.Role,
-                user.Role.TenRole
-            )
-        };
-
-        var jwtKey = _configuration["Jwt:Key"];
+        var jwtKey =
+            _configuration["Jwt:Key"];
 
         if (string.IsNullOrWhiteSpace(jwtKey))
         {
             return StatusCode(
-                500,
-                "Chua cau hinh Jwt:Key."
+                StatusCodes.Status500InternalServerError,
+                new
+                {
+                    message =
+                        "Chưa cấu hình Jwt:Key."
+                }
             );
         }
 
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(jwtKey)
-        );
+        var issuer =
+            _configuration["Jwt:Issuer"];
 
-        var credentials = new SigningCredentials(
-            key,
-            SecurityAlgorithms.HmacSha256
-        );
+        var audience =
+            _configuration["Jwt:Audience"];
 
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.Now.AddHours(2),
-            signingCredentials: credentials
-        );
+        // -------------------------------------------------
+        // SIGNING KEY
+        // -------------------------------------------------
 
-        var jwt = new JwtSecurityTokenHandler()
-            .WriteToken(token);
+        var securityKey =
+            new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtKey)
+            );
+
+        var credentials =
+            new SigningCredentials(
+                securityKey,
+                SecurityAlgorithms.HmacSha256
+            );
+
+        // -------------------------------------------------
+        // JWT CLAIMS
+        // -------------------------------------------------
+
+        var claims =
+            new List<Claim>
+            {
+                new Claim(
+                    ClaimTypes.NameIdentifier,
+                    user.UserId.ToString()
+                ),
+
+                new Claim(
+                    ClaimTypes.Name,
+                    user.TenDangNhap
+                ),
+
+                new Claim(
+                    ClaimTypes.Role,
+                    vaiTro
+                )
+            };
+
+        // -------------------------------------------------
+        // TẠO TOKEN
+        // -------------------------------------------------
+
+        var token =
+            new JwtSecurityToken(
+                issuer: issuer,
+                audience: audience,
+                claims: claims,
+                notBefore: DateTime.UtcNow,
+                expires: DateTime.UtcNow.AddHours(2),
+                signingCredentials: credentials
+            );
+
+        var tokenHandler =
+            new JwtSecurityTokenHandler();
+
+        var jwt =
+            tokenHandler.WriteToken(token);
+
+        // -------------------------------------------------
+        // RESPONSE
+        // -------------------------------------------------
 
         return Ok(new
         {
             token = jwt,
-            userId = user.UserId,
-            hoTen = user.HoTen,
-            tenDangNhap = user.TenDangNhap,
-            email = user.Email,
-            roleId = user.RoleId,
-            tenRole = user.Role.TenRole
+
+            userId =
+                user.UserId,
+
+            hoTen =
+                user.HoTen,
+
+            tenDangNhap =
+                user.TenDangNhap,
+
+            email =
+                user.Email,
+
+            roleId =
+                user.RoleId,
+
+            vaiTro =
+                vaiTro
         });
     }
 }
+

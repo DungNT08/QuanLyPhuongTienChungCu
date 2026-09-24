@@ -14,20 +14,28 @@ public class User
 
     public string Email { get; set; } = string.Empty;
 
+    // Số điện thoại
+    public string? SoDienThoai { get; set; }
+
+    // Căn cước công dân
+    public string? CCCD { get; set; }
+
+    // =====================================================
+    // ROLE
+    // =====================================================
+
+    // Khóa ngoại đến bảng Roles
     public long RoleId { get; set; }
+
+    // Navigation property
+    [JsonIgnore]
+    public Role? Role { get; set; }
+
+    // =====================================================
+    // TRẠNG THÁI
+    // =====================================================
 
     public string TrangThai { get; set; } = "ACTIVE";
 
     public DateTime NgayTao { get; set; } = DateTime.Now;
-
-    // ============ 3 PROPERTY MỚI THÊM ============
-    public string? SoDienThoai { get; set; }
-
-    public string? CCCD { get; set; }
-
-    public string? VaiTro { get; set; }
-    // =============================================
-
-    [JsonIgnore]
-    public Role? Role { get; set; }
 }
