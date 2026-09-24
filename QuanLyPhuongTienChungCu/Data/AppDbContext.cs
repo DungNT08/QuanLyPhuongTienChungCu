@@ -12,6 +12,8 @@ public class AppDbContext : DbContext
 
     public DbSet<PhuongTien> PhuongTiens => Set<PhuongTien>();
 
+     public DbSet<CanHo> CanHos => Set<CanHo>();
+
     public DbSet<LoaiPhuongTien> LoaiPhuongTiens => Set<LoaiPhuongTien>();
 
     public DbSet<LuotGuiXe> LuotGuiXes => Set<LuotGuiXe>();
