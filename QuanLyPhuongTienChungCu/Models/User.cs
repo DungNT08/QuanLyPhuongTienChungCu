@@ -20,6 +20,14 @@ public class User
 
     public DateTime NgayTao { get; set; } = DateTime.Now;
 
+    // ============ 3 PROPERTY MỚI THÊM ============
+    public string? SoDienThoai { get; set; }
+
+    public string? CCCD { get; set; }
+
+    public string? VaiTro { get; set; }
+    // =============================================
+
     [JsonIgnore]
     public Role? Role { get; set; }
 }
