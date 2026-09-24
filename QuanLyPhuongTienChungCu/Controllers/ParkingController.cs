@@ -51,27 +51,28 @@ public class ParkingController : ControllerBase
     }
 
     // =====================================================
-    // XE CƯ DÂN - CHECK IN
-    // ADMIN / BẢO VỆ
-    //
+    // CHECK-IN XE CƯ DÂN
     // POST: /api/Parking/check-in
     // =====================================================
 
     [Authorize(Roles = "Admin,BaoVe")]
     [HttpPost("check-in")]
-    public async Task<ActionResult<LuotGuiXe>> CheckIn(
+    public async Task<ActionResult<object>> CheckIn(
         CheckInDto dto)
     {
         if (string.IsNullOrWhiteSpace(dto.BienSo))
         {
             return BadRequest(new
             {
-                message =
-                    "Biển số không được để trống."
+                message = "Biển số không được để trống."
             });
         }
 
         var bienSo = dto.BienSo.Trim();
+
+        // -------------------------------------------------
+        // TÌM PHƯƠNG TIỆN CƯ DÂN
+        // -------------------------------------------------
 
         var phuongTien =
             await _context.PhuongTiens
@@ -96,6 +97,10 @@ public class ParkingController : ControllerBase
             });
         }
 
+        // -------------------------------------------------
+        // KIỂM TRA ĐANG GỬI
+        // -------------------------------------------------
+
         var dangGui =
             await _context.LuotGuiXes
                 .AnyAsync(x =>
@@ -113,6 +118,10 @@ public class ParkingController : ControllerBase
             });
         }
 
+        // -------------------------------------------------
+        // USER JWT
+        // -------------------------------------------------
+
         var userId = LayUserId();
 
         if (userId == null)
@@ -120,9 +129,13 @@ public class ParkingController : ControllerBase
             return Unauthorized(new
             {
                 message =
-                    "Không xác định được người dùng."
+                    "Không xác định được người dùng từ JWT."
             });
         }
+
+        // -------------------------------------------------
+        // TẠO LƯỢT GỬI
+        // -------------------------------------------------
 
         var luotGuiXe = new LuotGuiXe
         {
@@ -138,20 +151,32 @@ public class ParkingController : ControllerBase
             ThoiGianVao =
                 DateTime.Now,
 
-            ThoiGianRa = null,
+            ThoiGianRa =
+                null,
 
-            SoTien = null,
+            SoTien =
+                null,
 
             TrangThai =
                 "ACTIVE",
 
             NguoiTaoId =
-                userId.Value
+                userId.Value,
+
+            NguoiGhiVaoId =
+                userId.Value,
+
+            NguoiGhiRaId =
+                null
         };
 
         _context.LuotGuiXes.Add(luotGuiXe);
 
         await _context.SaveChangesAsync();
+
+        // -------------------------------------------------
+        // AUDIT
+        // -------------------------------------------------
 
         await _auditLogService.GhiLog(
             userId,
@@ -161,12 +186,73 @@ public class ParkingController : ControllerBase
             $"Check-in xe cu dan {luotGuiXe.BienSo}"
         );
 
-        return Ok(luotGuiXe);
+        // -------------------------------------------------
+        // NGƯỜI GHI VÀO
+        // -------------------------------------------------
+
+        var nguoiGhiVao =
+            await _context.Users
+                .Where(x =>
+                    x.UserId == userId.Value)
+                .Select(x =>
+                    x.HoTen)
+                .FirstOrDefaultAsync();
+
+        // -------------------------------------------------
+        // LOẠI XE
+        // -------------------------------------------------
+
+        var loaiXe =
+            await _context.LoaiPhuongTiens
+                .Where(x =>
+                    x.LoaiPhuongTienId ==
+                    luotGuiXe.LoaiPhuongTienId)
+                .Select(x =>
+                    x.TenLoai)
+                .FirstOrDefaultAsync();
+
+        return Ok(new
+        {
+            luotGuiXeId =
+                luotGuiXe.LuotGuiXeId,
+
+            phuongTienId =
+                luotGuiXe.PhuongTienId,
+
+            bienSo =
+                luotGuiXe.BienSo,
+
+            loaiPhuongTienId =
+                luotGuiXe.LoaiPhuongTienId,
+
+            loaiXe =
+                loaiXe,
+
+            thoiGianVao =
+                luotGuiXe.ThoiGianVao,
+
+            thoiGianRa =
+                luotGuiXe.ThoiGianRa,
+
+            soTien =
+                luotGuiXe.SoTien,
+
+            trangThai =
+                luotGuiXe.TrangThai,
+
+            nguoiGhiVao =
+                nguoiGhiVao,
+
+            nguoiGhiRa =
+                (string?)null,
+
+            laXeKhach =
+                false
+        });
     }
 
     // =====================================================
-    // XE KHÁCH - CHECK IN
-    //
+    // CHECK-IN XE KHÁCH
     // POST: /api/Parking/guest-check-in
     // =====================================================
 
@@ -186,6 +272,10 @@ public class ParkingController : ControllerBase
 
         var bienSo = dto.BienSo.Trim();
 
+        // -------------------------------------------------
+        // LOẠI XE
+        // -------------------------------------------------
+
         var loaiXe =
             await _context.LoaiPhuongTiens
                 .FirstOrDefaultAsync(x =>
@@ -201,6 +291,10 @@ public class ParkingController : ControllerBase
             });
         }
 
+        // -------------------------------------------------
+        // KHÔNG TRÙNG XE CƯ DÂN
+        // -------------------------------------------------
+
         var trungXeCuDan =
             await _context.PhuongTiens
                 .AnyAsync(x =>
@@ -215,6 +309,10 @@ public class ParkingController : ControllerBase
                     "Không thể ghi nhận là xe khách."
             });
         }
+
+        // -------------------------------------------------
+        // XE KHÁCH ĐANG GỬI
+        // -------------------------------------------------
 
         var xeKhachDangGui =
             await _context.LuotGuiXes
@@ -234,6 +332,10 @@ public class ParkingController : ControllerBase
             });
         }
 
+        // -------------------------------------------------
+        // USER JWT
+        // -------------------------------------------------
+
         var userId = LayUserId();
 
         if (userId == null)
@@ -241,15 +343,21 @@ public class ParkingController : ControllerBase
             return Unauthorized(new
             {
                 message =
-                    "Không xác định được người dùng."
+                    "Không xác định được người dùng từ JWT."
             });
         }
 
+        // -------------------------------------------------
+        // TẠO LƯỢT XE KHÁCH
+        // -------------------------------------------------
+
         var luotGuiXe = new LuotGuiXe
         {
-            PhuongTienId = null,
+            PhuongTienId =
+                null,
 
-            BienSo = bienSo,
+            BienSo =
+                bienSo,
 
             LoaiPhuongTienId =
                 dto.LoaiPhuongTienId,
@@ -257,20 +365,32 @@ public class ParkingController : ControllerBase
             ThoiGianVao =
                 DateTime.Now,
 
-            ThoiGianRa = null,
+            ThoiGianRa =
+                null,
 
-            SoTien = null,
+            SoTien =
+                null,
 
             TrangThai =
                 "ACTIVE",
 
             NguoiTaoId =
-                userId.Value
+                userId.Value,
+
+            NguoiGhiVaoId =
+                userId.Value,
+
+            NguoiGhiRaId =
+                null
         };
 
         _context.LuotGuiXes.Add(luotGuiXe);
 
         await _context.SaveChangesAsync();
+
+        // -------------------------------------------------
+        // AUDIT
+        // -------------------------------------------------
 
         await _auditLogService.GhiLog(
             userId,
@@ -279,6 +399,18 @@ public class ParkingController : ControllerBase
             luotGuiXe.LuotGuiXeId,
             $"Check-in xe khach {luotGuiXe.BienSo}"
         );
+
+        // -------------------------------------------------
+        // NGƯỜI GHI VÀO
+        // -------------------------------------------------
+
+        var nguoiGhiVao =
+            await _context.Users
+                .Where(x =>
+                    x.UserId == userId.Value)
+                .Select(x =>
+                    x.HoTen)
+                .FirstOrDefaultAsync();
 
         return Ok(new
         {
@@ -309,28 +441,26 @@ public class ParkingController : ControllerBase
             trangThai =
                 luotGuiXe.TrangThai,
 
+            nguoiGhiVao =
+                nguoiGhiVao,
+
+            nguoiGhiRa =
+                (string?)null,
+
             cuDan =
                 (string?)null,
 
             canHo =
                 (string?)null,
 
-            laXeKhach = true
+            laXeKhach =
+                true
         });
     }
 
     // =====================================================
     // ACTIVE
-    //
     // GET: /api/Parking/active
-    //
-    // Trả về:
-    // - Biển số
-    // - Loại xe
-    // - Cư dân
-    // - Căn hộ
-    // - Thời gian vào
-    // - Trạng thái
     // =====================================================
 
     [HttpGet("active")]
@@ -346,12 +476,11 @@ public class ParkingController : ControllerBase
                     x.TrangThai == "ACTIVE")
                 .AsQueryable();
 
-        // =================================================
-        // NẾU LÀ CƯ DÂN
-        // Chỉ xem xe của chính mình
-        // =================================================
-
         var role = LayRole();
+
+        // -------------------------------------------------
+        // CƯ DÂN CHỈ XEM XE CỦA MÌNH
+        // -------------------------------------------------
 
         if (role == "CuDan")
         {
@@ -371,9 +500,9 @@ public class ParkingController : ControllerBase
                 x.PhuongTien.UserId == userId);
         }
 
-        // =================================================
-        // LẤY DỮ LIỆU
-        // =================================================
+        // -------------------------------------------------
+        // QUERY
+        // -------------------------------------------------
 
         var danhSach =
             await query
@@ -381,26 +510,14 @@ public class ParkingController : ControllerBase
                     x.ThoiGianVao)
                 .Select(x => new
                 {
-                    // ==============================
-                    // ID
-                    // ==============================
-
                     luotGuiXeId =
                         x.LuotGuiXeId,
 
                     phuongTienId =
                         x.PhuongTienId,
 
-                    // ==============================
-                    // BIỂN SỐ
-                    // ==============================
-
                     bienSo =
                         x.BienSo,
-
-                    // ==============================
-                    // LOẠI PHƯƠNG TIỆN
-                    // ==============================
 
                     loaiPhuongTienId =
                         x.LoaiPhuongTienId,
@@ -410,10 +527,7 @@ public class ParkingController : ControllerBase
                             ? x.LoaiPhuongTien.TenLoai
                             : "",
 
-                    // ==============================
                     // CƯ DÂN
-                    // ==============================
-
                     cuDan =
                         x.PhuongTien != null
                             ? _context.Users
@@ -424,10 +538,6 @@ public class ParkingController : ControllerBase
                                     u.HoTen)
                                 .FirstOrDefault()
                             : null,
-
-                    // ==============================
-                    // CĂN HỘ
-                    // ==============================
 
                     canHo =
                         x.PhuongTien != null
@@ -440,34 +550,46 @@ public class ParkingController : ControllerBase
                                 .FirstOrDefault()
                             : null,
 
-                    // ==============================
                     // THỜI GIAN
-                    // ==============================
-
                     thoiGianVao =
                         x.ThoiGianVao,
 
                     thoiGianRa =
                         x.ThoiGianRa,
 
-                    // ==============================
                     // TIỀN
-                    // ==============================
-
                     soTien =
                         x.SoTien,
 
-                    // ==============================
                     // TRẠNG THÁI
-                    // ==============================
-
                     trangThai =
                         x.TrangThai,
 
-                    // ==============================
-                    // XE KHÁCH
-                    // ==============================
+                    // NGƯỜI GHI VÀO
+                    nguoiGhiVao =
+                        x.NguoiGhiVaoId != null
+                            ? _context.Users
+                                .Where(u =>
+                                    u.UserId ==
+                                    x.NguoiGhiVaoId.Value)
+                                .Select(u =>
+                                    u.HoTen)
+                                .FirstOrDefault()
+                            : null,
 
+                    // NGƯỜI GHI RA
+                    nguoiGhiRa =
+                        x.NguoiGhiRaId != null
+                            ? _context.Users
+                                .Where(u =>
+                                    u.UserId ==
+                                    x.NguoiGhiRaId.Value)
+                                .Select(u =>
+                                    u.HoTen)
+                                .FirstOrDefault()
+                            : null,
+
+                    // XE KHÁCH
                     laXeKhach =
                         x.PhuongTienId == null
                 })
@@ -477,8 +599,7 @@ public class ParkingController : ControllerBase
     }
 
     // =====================================================
-    // XE KHÁCH - DANH SÁCH
-    //
+    // XE KHÁCH
     // GET: /api/Parking/guest
     // =====================================================
 
@@ -526,13 +647,38 @@ public class ParkingController : ControllerBase
                     trangThai =
                         x.TrangThai,
 
+                    // NGƯỜI GHI VÀO
+                    nguoiGhiVao =
+                        x.NguoiGhiVaoId != null
+                            ? _context.Users
+                                .Where(u =>
+                                    u.UserId ==
+                                    x.NguoiGhiVaoId.Value)
+                                .Select(u =>
+                                    u.HoTen)
+                                .FirstOrDefault()
+                            : null,
+
+                    // NGƯỜI GHI RA
+                    nguoiGhiRa =
+                        x.NguoiGhiRaId != null
+                            ? _context.Users
+                                .Where(u =>
+                                    u.UserId ==
+                                    x.NguoiGhiRaId.Value)
+                                .Select(u =>
+                                    u.HoTen)
+                                .FirstOrDefault()
+                            : null,
+
                     cuDan =
                         (string?)null,
 
                     canHo =
                         (string?)null,
 
-                    laXeKhach = true
+                    laXeKhach =
+                        true
                 })
                 .ToListAsync();
 
@@ -540,8 +686,7 @@ public class ParkingController : ControllerBase
     }
 
     // =====================================================
-    // CHECK OUT
-    //
+    // CHECK-OUT
     // POST: /api/Parking/check-out
     // =====================================================
 
@@ -561,9 +706,14 @@ public class ParkingController : ControllerBase
 
         var bienSo = dto.BienSo.Trim();
 
+        // -------------------------------------------------
+        // TÌM LƯỢT ACTIVE
+        // -------------------------------------------------
+
         var luotGuiXe =
             await _context.LuotGuiXes
-                .Include(x => x.LoaiPhuongTien)
+                .Include(x =>
+                    x.LoaiPhuongTien)
                 .FirstOrDefaultAsync(x =>
                     x.BienSo == bienSo
                     &&
@@ -578,8 +728,31 @@ public class ParkingController : ControllerBase
             });
         }
 
+        // -------------------------------------------------
+        // USER JWT
+        // -------------------------------------------------
+
+        var userId = LayUserId();
+
+        if (userId == null)
+        {
+            return Unauthorized(new
+            {
+                message =
+                    "Không xác định được người dùng từ JWT."
+            });
+        }
+
+        // -------------------------------------------------
+        // THỜI GIAN RA
+        // -------------------------------------------------
+
         var thoiGianRa =
             DateTime.Now;
+
+        // -------------------------------------------------
+        // BẢNG GIÁ
+        // -------------------------------------------------
 
         var bangGia =
             await _context.BangGias
@@ -609,6 +782,10 @@ public class ParkingController : ControllerBase
             });
         }
 
+        // -------------------------------------------------
+        // TÍNH SỐ GIỜ
+        // -------------------------------------------------
+
         var soGio =
             Math.Ceiling(
                 (
@@ -622,16 +799,9 @@ public class ParkingController : ControllerBase
             soGio = 1;
         }
 
-        var userId = LayUserId();
-
-        if (userId == null)
-        {
-            return Unauthorized(new
-            {
-                message =
-                    "Không xác định được người dùng."
-            });
-        }
+        // -------------------------------------------------
+        // UPDATE
+        // -------------------------------------------------
 
         luotGuiXe.ThoiGianRa =
             thoiGianRa;
@@ -643,7 +813,15 @@ public class ParkingController : ControllerBase
         luotGuiXe.TrangThai =
             "COMPLETED";
 
+        // NGƯỜI GHI XE RA
+        luotGuiXe.NguoiGhiRaId =
+            userId.Value;
+
         await _context.SaveChangesAsync();
+
+        // -------------------------------------------------
+        // AUDIT
+        // -------------------------------------------------
 
         await _auditLogService.GhiLog(
             userId,
@@ -652,6 +830,38 @@ public class ParkingController : ControllerBase
             luotGuiXe.LuotGuiXeId,
             $"Check-out {luotGuiXe.BienSo}, so tien {luotGuiXe.SoTien:0}"
         );
+
+        // -------------------------------------------------
+        // NGƯỜI GHI VÀO
+        // -------------------------------------------------
+
+        var nguoiGhiVao =
+            luotGuiXe.NguoiGhiVaoId != null
+                ? await _context.Users
+                    .Where(x =>
+                        x.UserId ==
+                        luotGuiXe.NguoiGhiVaoId.Value)
+                    .Select(x =>
+                        x.HoTen)
+                    .FirstOrDefaultAsync()
+                : null;
+
+        // -------------------------------------------------
+        // NGƯỜI GHI RA
+        // -------------------------------------------------
+
+        var nguoiGhiRa =
+            await _context.Users
+                .Where(x =>
+                    x.UserId ==
+                    userId.Value)
+                .Select(x =>
+                    x.HoTen)
+                .FirstOrDefaultAsync();
+
+        // -------------------------------------------------
+        // RESPONSE
+        // -------------------------------------------------
 
         return Ok(new
         {
@@ -663,6 +873,9 @@ public class ParkingController : ControllerBase
 
             bienSo =
                 luotGuiXe.BienSo,
+
+            loaiPhuongTienId =
+                luotGuiXe.LoaiPhuongTienId,
 
             loaiXe =
                 luotGuiXe.LoaiPhuongTien != null
@@ -681,6 +894,12 @@ public class ParkingController : ControllerBase
             trangThai =
                 luotGuiXe.TrangThai,
 
+            nguoiGhiVao =
+                nguoiGhiVao,
+
+            nguoiGhiRa =
+                nguoiGhiRa,
+
             laXeKhach =
                 luotGuiXe.PhuongTienId == null
         });
@@ -690,18 +909,42 @@ public class ParkingController : ControllerBase
     // HISTORY
     //
     // GET: /api/Parking/history
+    //
+    // TẤT CẢ / CƯ DÂN / XE KHÁCH
+    //
+    // Bao gồm:
+    // - Biển số
+    // - Loại xe
+    // - Cư dân
+    // - Căn hộ
+    // - Thời gian vào
+    // - Người ghi vào
+    // - Thời gian ra
+    // - Người ghi ra
+    // - Trạng thái
+    // - Số tiền
     // =====================================================
 
+    [Authorize(Roles = "Admin,BaoVe,CuDan")]
     [HttpGet("history")]
     public async Task<ActionResult<IEnumerable<object>>>
         GetHistory()
     {
+        // -------------------------------------------------
+        // QUERY GỐC
+        // -------------------------------------------------
+
         var query =
             _context.LuotGuiXes
                 .AsNoTracking()
                 .Include(x => x.PhuongTien)
                 .Include(x => x.LoaiPhuongTien)
                 .AsQueryable();
+
+        // -------------------------------------------------
+        // NẾU LÀ CƯ DÂN
+        // CHỈ XEM LỊCH SỬ XE CỦA MÌNH
+        // -------------------------------------------------
 
         var role = LayRole();
 
@@ -711,7 +954,11 @@ public class ParkingController : ControllerBase
 
             if (userId == null)
             {
-                return Unauthorized();
+                return Unauthorized(new
+                {
+                    message =
+                        "Không xác định được người dùng."
+                });
             }
 
             query = query.Where(x =>
@@ -719,20 +966,36 @@ public class ParkingController : ControllerBase
                 x.PhuongTien.UserId == userId);
         }
 
+        // -------------------------------------------------
+        // LẤY DATA TỪ SQL
+        // -------------------------------------------------
+
         var danhSach =
             await query
                 .OrderByDescending(x =>
                     x.ThoiGianVao)
                 .Select(x => new
                 {
+                    // =================================================
+                    // ID
+                    // =================================================
+
                     luotGuiXeId =
                         x.LuotGuiXeId,
 
                     phuongTienId =
                         x.PhuongTienId,
 
+                    // =================================================
+                    // BIỂN SỐ
+                    // =================================================
+
                     bienSo =
                         x.BienSo,
+
+                    // =================================================
+                    // LOẠI XE
+                    // =================================================
 
                     loaiPhuongTienId =
                         x.LoaiPhuongTienId,
@@ -742,17 +1005,136 @@ public class ParkingController : ControllerBase
                             ? x.LoaiPhuongTien.TenLoai
                             : "",
 
+                    // =================================================
+                    // CƯ DÂN
+                    //
+                    // LuotGuiXe
+                    //     -> PhuongTien
+                    //          -> UserId
+                    //               -> Users.HoTen
+                    // =================================================
+
+                    cuDan =
+                        x.PhuongTien != null
+                            ? _context.Users
+                                .Where(u =>
+                                    u.UserId ==
+                                    x.PhuongTien.UserId)
+                                .Select(u =>
+                                    u.HoTen)
+                                .FirstOrDefault()
+                            : null,
+
+                    // =================================================
+                    // CĂN HỘ
+                    //
+                    // PhuongTien.UserId
+                    //     -> CanHo.UserId
+                    //          -> MaCanHo
+                    // =================================================
+
+                    canHo =
+                        x.PhuongTien != null
+                            ? _context.CanHos
+                                .Where(c =>
+                                    c.UserId ==
+                                    x.PhuongTien.UserId)
+                                .Select(c =>
+                                    c.MaCanHo)
+                                .FirstOrDefault()
+                            : null,
+
+                    // =================================================
+                    // THỜI GIAN VÀO
+                    // =================================================
+
                     thoiGianVao =
                         x.ThoiGianVao,
+
+                    // =================================================
+                    // NGƯỜI GHI VÀO
+                    //
+                    // LuotGuiXe.NguoiGhiVaoId
+                    //     -> Users.UserId
+                    //          -> HoTen
+                    // =================================================
+
+                    nguoiGhiVao =
+                        x.NguoiGhiVaoId != null
+                            ? _context.Users
+                                .Where(u =>
+                                    u.UserId ==
+                                    x.NguoiGhiVaoId.Value)
+                                .Select(u =>
+                                    u.HoTen)
+                                .FirstOrDefault()
+                            : null,
+
+                    // =================================================
+                    // THỜI GIAN RA
+                    // =================================================
 
                     thoiGianRa =
                         x.ThoiGianRa,
 
+                    // =================================================
+                    // NGƯỜI GHI RA
+                    //
+                    // LuotGuiXe.NguoiGhiRaId
+                    //     -> Users.UserId
+                    //          -> HoTen
+                    // =================================================
+
+                    nguoiGhiRa =
+                        x.NguoiGhiRaId != null
+                            ? _context.Users
+                                .Where(u =>
+                                    u.UserId ==
+                                    x.NguoiGhiRaId.Value)
+                                .Select(u =>
+                                    u.HoTen)
+                                .FirstOrDefault()
+                            : null,
+
+                    // =================================================
+                    // TIỀN
+                    // =================================================
+
                     soTien =
                         x.SoTien,
 
-                    trangThai =
+                    // =================================================
+                    // TRẠNG THÁI GỐC SQL
+                    // =================================================
+
+                    trangThaiGoc =
                         x.TrangThai,
+
+                    // =================================================
+                    // TRẠNG THÁI CHO FRONTEND
+                    //
+                    // ACTIVE
+                    //     -> Đang gửi
+                    //
+                    // COMPLETED + xe cư dân
+                    //     -> Đã ra
+                    //
+                    // COMPLETED + xe khách
+                    //     -> Đã thanh toán
+                    // =================================================
+
+                    trangThai =
+                        x.TrangThai == "ACTIVE"
+                            ? "Đang gửi"
+                            : x.PhuongTienId == null
+                                ? "Đã thanh toán"
+                                : "Đã ra",
+
+                    // =================================================
+                    // XE KHÁCH
+                    //
+                    // Xe khách không có PhuongTienId
+                    // =================================================
 
                     laXeKhach =
                         x.PhuongTienId == null
@@ -764,7 +1146,6 @@ public class ParkingController : ControllerBase
 
     // =====================================================
     // LOẠI PHƯƠNG TIỆN
-    //
     // GET: /api/Parking/loai-phuong-tien
     // =====================================================
 
