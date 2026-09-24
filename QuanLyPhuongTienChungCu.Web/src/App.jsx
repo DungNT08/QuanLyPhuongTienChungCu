@@ -22,6 +22,7 @@ import BangGia from "./Admin/BangGia";
 import LichSu from "./Admin/LichSu";
 import BaoCao from "./Admin/BaoCao";
 import QLyUser from "./Admin/QLyUser";
+import QLyCuDan from "./Admin/QLyCuDan";
 import Login from "./Login/Login";
 
 // =====================================================
@@ -170,7 +171,6 @@ function App() {
           }
         />
 
-
         <Route
           path="/admin/bang-gia"
           element={
@@ -198,12 +198,22 @@ function App() {
           }
         />
 
-        {/* Quản lý người dùng */}
+        {/* Quản lý người dùng (nhân viên) */}
         <Route
           path="/admin/nguoi-dung"
           element={
             <LayoutAdmin>
               <QLyUser />
+            </LayoutAdmin>
+          }
+        />
+
+        {/* Quản lý cư dân */}
+        <Route
+          path="/admin/cu-dan"
+          element={
+            <LayoutAdmin>
+              <QLyCuDan />
             </LayoutAdmin>
           }
         />
