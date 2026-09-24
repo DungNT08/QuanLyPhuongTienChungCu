@@ -727,6 +727,16 @@
 
 .bg-table-scroll::-webkit-scrollbar-thumb:hover,
 .bg-modal-body::-webkit-scrollbar-thumb:hover { background: #aeb7c5; }
+/* Thêm vào file BangGia.css */
+.bg-status-pending {
+  background-color: #e7f1ff; /* Nền xanh dương nhạt */
+  color: #0c5460; /* Chữ xanh đậm */
+
+}
+
+.bg-status-pending .bg-status-dot {
+  background-color: #17a2b8; /* Chấm tròn xanh dương */
+}
 
 /* =========================================================
    RESPONSIVE
