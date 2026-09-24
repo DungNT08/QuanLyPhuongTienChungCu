@@ -83,11 +83,7 @@ function App() {
 
         <Route
           path="/"
-          element={
-            <LayoutUser>
-              <TrangChuUser />
-            </LayoutUser>
-          }
+          element={<Login />}
         />
 
         <Route

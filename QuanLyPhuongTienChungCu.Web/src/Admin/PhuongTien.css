@@ -3,23 +3,29 @@
 ========================================================= */
 
 :root {
-  --pt-sidebar-width: 250px;
-  --pt-header-height: 64px;
+  --pt-sidebar-width: 240px;
+  --pt-header-height: 68px;
+
+  --pt-bg: #f4f9fc;
+  --pt-white: #ffffff;
+
+  --pt-primary: #2563eb;
+  --pt-primary-hover: #1d4ed8;
+
+  --pt-text: #172033;
+  --pt-text-secondary: #475467;
+  --pt-text-muted: #667085;
+
+  --pt-border: #e5e9f0;
+  --pt-border-light: #edf0f4;
 }
 
-.pt-wrapper {
-  width: calc(100% - var(--pt-sidebar-width));
-  min-height: 100vh;
 
-  margin-left: var(--pt-sidebar-width);
+/* =========================================================
+   RESET RIÊNG TRANG PHƯƠNG TIỆN
+========================================================= */
 
-  background: #f6f8fb;
-
-  box-sizing: border-box;
-
-  overflow-x: hidden;
-}
-
+.pt-wrapper,
 .pt-wrapper *,
 .pt-wrapper *::before,
 .pt-wrapper *::after {
@@ -28,16 +34,45 @@
 
 
 /* =========================================================
+   WRAPPER
+   QUAN TRỌNG:
+   App.jsx đã có .noi-dung-app:
+       margin-left: 240px;
+       width: calc(100% - 240px);
+
+   Vì vậy .pt-wrapper KHÔNG được margin-left nữa.
+========================================================= */
+
+.pt-wrapper {
+  position: relative;
+
+  width: 100%;
+  min-height: calc(100vh - var(--pt-header-height));
+
+  margin: 0;
+  padding: 0;
+
+  background: var(--pt-bg);
+
+  overflow-x: hidden;
+}
+
+
+/* =========================================================
    BODY
 ========================================================= */
 
 .pt-body {
+  position: relative;
+
   width: 100%;
   max-width: 1500px;
 
   margin: 0 auto;
 
   padding: 28px;
+
+  background: var(--pt-bg);
 }
 
 
@@ -46,6 +81,8 @@
 ========================================================= */
 
 .pt-title-bar {
+  width: 100%;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -58,7 +95,7 @@
 .pt-title-bar h2 {
   margin: 0;
 
-  color: #172033;
+  color: var(--pt-text);
 
   font-size: 27px;
   font-weight: 700;
@@ -72,6 +109,7 @@
   color: #7a8497;
 
   font-size: 14px;
+  line-height: 1.5;
 }
 
 
@@ -90,10 +128,12 @@
 
   padding: 0 18px;
 
+  flex-shrink: 0;
+
   border: 0;
   border-radius: 9px;
 
-  background: #2563eb;
+  background: var(--pt-primary);
 
   color: #ffffff;
 
@@ -109,7 +149,7 @@
 }
 
 .pt-btn-add:hover {
-  background: #1d4ed8;
+  background: var(--pt-primary-hover);
 
   box-shadow:
     0 5px 15px rgba(37, 99, 235, 0.2);
@@ -119,12 +159,19 @@
   transform: translateY(1px);
 }
 
+.pt-btn-add:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 
 /* =========================================================
    ERROR
 ========================================================= */
 
 .pt-error {
+  width: 100%;
+
   margin-bottom: 18px;
 
   padding: 13px 16px;
@@ -137,6 +184,7 @@
   color: #b91c1c;
 
   font-size: 14px;
+  line-height: 1.5;
 }
 
 
@@ -149,10 +197,10 @@
 
   overflow: hidden;
 
-  border: 1px solid #e5e9f0;
+  border: 1px solid var(--pt-border);
   border-radius: 13px;
 
-  background: #ffffff;
+  background: var(--pt-white);
 
   box-shadow:
     0 2px 10px rgba(15, 23, 42, 0.04);
@@ -164,6 +212,8 @@
 ========================================================= */
 
 .pt-table-toolbar {
+  width: 100%;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -172,8 +222,15 @@
 
   padding: 17px 18px;
 
-  border-bottom: 1px solid #edf0f4;
+  border-bottom: 1px solid var(--pt-border-light);
+
+  background: #ffffff;
 }
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
 
 .pt-search {
   position: relative;
@@ -194,6 +251,8 @@
   font-size: 15px;
 
   pointer-events: none;
+
+  z-index: 1;
 }
 
 .pt-search input {
@@ -218,7 +277,7 @@
 }
 
 .pt-search input:focus {
-  border-color: #2563eb;
+  border-color: var(--pt-primary);
 
   box-shadow:
     0 0 0 3px rgba(37, 99, 235, 0.09);
@@ -231,10 +290,17 @@
 .pt-search-clear {
   position: absolute;
 
-  right: 10px;
+  top: 50%;
+  right: 9px;
 
   width: 22px;
   height: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transform: translateY(-50%);
 
   border: 0;
   border-radius: 50%;
@@ -248,6 +314,15 @@
   line-height: 20px;
 }
 
+.pt-search-clear:hover {
+  background: #e3e7ed;
+}
+
+
+/* =========================================================
+   TOTAL
+========================================================= */
+
 .pt-total {
   color: #667085;
 
@@ -258,7 +333,7 @@
 
 
 /* =========================================================
-   TABLE
+   TABLE SCROLL
 ========================================================= */
 
 .pt-table-scroll {
@@ -268,12 +343,19 @@
   overflow-y: hidden;
 }
 
+
+/* =========================================================
+   TABLE
+========================================================= */
+
 .pt-table {
   width: 100%;
 
   min-width: 900px;
 
   border-collapse: collapse;
+
+  table-layout: auto;
 }
 
 .pt-table thead {
@@ -285,7 +367,7 @@
 
   padding: 0 16px;
 
-  border-bottom: 1px solid #e5e9f0;
+  border-bottom: 1px solid var(--pt-border);
 
   color: #667085;
 
@@ -304,7 +386,7 @@
 
   padding: 0 16px;
 
-  border-bottom: 1px solid #edf0f4;
+  border-bottom: 1px solid var(--pt-border-light);
 
   color: #344054;
 
@@ -343,7 +425,7 @@
 }
 
 .pt-license {
-  color: #172033;
+  color: var(--pt-text);
 
   font-weight: 700;
 
@@ -354,6 +436,8 @@
 
 .pt-type {
   color: #475467;
+
+  white-space: nowrap;
 }
 
 .pt-owner {
@@ -437,6 +521,8 @@
   width: 6px;
   height: 6px;
 
+  flex: 0 0 6px;
+
   border-radius: 50%;
 
   background: currentColor;
@@ -496,7 +582,7 @@
 
 
 /* =========================================================
-   EMPTY / LOADING
+   EMPTY
 ========================================================= */
 
 .pt-empty {
@@ -515,6 +601,11 @@
   opacity: 0.7;
 }
 
+
+/* =========================================================
+   LOADING
+========================================================= */
+
 .pt-loading {
   display: inline-flex;
   align-items: center;
@@ -529,7 +620,8 @@
   height: 17px;
 
   border: 2px solid #dbe3f0;
-  border-top-color: #2563eb;
+
+  border-top-color: var(--pt-primary);
 
   border-radius: 50%;
 
@@ -555,7 +647,9 @@
 
   padding: 0 18px;
 
-  border-top: 1px solid #edf0f4;
+  border-top: 1px solid var(--pt-border-light);
+
+  background: #ffffff;
 
   color: #667085;
 
@@ -569,19 +663,13 @@
 
 /* =========================================================
    MODAL OVERLAY
-   QUAN TRỌNG:
-   - Phủ cả sidebar
-   - Phủ cả header
-   - Không bị layout chính che
+   Luôn phủ toàn màn hình
 ========================================================= */
 
 .pt-modal-overlay {
   position: fixed;
 
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  inset: 0;
 
   z-index: 2147483647;
 
@@ -669,7 +757,7 @@
 
   padding: 21px 23px;
 
-  border-bottom: 1px solid #edf0f4;
+  border-bottom: 1px solid var(--pt-border-light);
 
   background: #ffffff;
 }
@@ -677,10 +765,12 @@
 .pt-modal-header h3 {
   margin: 0;
 
-  color: #172033;
+  color: var(--pt-text);
 
   font-size: 19px;
   font-weight: 700;
+
+  line-height: 1.3;
 }
 
 .pt-modal-header p {
@@ -689,7 +779,13 @@
   color: #7a8497;
 
   font-size: 13px;
+  line-height: 1.45;
 }
+
+
+/* =========================================================
+   CLOSE
+========================================================= */
 
 .pt-close {
   display: inline-flex;
@@ -804,7 +900,7 @@
 
 .pt-form-group input[type="text"]:focus,
 .pt-form-group select:focus {
-  border-color: #2563eb;
+  border-color: var(--pt-primary);
 
   box-shadow:
     0 0 0 3px rgba(37, 99, 235, 0.08);
@@ -828,6 +924,8 @@
 
 .pt-select-wrapper {
   position: relative;
+
+  width: 100%;
 }
 
 .pt-select-wrapper select {
@@ -964,8 +1062,7 @@
   font-size: 15px;
 }
 
-.pt-apartment-option.selected
-.pt-apartment-home {
+.pt-apartment-option.selected .pt-apartment-home {
   background: #dbeafe;
 }
 
@@ -985,7 +1082,7 @@
 }
 
 .pt-check {
-  color: #2563eb;
+  color: var(--pt-primary);
 
   font-size: 18px;
   font-weight: 700;
@@ -1030,6 +1127,8 @@
   color: #dc2626;
 
   font-size: 12px;
+
+  line-height: 1.4;
 }
 
 
@@ -1047,7 +1146,7 @@
 
   padding: 11px 12px;
 
-  border: 1px solid #e5e9f0;
+  border: 1px solid var(--pt-border);
 
   border-radius: 9px;
 
@@ -1149,7 +1248,7 @@
 
   margin: 0;
 
-  accent-color: #2563eb;
+  accent-color: var(--pt-primary);
 
   cursor: pointer;
 }
@@ -1208,7 +1307,7 @@
 
   padding: 15px 23px;
 
-  border-top: 1px solid #edf0f4;
+  border-top: 1px solid var(--pt-border-light);
 
   background: #ffffff;
 }
@@ -1248,17 +1347,17 @@
 }
 
 .pt-btn-save {
-  border: 1px solid #2563eb;
+  border: 1px solid var(--pt-primary);
 
-  background: #2563eb;
+  background: var(--pt-primary);
 
   color: #ffffff;
 }
 
 .pt-btn-save:hover:not(:disabled) {
-  border-color: #1d4ed8;
+  border-color: var(--pt-primary-hover);
 
-  background: #1d4ed8;
+  background: var(--pt-primary-hover);
 }
 
 .pt-btn-save:active:not(:disabled),
@@ -1307,7 +1406,7 @@
 
 
 /* =========================================================
-   RESPONSIVE
+   RESPONSIVE - DESKTOP NHỎ
 ========================================================= */
 
 @media (max-width: 1200px) {
@@ -1326,9 +1425,14 @@
 ========================================================= */
 
 @media (max-width: 900px) {
+  /*
+    Sidebar trên màn hình nhỏ:
+    App.jsx vẫn quản lý layout.
+    Trang phương tiện chỉ full vùng cha.
+  */
+
   .pt-wrapper {
     width: 100%;
-
     margin-left: 0;
   }
 
@@ -1395,9 +1499,7 @@
     padding: 0 14px;
   }
 
-  /*
-     Modal mobile
-  */
+  /* Modal mobile */
 
   .pt-modal-overlay {
     align-items: flex-start;
@@ -1438,8 +1540,16 @@
 ========================================================= */
 
 @media (max-width: 480px) {
+  .pt-body {
+    padding: 16px 10px;
+  }
+
   .pt-title-bar h2 {
     font-size: 21px;
+  }
+
+  .pt-subtitle {
+    font-size: 12px;
   }
 
   .pt-modal-header h3 {

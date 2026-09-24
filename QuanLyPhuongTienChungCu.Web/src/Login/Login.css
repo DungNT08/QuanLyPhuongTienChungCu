@@ -1,35 +1,138 @@
+/* =========================================================
+   LOGIN PAGE
+========================================================= */
+
 .login-page {
   min-height: 100vh;
+  width: 100%;
+
   display: flex;
-  justify-content: center;
   align-items: center;
-  background: #eef6fb;
+  justify-content: center;
+
+  padding: 24px;
+
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(37, 99, 235, 0.08),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 85% 80%,
+      rgba(59, 130, 246, 0.08),
+      transparent 30%
+    ),
+    #f6f8fb;
+
+  box-sizing: border-box;
 }
+
+
+/* =========================================================
+   LOGIN BOX
+========================================================= */
 
 .login-box {
-  width: 380px;
-  padding: 35px;
-  background: white;
+  width: min(430px, 100%);
+
+  padding: 38px 36px 34px;
+
+  border: 1px solid #e5e9f0;
   border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+
+  background: #ffffff;
+
+  box-shadow:
+    0 20px 50px rgba(15, 23, 42, 0.08),
+    0 3px 12px rgba(15, 23, 42, 0.04);
+
+  box-sizing: border-box;
+
+  animation: login-box-in 0.25s ease;
 }
+
+@keyframes login-box-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =========================================================
+   ICON
+========================================================= */
 
 .login-icon {
-  text-align: center;
-  font-size: 48px;
+  width: 64px;
+  height: 64px;
+
+  margin: 0 auto 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 16px;
+
+  background: #eff6ff;
+
+  color: #2563eb;
+
+  font-size: 31px;
+
+  box-shadow:
+    inset 0 0 0 1px #dbeafe;
 }
 
+
+/* =========================================================
+   TITLE
+========================================================= */
+
 .login-box h1 {
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 25px;
+  font-weight: 700;
+
+  line-height: 1.3;
+
   text-align: center;
-  margin: 10px 0 5px;
-  color: #123f5a;
 }
 
 .login-box > p {
+  margin: 8px 0 28px;
+
+  color: #7a8497;
+
+  font-size: 14px;
+  line-height: 1.5;
+
   text-align: center;
-  color: #6b8fa3;
-  margin-bottom: 25px;
 }
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.login-box form {
+  width: 100%;
+}
+
+
+/* =========================================================
+   FIELD
+========================================================= */
 
 .login-field {
   margin-bottom: 18px;
@@ -37,47 +140,210 @@
 
 .login-field label {
   display: block;
-  margin-bottom: 7px;
+
+  margin-bottom: 8px;
+
+  color: #344054;
+
+  font-size: 13px;
   font-weight: 600;
-  color: #234c65;
 }
+
+
+/* =========================================================
+   INPUT
+========================================================= */
 
 .login-field input {
   width: 100%;
-  box-sizing: border-box;
-  padding: 12px;
-  border: 1px solid #ccdce5;
+  height: 44px;
+
+  padding: 0 13px;
+
+  border: 1px solid #d7dce4;
   border-radius: 8px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #1d2939;
+
+  font-family: inherit;
   font-size: 14px;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.login-field input:hover {
+  border-color: #c5ccd7;
 }
 
 .login-field input:focus {
-  outline: none;
-  border-color: #3498db;
+  border-color: #2563eb;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.09);
 }
+
+.login-field input::placeholder {
+  color: #98a2b3;
+}
+
+.login-field input:disabled {
+  background: #f8fafc;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.login-error {
+  margin: 4px 0 17px;
+
+  padding: 11px 13px;
+
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+
+  background: #fff1f2;
+
+  color: #b42318;
+
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+========================================================= */
 
 .login-box button {
   width: 100%;
-  padding: 13px;
-  border: none;
+  height: 44px;
+
+  margin-top: 2px;
+
+  padding: 0 16px;
+
+  border: 1px solid #2563eb;
   border-radius: 8px;
-  background: #1683d8;
-  color: white;
-  font-size: 15px;
-  font-weight: 700;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 14px;
+  font-weight: 600;
+
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+.login-box button:hover:not(:disabled) {
+  border-color: #1d4ed8;
+
+  background: #1d4ed8;
+
+  box-shadow:
+    0 5px 15px rgba(37, 99, 235, 0.18);
+}
+
+.login-box button:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 .login-box button:disabled {
   opacity: 0.6;
+
   cursor: not-allowed;
+
+  box-shadow: none;
 }
 
-.login-error {
-  margin-bottom: 15px;
-  padding: 10px;
-  border-radius: 7px;
-  background: #fff0f0;
-  color: #d93025;
-  font-size: 13px;
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 600px) {
+  .login-page {
+    padding: 18px;
+  }
+
+  .login-box {
+    padding: 32px 24px 28px;
+
+    border-radius: 14px;
+  }
+
+  .login-icon {
+    width: 58px;
+    height: 58px;
+
+    margin-bottom: 16px;
+
+    border-radius: 14px;
+
+    font-size: 28px;
+  }
+
+  .login-box h1 {
+    font-size: 22px;
+  }
+
+  .login-box > p {
+    margin-bottom: 24px;
+
+    font-size: 13px;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 400px) {
+  .login-page {
+    padding: 12px;
+  }
+
+  .login-box {
+    padding: 28px 18px 24px;
+  }
+
+  .login-icon {
+    width: 54px;
+    height: 54px;
+
+    font-size: 26px;
+  }
+
+  .login-box h1 {
+    font-size: 21px;
+  }
+
+  .login-field input,
+  .login-box button {
+    height: 43px;
+  }
 }

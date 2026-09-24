@@ -18,6 +18,7 @@ html,
 body,
 #root {
   width: 100%;
+  min-width: 0;
   min-height: 100vh;
 }
 
@@ -75,44 +76,81 @@ a {
 ===================================================== */
 
 .app {
-  width: 100%;
-  min-height: 100vh;
-  overflow-x: hidden;
-  background: #f4f9fc;
-}
+  position: relative;
 
-.noi-dung-app {
   width: 100%;
+  min-width: 0;
   min-height: 100vh;
-  background: #f4f9fc;
-}
 
-.trang-wrapper {
-  width: 100%;
-  min-height: 100vh;
   overflow-x: hidden;
+
   background: #f4f9fc;
 }
 
 /* =====================================================
-   LAYOUT CHUNG
-   SIDEBAR = 240px
-   HEADER = 68px
+   NỘI DUNG APP
+
+   Sidebar:
+   - width: 240px
+   - fixed bên trái
+
+   Header:
+   - cao khoảng 68px
+   - nội dung bắt đầu từ top 68px
+
+   Vì vậy toàn bộ nội dung chính:
+   - chừa trái 240px
+   - chừa trên 68px
+===================================================== */
+
+.noi-dung-app {
+  position: relative;
+
+  width: calc(100% - 240px);
+  min-width: 0;
+  min-height: 100vh;
+
+  margin-left: 240px;
+
+  padding-top: 68px;
+
+  background: #f4f9fc;
+
+  overflow-x: hidden;
+}
+
+/* =====================================================
+   WRAPPER CŨ
+===================================================== */
+
+.trang-wrapper {
+  width: 100%;
+  min-width: 0;
+  min-height: 100vh;
+
+  overflow-x: hidden;
+
+  background: #f4f9fc;
+}
+
+/* =====================================================
+   TRANG NỘI DUNG CHUNG
+
+   QUAN TRỌNG:
+   Không margin-left ở đây.
+   .noi-dung-app đã chừa sidebar rồi.
 ===================================================== */
 
 .trang-noi-dung {
   position: relative;
 
-  margin-left: 240px;
+  width: 100%;
+  min-width: 0;
+  min-height: calc(100vh - 68px);
 
-  width: calc(100% - 240px);
+  margin-left: 0;
 
-  min-height: 100vh;
-
-  padding:
-    88px
-    28px
-    28px;
+  padding: 24px 28px 32px;
 
   background: #f4f9fc;
 
@@ -121,36 +159,26 @@ a {
 
 /* =====================================================
    TRANG XE KHÁCH
-   QUAN TRỌNG
 ===================================================== */
 
 .noi-dung-xe-khach {
   position: relative;
 
-  margin-left: 240px;
+  width: 100%;
+  min-width: 0;
+  min-height: calc(100vh - 68px);
 
-  width: calc(100% - 240px);
+  margin-left: 0;
 
-  min-height: 100vh;
-
-  padding:
-    88px
-    28px
-    32px;
+  padding: 24px 28px 32px;
 
   background: #f4f9fc;
 
   overflow-x: hidden;
 }
 
-/*
-  Nếu header của bạn cao khoảng 68px,
-  padding-top 88px tạo khoảng cách an toàn
-  để nội dung không bị header đè.
-*/
-
 /* =====================================================
-   HEADER / TIÊU ĐỀ TRANG
+   TIÊU ĐỀ TRANG
 ===================================================== */
 
 .tieu-de-trang {
@@ -207,13 +235,12 @@ a {
   border-radius: 8px;
 
   background: #0f6b91;
-  color: white;
+  color: #ffffff;
 
   font-size: 14px;
   font-weight: 600;
 
-  box-shadow:
-    0 3px 10px rgba(15, 107, 145, 0.16);
+  box-shadow: 0 3px 10px rgba(15, 107, 145, 0.16);
 
   transition:
     background 0.2s ease,
@@ -224,8 +251,7 @@ a {
 .nut-them-moi:hover {
   background: #0b5d80;
 
-  box-shadow:
-    0 5px 14px rgba(15, 107, 145, 0.22);
+  box-shadow: 0 5px 14px rgba(15, 107, 145, 0.22);
 
   transform: translateY(-1px);
 }
@@ -260,6 +286,7 @@ a {
 .thong-bao svg {
   width: 19px;
   height: 19px;
+
   flex-shrink: 0;
 }
 
@@ -308,7 +335,6 @@ a {
   position: relative;
 
   width: min(360px, 100%);
-
   height: 42px;
 
   display: flex;
@@ -317,7 +343,6 @@ a {
   background: #ffffff;
 
   border: 1px solid #d6e4eb;
-
   border-radius: 8px;
 
   transition:
@@ -328,8 +353,7 @@ a {
 .o-tim-kiem-nho:focus-within {
   border-color: #4e9abb;
 
-  box-shadow:
-    0 0 0 3px rgba(78, 154, 187, 0.10);
+  box-shadow: 0 0 0 3px rgba(78, 154, 187, 0.1);
 }
 
 .icon-tim-svg {
@@ -379,7 +403,6 @@ a {
   color: #8ba0ab;
 
   font-size: 20px;
-
   line-height: 20px;
 }
 
@@ -400,7 +423,6 @@ a {
   background: #ffffff;
 
   border: 1px solid #d6e4eb;
-
   border-radius: 8px;
 }
 
@@ -451,15 +473,14 @@ a {
 
 .o-dashboard {
   width: 100%;
+  min-width: 0;
 
   background: #ffffff;
 
   border: 1px solid #dce8ee;
-
   border-radius: 10px;
 
-  box-shadow:
-    0 2px 8px rgba(20, 70, 90, 0.04);
+  box-shadow: 0 2px 8px rgba(20, 70, 90, 0.04);
 
   overflow: hidden;
 }
@@ -473,11 +494,12 @@ a {
 
   overflow-x: auto;
   overflow-y: hidden;
+
+  -webkit-overflow-scrolling: touch;
 }
 
 .bang-xe-khach {
   width: 100%;
-
   min-width: 1050px;
 
   border-collapse: collapse;
@@ -611,7 +633,6 @@ a {
   padding: 0 12px;
 
   border: 1px solid #e2a7a7;
-
   border-radius: 6px;
 
   background: #fff6f6;
@@ -626,7 +647,6 @@ a {
 
 .nut-checkout:hover {
   background: #ffe9e9;
-
   border-color: #d98b8b;
 }
 
@@ -710,7 +730,6 @@ a {
   padding: 0 7px;
 
   border: 1px solid #d9e5ea;
-
   border-radius: 6px;
 
   background: #ffffff;
@@ -767,7 +786,6 @@ a {
   height: 20px;
 
   border: 2px solid #d7e6ed;
-
   border-top-color: #0f6b91;
 
   border-radius: 50%;
@@ -819,13 +837,13 @@ a {
 
   border-radius: 12px;
 
-  box-shadow:
-    0 20px 60px rgba(0, 35, 55, 0.22);
+  box-shadow: 0 20px 60px rgba(0, 35, 55, 0.22);
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
+
   gap: 15px;
 
   padding: 22px 22px 18px;
@@ -891,7 +909,6 @@ a {
   align-items: center;
 
   border: 1px solid #d5e3e9;
-
   border-radius: 7px;
 
   background: #ffffff;
@@ -901,8 +918,7 @@ a {
 .o-chon-loai-xe:focus-within {
   border-color: #4c98b8;
 
-  box-shadow:
-    0 0 0 3px rgba(76, 152, 184, 0.1);
+  box-shadow: 0 0 0 3px rgba(76, 152, 184, 0.1);
 }
 
 .o-nhap-bien-so svg,
@@ -1044,40 +1060,50 @@ a {
 }
 
 /* =====================================================
-   RESPONSIVE
+   RESPONSIVE - TABLET
 ===================================================== */
 
-/* Sidebar vẫn rộng 240px */
 @media (max-width: 1100px) {
+  .noi-dung-app {
+    width: calc(100% - 220px);
+    margin-left: 220px;
+  }
+
   .trang-noi-dung,
   .noi-dung-xe-khach {
-    margin-left: 220px;
-
-    width: calc(100% - 220px);
-
     padding-left: 18px;
     padding-right: 18px;
   }
 }
 
-/* Mobile */
+/* =====================================================
+   RESPONSIVE - MOBILE
+===================================================== */
+
 @media (max-width: 700px) {
-  .trang-noi-dung,
-  .noi-dung-xe-khach {
+  .noi-dung-app {
+    width: 100%;
     margin-left: 0;
 
+    padding-top: 0;
+  }
+
+  .trang-noi-dung,
+  .noi-dung-xe-khach {
     width: 100%;
 
-    padding:
-      20px
-      14px
-      20px;
+    min-height: 100vh;
+
+    margin-left: 0;
+
+    padding: 20px 14px;
   }
 
   .tieu-de-trang {
     flex-direction: column;
-
     align-items: stretch;
+
+    gap: 12px;
 
     margin-bottom: 18px;
   }
@@ -1116,6 +1142,10 @@ a {
 
     justify-content: center;
   }
+
+  .o-dashboard {
+    border-radius: 8px;
+  }
 }
 
 /* =====================================================
@@ -1123,11 +1153,9 @@ a {
 ===================================================== */
 
 @media (max-width: 480px) {
+  .trang-noi-dung,
   .noi-dung-xe-khach {
-    padding:
-      16px
-      10px
-      16px;
+    padding: 16px 10px;
   }
 
   .tieu-de-trang h1 {
@@ -1153,4 +1181,76 @@ a {
   .hop-modal form {
     padding: 17px;
   }
+}
+
+/* =====================================================
+   FIX TRÁNH PHẦN TỬ CON GÂY TRÀN NGANG
+===================================================== */
+
+.trang-noi-dung > *,
+.noi-dung-xe-khach > * {
+  max-width: 100%;
+}
+
+/* =====================================================
+   FIX IMAGE / SVG
+===================================================== */
+
+img,
+svg {
+  max-width: 100%;
+}
+
+svg {
+  flex-shrink: 0;
+}
+
+/* =====================================================
+   FIX FORM
+===================================================== */
+
+input,
+select,
+textarea {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+/* =====================================================
+   FIX TABLE
+===================================================== */
+
+table {
+  max-width: 100%;
+}
+
+td,
+th {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+/* =====================================================
+   FIX HEADER FIXED KHÔNG CHE NỘI DUNG
+
+   Dùng nếu Header nằm fixed ở phía trên.
+===================================================== */
+
+header {
+  z-index: 1000;
+}
+
+/* =====================================================
+   FIX SIDEBAR FIXED
+
+   Nếu sidebarAdmin/sidebarUser dùng position: fixed,
+   z-index này đảm bảo sidebar nằm trên nền.
+===================================================== */
+
+.sidebar-admin,
+.sidebar-user {
+  z-index: 1100;
 }
