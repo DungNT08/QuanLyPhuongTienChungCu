@@ -33,8 +33,6 @@
 
 /* =========================================================
    WRAPPER
-   App.jsx đã có .noi-dung-app với margin-left: 240px.
-   Nên .bg-wrapper KHÔNG được margin-left nữa.
 ========================================================= */
 
 .bg-wrapper {
@@ -324,6 +322,7 @@
 
 .bg-status-active { background: #ecfdf3; color: #027a48; }
 .bg-status-inactive { background: #fef3f2; color: #b42318; }
+.bg-status-warning { background: #fff3cd; color: #856404; }
 
 .bg-status-dot {
   width: 6px;
@@ -331,6 +330,10 @@
   flex: 0 0 6px;
   border-radius: 50%;
   background: currentColor;
+}
+
+.bg-status-warning .bg-status-dot {
+  background-color: #ffc107;
 }
 
 /* =========================================================
@@ -463,18 +466,20 @@
 }
 
 /* =========================================================
-   MODAL HEADER
+   MODAL HEADER - ĐÃ SỬA CĂN GIỮA
 ========================================================= */
 
 .bg-modal-header {
   flex: 0 0 auto;
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content: center;
+  position: relative;
   gap: 20px;
   padding: 21px 23px;
   border-bottom: 1px solid var(--bg-border-light);
   background: #ffffff;
+  text-align: center;
 }
 
 .bg-modal-header h3 {
@@ -493,16 +498,18 @@
 }
 
 /* =========================================================
-   CLOSE
+   CLOSE - ĐÃ SỬA NẰM GÓC PHẢI
 ========================================================= */
 
 .bg-close {
+  position: absolute;
+  top: 21px;
+  right: 23px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
-  margin-top: -3px;
   flex: 0 0 32px;
   border: 0;
   border-radius: 7px;
@@ -727,15 +734,13 @@
 
 .bg-table-scroll::-webkit-scrollbar-thumb:hover,
 .bg-modal-body::-webkit-scrollbar-thumb:hover { background: #aeb7c5; }
-/* Thêm vào file BangGia.css */
 .bg-status-pending {
-  background-color: #e7f1ff; /* Nền xanh dương nhạt */
-  color: #0c5460; /* Chữ xanh đậm */
-
+  background-color: #e7f1ff;
+  color: #0c5460;
 }
 
 .bg-status-pending .bg-status-dot {
-  background-color: #17a2b8; /* Chấm tròn xanh dương */
+  background-color: #17a2b8;
 }
 
 /* =========================================================

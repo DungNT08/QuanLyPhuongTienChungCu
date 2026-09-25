@@ -50,7 +50,6 @@ public class BangGiaController : ControllerBase
 
     // =========================================================
     // GET: api/BangGia
-    // Xem danh sach bang gia
     // =========================================================
 
     [HttpGet]
@@ -106,6 +105,20 @@ public class BangGiaController : ControllerBase
 
     // =========================================================
     // POST: api/BangGia
+    //
+    // LOGIC:
+    // 1. Nếu HieuLucTu <= hôm nay (bắt đầu ngay):
+    //    - Đóng giá cũ (cập nhật HieuLucDen, chuyển INACTIVE)
+    //    - Kiểm tra trùng
+    // 2. Nếu HieuLucTu > hôm nay (tương lai):
+    //    - KHÔNG đóng giá cũ (giữ ACTIVE)
+    //    - KHÔNG kiểm tra trùng (vì giá cũ vẫn đang chạy)
+    //    - Giá mới sẽ ở trạng thái "Chưa hoạt động"
+    // 3. Thêm giá mới
+    // =========================================================
+
+       // =========================================================
+    // POST: api/BangGia
     // =========================================================
 
     [Authorize(Roles = "Admin,BanQuanLy")]
@@ -138,9 +151,39 @@ public class BangGiaController : ControllerBase
             bangGia.TrangThai = "ACTIVE";
         }
 
-        bangGia.TrangThai =
-            bangGia.TrangThai.Trim().ToUpper();
+        bangGia.TrangThai = bangGia.TrangThai.Trim().ToUpper();
 
+        // =========================================================
+        // BƯỚC 1: CẬP NHẬT NGÀY KẾT THÚC CHO GIÁ CŨ
+        // - Luôn cập nhật HieuLucDen của giá cũ = HieuLucTu của giá mới
+        // - Chỉ chuyển INACTIVE nếu giá mới bắt đầu từ HÔM NAY trở về trước
+        // - Nếu giá mới ở TƯƠNG LAI: giữ giá cũ ACTIVE
+        // =========================================================
+        var homNay = DateTime.Today;
+
+        var cacGiaCuCungLoai = await _context.BangGias
+            .Where(x =>
+                x.LoaiPhuongTienId == bangGia.LoaiPhuongTienId &&
+                x.TrangThai == "ACTIVE")
+            .ToListAsync();
+
+        foreach (var giaCu in cacGiaCuCungLoai)
+        {
+            // Luôn cập nhật ngày kết thúc cho giá cũ
+            giaCu.HieuLucDen = bangGia.HieuLucTu;
+
+            // Chỉ chuyển INACTIVE nếu giá mới bắt đầu từ hôm nay trở về trước
+            if (bangGia.HieuLucTu.Date <= homNay)
+            {
+                giaCu.TrangThai = "INACTIVE";
+            }
+        }
+
+        await _context.SaveChangesAsync();
+
+        // =========================================================
+        // BƯỚC 2: KIỂM TRA TRÙNG
+        // =========================================================
         if (bangGia.TrangThai == "ACTIVE")
         {
             var biTrung = await KiemTraTrungBangGiaActive(
@@ -159,6 +202,9 @@ public class BangGiaController : ControllerBase
             }
         }
 
+        // =========================================================
+        // BƯỚC 3: THÊM GIÁ MỚI
+        // =========================================================
         _context.BangGias.Add(bangGia);
 
         await _context.SaveChangesAsync();
@@ -190,7 +236,6 @@ public class BangGiaController : ControllerBase
             ketQua
         );
     }
-
     // =========================================================
     // PUT: api/BangGia/{id}
     // =========================================================
@@ -293,15 +338,6 @@ public class BangGiaController : ControllerBase
 
     // =========================================================
     // DELETE: api/BangGia/{id}
-    //
-    // QUY TẮC:
-    // - "Chưa hoạt động" (HieuLucTu > Hôm nay) => CHO PHÉP XÓA
-    // - "Đang hoạt động" hoặc "Ngừng hoạt động" => CHẶN XÓA
-    //
-    // Lý do:
-    // - Chưa hoạt động: chưa ảnh hưởng nghiệp vụ, có thể xóa an toàn.
-    // - Đang hoạt động: đang được dùng để tính phí.
-    // - Ngừng hoạt động: đã từng được dùng, cần giữ lịch sử.
     // =========================================================
 
     [Authorize(Roles = "Admin,BanQuanLy")]
@@ -319,13 +355,10 @@ public class BangGiaController : ControllerBase
             });
         }
 
-        // Kiểm tra: Chỉ cho phép xóa khi bảng giá "Chưa hoạt động"
-        // Tức là ngày bắt đầu (HieuLucTu) > ngày hôm nay
         var homNay = DateTime.Today;
 
         if (bangGia.HieuLucTu.Date <= homNay)
         {
-            // Đã/đang hoạt động => CHẶN XÓA
             return BadRequest(new
             {
                 message = "Không thể xóa bảng giá đã/đang hoạt động. " +
@@ -334,7 +367,6 @@ public class BangGiaController : ControllerBase
             });
         }
 
-        // Chưa hoạt động => CHO PHÉP XÓA
         _context.BangGias.Remove(bangGia);
 
         await _context.SaveChangesAsync();
@@ -374,45 +406,40 @@ public class BangGiaController : ControllerBase
 
         if (boQuaBangGiaId.HasValue)
         {
-            query = query.Where(
-                x => x.BangGiaId != boQuaBangGiaId.Value
-            );
+            query = query.Where(x => x.BangGiaId != boQuaBangGiaId.Value);
         }
 
         var danhSach = await query.ToListAsync();
 
         foreach (var bangGia in danhSach)
         {
-            if (!hieuLucDen.HasValue &&
-                bangGia.HieuLucDen.HasValue)
+            if (bangGia.HieuLucDen.HasValue &&
+                bangGia.HieuLucDen.Value <= hieuLucTu)
             {
-                if (hieuLucTu < bangGia.HieuLucDen.Value)
+                continue;
+            }
+
+            bool trung = false;
+
+            if (!hieuLucDen.HasValue)
+            {
+                if (!bangGia.HieuLucDen.HasValue) trung = true;
+                else if (hieuLucTu < bangGia.HieuLucDen.Value) trung = true;
+            }
+            else
+            {
+                if (!bangGia.HieuLucDen.HasValue)
                 {
-                    return true;
+                    if (hieuLucDen.Value > bangGia.HieuLucTu) trung = true;
+                }
+                else
+                {
+                    if (hieuLucTu < bangGia.HieuLucDen.Value &&
+                        hieuLucDen.Value > bangGia.HieuLucTu) trung = true;
                 }
             }
-            else if (!hieuLucDen.HasValue &&
-                     !bangGia.HieuLucDen.HasValue)
-            {
-                return true;
-            }
-            else if (hieuLucDen.HasValue &&
-                     !bangGia.HieuLucDen.HasValue)
-            {
-                if (hieuLucDen.Value > bangGia.HieuLucTu)
-                {
-                    return true;
-                }
-            }
-            else if (hieuLucDen.HasValue &&
-                     bangGia.HieuLucDen.HasValue)
-            {
-                if (hieuLucTu < bangGia.HieuLucDen.Value &&
-                    hieuLucDen.Value > bangGia.HieuLucTu)
-                {
-                    return true;
-                }
-            }
+
+            if (trung) return true;
         }
 
         return false;
