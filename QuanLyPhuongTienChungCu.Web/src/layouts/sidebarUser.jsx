@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./sidebarUser.css";
 
 const danhSachMenu = [
-  { icon: "🏠", ten: "Trang chủ", duongDan: "/" },
+  { icon: "🏠", ten: "Trang chủ", duongDan: "/trang-chu" },
   {
     icon: "🚗",
     ten: "Phương tiện của tôi",

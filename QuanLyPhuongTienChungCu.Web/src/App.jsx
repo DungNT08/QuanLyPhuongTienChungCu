@@ -24,6 +24,7 @@ import BaoCao from "./Admin/BaoCao";
 import QLyUser from "./Admin/QLyUser";
 import QLyCuDan from "./Admin/QLyCuDan";
 import Login from "./Login/Login";
+import HoSoAdmin from "./Admin/HoSoAdmin";
 
 // =====================================================
 // TRANG USER - CƯ DÂN
@@ -72,18 +73,40 @@ function App() {
         {/* =================================================
             ĐĂNG NHẬP
         ================================================= */}
-        <Route
-          path="/login"
-          element={<Login />}
-        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
 
         {/* =================================================
             USER - CƯ DÂN
         ================================================= */}
 
+        {/* ➕ TRANG CHỦ CƯ DÂN */}
         <Route
-          path="/"
-          element={<Login />}
+          path="/trang-chu"
+          element={
+            <LayoutUser>
+              <TrangChuUser />
+            </LayoutUser>
+          }
+        />
+
+        <Route
+          path="/user/trang-chu"
+          element={
+            <LayoutUser>
+              <TrangChuUser />
+            </LayoutUser>
+          }
+        />
+
+        {/* PHƯƠNG TIỆN */}
+        <Route
+          path="/user/phuong-tien"
+          element={
+            <LayoutUser>
+              <PhuongTienU />
+            </LayoutUser>
+          }
         />
 
         <Route
@@ -91,6 +114,16 @@ function App() {
           element={
             <LayoutUser>
               <PhuongTienU />
+            </LayoutUser>
+          }
+        />
+
+        {/* LỊCH SỬ GỬI XE */}
+        <Route
+          path="/user/lich-su-gui-xe"
+          element={
+            <LayoutUser>
+              <LichGuiXeU />
             </LayoutUser>
           }
         />
@@ -104,6 +137,16 @@ function App() {
           }
         />
 
+        {/* HÓA ĐƠN */}
+        <Route
+          path="/user/hoa-don"
+          element={
+            <LayoutUser>
+              <HoaDon />
+            </LayoutUser>
+          }
+        />
+
         <Route
           path="/hoa-don"
           element={
@@ -113,11 +156,31 @@ function App() {
           }
         />
 
+        {/* THÔNG BÁO */}
+        <Route
+          path="/user/thong-bao"
+          element={
+            <LayoutUser>
+              <ThongBao />
+            </LayoutUser>
+          }
+        />
+
         <Route
           path="/thong-bao"
           element={
             <LayoutUser>
               <ThongBao />
+            </LayoutUser>
+          }
+        />
+
+        {/* HỒ SƠ CÁ NHÂN */}
+        <Route
+          path="/user/ho-so"
+          element={
+            <LayoutUser>
+              <HoSo />
             </LayoutUser>
           }
         />
@@ -198,7 +261,6 @@ function App() {
           }
         />
 
-        {/* Quản lý người dùng (nhân viên) */}
         <Route
           path="/admin/nguoi-dung"
           element={
@@ -208,13 +270,39 @@ function App() {
           }
         />
 
-        {/* Quản lý cư dân */}
         <Route
           path="/admin/cu-dan"
           element={
             <LayoutAdmin>
               <QLyCuDan />
             </LayoutAdmin>
+          }
+        />
+
+        {/* HỒ SƠ ADMIN */}
+        <Route
+          path="/admin/ho-so"
+          element={
+            <LayoutAdmin>
+              <HoSoAdmin />
+            </LayoutAdmin>
+          }
+        />
+
+        {/* =================================================
+            404 - Route không khớp
+        ================================================= */}
+        <Route
+          path="*"
+          element={
+            <div style={{
+              padding: 40,
+              textAlign: "center",
+              fontSize: 20,
+              color: "#6b8fa3",
+            }}>
+              ⚠️ Trang không tồn tại (404)
+            </div>
           }
         />
 
