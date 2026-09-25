@@ -449,38 +449,6 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
                 <span>Thông tin cá nhân</span>
               </button>
 
-              {/* CÀI ĐẶT */}
-              <button
-                onClick={() => {
-                  alert("Mở trang cài đặt");
-                  setHienMenuUser(false);
-                }}
-                style={{
-                  width: "100%",
-                  padding: "11px 16px",
-                  border: "none",
-                  background: "#ffffff",
-                  textAlign: "left",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  color: "#1b405a",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.background =
-                    "#f4f9fc")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.background =
-                    "#ffffff")
-                }
-              >
-                <span>⚙️</span>
-                <span>Cài đặt</span>
-              </button>
 
               {/* ĐƯỜNG KẺ */}
               <div

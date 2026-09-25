@@ -11,7 +11,8 @@ const danhSachMenu = [
   { icon: "◴", ten: "Lịch sử", duongDan: "/admin/lich-su" },
   { icon: "▥", ten: "Báo cáo", duongDan: "/admin/bao-cao" },
   { icon: "♙", ten: "Quản lý người dùng", duongDan: "/admin/nguoi-dung" },
-   { icon: "♙", ten: "Quản lý cư dân", duongDan: "/admin/cu-dan" },
+  { icon: "♙", ten: "Quản lý cư dân", duongDan: "/admin/cu-dan" },
+  { icon: "👤", ten: "Hồ sơ cá nhân", duongDan: "/admin/ho-so" },
 ];
 
 function SidebarAdmin({ duLieuTimKiem = [], onTimKiem }) {
@@ -147,17 +148,7 @@ function SidebarAdmin({ duLieuTimKiem = [], onTimKiem }) {
   const moThongTinCaNhan = () => {
     setHienMenuAdmin(false);
 
-    // Hiện tại chưa có route riêng thì chuyển về trang quản lý user
-    navigate("/admin/nguoi-dung");
-  };
-
-  // =====================================================
-  // MỞ CÀI ĐẶT
-  // =====================================================
-  const moCaiDat = () => {
-    setHienMenuAdmin(false);
-
-    alert("Chức năng cài đặt đang được phát triển.");
+    navigate("/admin/ho-so");
   };
 
   return (
@@ -452,41 +443,6 @@ function SidebarAdmin({ duLieuTimKiem = [], onTimKiem }) {
 
                 <span>
                   Thông tin cá nhân
-                </span>
-              </button>
-
-              {/* =========================================
-                  CÀI ĐẶT
-              ========================================= */}
-              <button
-                onClick={moCaiDat}
-                style={{
-                  width: "100%",
-                  padding: "11px 16px",
-                  border: "none",
-                  background: "#ffffff",
-                  textAlign: "left",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  color: "#1b405a",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.background =
-                    "#f4f9fc")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.background =
-                    "#ffffff")
-                }
-              >
-                <span>⚙️</span>
-
-                <span>
-                  Cài đặt
                 </span>
               </button>
 
