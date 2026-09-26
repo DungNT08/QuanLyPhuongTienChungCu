@@ -55,7 +55,7 @@ namespace QuanLyPhuongTienChungCu.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AuditLogs");
+                    b.ToTable("AuditLogs", (string)null);
                 });
 
             modelBuilder.Entity("QuanLyPhuongTienChungCu.Models.BangGia", b =>
@@ -86,7 +86,7 @@ namespace QuanLyPhuongTienChungCu.Migrations
 
                     b.HasIndex("LoaiPhuongTienId");
 
-                    b.ToTable("BangGias");
+                    b.ToTable("BangGias", (string)null);
                 });
 
             modelBuilder.Entity("QuanLyPhuongTienChungCu.Models.CanHo", b =>
@@ -109,7 +109,7 @@ namespace QuanLyPhuongTienChungCu.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CanHo");
+                    b.ToTable("CanHo", (string)null);
                 });
 
             modelBuilder.Entity("QuanLyPhuongTienChungCu.Models.LoaiPhuongTien", b =>
@@ -132,7 +132,7 @@ namespace QuanLyPhuongTienChungCu.Migrations
                     b.HasIndex("TenLoai")
                         .IsUnique();
 
-                    b.ToTable("LoaiPhuongTiens");
+                    b.ToTable("LoaiPhuongTiens", (string)null);
                 });
 
             modelBuilder.Entity("QuanLyPhuongTienChungCu.Models.LuotGuiXe", b =>
@@ -177,7 +177,7 @@ namespace QuanLyPhuongTienChungCu.Migrations
 
                     b.HasIndex("BienSo", "TrangThai");
 
-                    b.ToTable("LuotGuiXes");
+                    b.ToTable("LuotGuiXes", (string)null);
                 });
 
             modelBuilder.Entity("QuanLyPhuongTienChungCu.Models.PhuongTien", b =>
@@ -220,7 +220,7 @@ namespace QuanLyPhuongTienChungCu.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PhuongTiens");
+                    b.ToTable("PhuongTiens", (string)null);
                 });
 
             modelBuilder.Entity("QuanLyPhuongTienChungCu.Models.Role", b =>
@@ -243,7 +243,7 @@ namespace QuanLyPhuongTienChungCu.Migrations
                     b.HasIndex("TenRole")
                         .IsUnique();
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("QuanLyPhuongTienChungCu.Models.ThanhToan", b =>
@@ -275,7 +275,7 @@ namespace QuanLyPhuongTienChungCu.Migrations
                     b.HasIndex("LuotGuiXeId")
                         .IsUnique();
 
-                    b.ToTable("ThanhToans");
+                    b.ToTable("ThanhToans", (string)null);
                 });
 
             modelBuilder.Entity("QuanLyPhuongTienChungCu.Models.User", b =>
@@ -319,7 +319,7 @@ namespace QuanLyPhuongTienChungCu.Migrations
                     b.HasIndex("TenDangNhap")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("QuanLyPhuongTienChungCu.Models.AuditLog", b =>

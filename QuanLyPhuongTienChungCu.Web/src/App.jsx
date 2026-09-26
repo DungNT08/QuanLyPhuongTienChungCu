@@ -26,6 +26,7 @@ import QLyCuDan from "./Admin/QLyCuDan";
 import QLyCanHo from "./Admin/QLyCanHo";
 import Login from "./Login/Login";
 import HoSoAdmin from "./Admin/HoSoAdmin";
+import ThongBaoAdmin from "./Admin/ThongBaoAdmin";
 
 // =====================================================
 // TRANG USER - CƯ DÂN
@@ -295,6 +296,14 @@ function App() {
           element={
             <LayoutAdmin>
               <HoSoAdmin />
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/admin/thong-bao"
+          element={
+            <LayoutAdmin>
+              <ThongBaoAdmin />
             </LayoutAdmin>
           }
         />
