@@ -2,32 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./TrangChu.css";
 
-// =====================================================
-// GỌI API — có fallback an toàn nếu file api.js lỗi
-// =====================================================
-let apiFetch;
-try {
-  apiFetch = require("../api/api").apiFetch;
-} catch {
-  // Nếu không import được → dùng fetch trực tiếp
-  apiFetch = async (url) => {
-    const BASE = "http://localhost:5022/api";
-    const token = localStorage.getItem("token");
-    const res = await fetch(`${BASE}${url}`, {
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    });
-    if (!res.ok) throw new Error(`API lỗi: ${res.status}`);
-    const text = await res.text();
-    try {
-      return text ? JSON.parse(text) : null;
-    } catch {
-      return text;
-    }
-  };
-}
+const API_URL = "http://localhost:5022/api";
 
 function TrangChu() {
   const navigate = useNavigate();
@@ -48,69 +23,68 @@ function TrangChu() {
     navigate("/phuong-tien-cua-toi");
   };
 
+  const xemTatCa = () => {
+    navigate("/lich-su-gui-xe");
+  };
+
   // =====================================================
-  // GỌI API KHI MỞ TRANG
+  // HÀM GỌI API
+  // =====================================================
+  const goiApi = async (endpoint) => {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    try {
+      return text ? JSON.parse(text) : null;
+    } catch {
+      return text;
+    }
+  };
+
+  // =====================================================
+  // LOAD DATA
   // =====================================================
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
 
-        // ---------- 0. LẤY USER ----------
-        let userId = null;
+        // ---------- 1. LẤY SỐ PHƯƠNG TIỆN ----------
         try {
-          const user = JSON.parse(localStorage.getItem("user") || "{}");
-          userId = user.id ?? user.userId ?? user.UserId ?? null;
-          console.log("👤 User:", user, "| UserId:", userId);
-        } catch (e) {
-          console.warn("Không đọc được user từ localStorage:", e);
-        }
-
-        // ---------- 1. LẤY DANH SÁCH PHƯƠNG TIỆN ----------
-        let dsPTcuaToi = [];
-        try {
-          const dataPT = await apiFetch("/PhuongTien");
-          console.log("📦 Data phương tiện:", dataPT);
-
+          const dataPT = await goiApi("/PhuongTien");
           const dsPT = Array.isArray(dataPT)
             ? dataPT
             : dataPT?.data ?? [];
-
-          dsPTcuaToi = userId
-            ? dsPT.filter((pt) => (pt.userId ?? pt.UserId) === userId)
-            : dsPT;
-
-          console.log("✅ Xe của tôi:", dsPTcuaToi.length);
-          setSoPhuongTien(dsPTcuaToi.length);
+          setSoPhuongTien(dsPT.length);
+          console.log("🚗 Số phương tiện:", dsPT.length);
         } catch (err) {
           console.error("❌ Lỗi lấy phương tiện:", err.message);
           setSoPhuongTien(0);
         }
 
-        // ---------- 2. LẤY LƯỢT GỬI XE ----------
+        // ---------- 2. LẤY LỊCH SỬ GỬI XE ----------
         try {
-          const dataLG = await apiFetch("/LuotGui");
-          console.log("📦 Data lượt gửi:", dataLG);
+          const dataLG = await goiApi("/Parking/history");
+          const dsLG = Array.isArray(dataLG) ? dataLG : dataLG?.data ?? [];
 
-          const dsLG = Array.isArray(dataLG)
-            ? dataLG
-            : dataLG?.data ?? [];
-
-          const dsLGcuaToi = userId
-            ? dsLG.filter((lg) => (lg.userId ?? lg.UserId) === userId)
-            : dsLG;
+          console.log("📦 Lịch sử gửi xe:", dsLG);
 
           // 5 lượt gần nhất
-          setLichSuGui(dsLGcuaToi.slice(0, 5));
+          setLichSuGui(dsLG.slice(0, 5));
 
-          // Đếm lượt gửi trong tháng
+          // ---------- ĐẾM LƯỢT GỬI TRONG THÁNG ----------
           const now = new Date();
           const thangNay = now.getMonth();
           const namNay = now.getFullYear();
-          const soLuot = dsLGcuaToi.filter((lg) => {
-            const ngay = new Date(
-              lg.ngayVao ?? lg.NgayVao ?? lg.ngayTao ?? lg.NgayTao
-            );
+
+          const soLuot = dsLG.filter((lg) => {
+            const ngay = new Date(lg.thoiGianVao);
             return (
               !isNaN(ngay) &&
               ngay.getMonth() === thangNay &&
@@ -119,18 +93,18 @@ function TrangChu() {
           }).length;
           setSoLuotGui(soLuot);
 
-          // Tổng chi phí
-          const tong = dsLGcuaToi.reduce(
-            (sum, lg) => sum + Number(lg.phi ?? lg.Phi ?? 0),
+          // ---------- TỔNG CHI PHÍ ----------
+          const tong = dsLG.reduce(
+            (sum, lg) => sum + Number(lg.soTien ?? 0),
             0
           );
           setTongChiPhi(tong.toLocaleString("vi-VN") + "đ");
         } catch (err) {
-          console.warn("⚠️ Chưa có API /LuotGui:", err.message);
+          console.warn("⚠️ Lỗi lấy lịch sử gửi xe:", err.message);
           setSoLuotGui(0);
           setTongChiPhi("0đ");
+          setLichSuGui([]);
         }
-
       } catch (error) {
         console.error("❌ Lỗi load trang chủ:", error);
       } finally {
@@ -141,23 +115,49 @@ function TrangChu() {
     loadData();
   }, []);
 
+  // =====================================================
+  // FORMAT NGÀY GIỜ
+  // =====================================================
+  const formatNgay = (str) => {
+    if (!str) return "—";
+    const d = new Date(str);
+    if (isNaN(d)) return "—";
+    const ngay = String(d.getDate()).padStart(2, "0");
+    const thang = String(d.getMonth() + 1).padStart(2, "0");
+    const nam = d.getFullYear();
+    const gio = String(d.getHours()).padStart(2, "0");
+    const phut = String(d.getMinutes()).padStart(2, "0");
+    return `${gio}:${phut} ${ngay}/${thang}/${nam}`;
+  };
+
+  const formatTien = (tien) => {
+    if (!tien) return "—";
+    return Number(tien).toLocaleString("vi-VN") + "đ";
+  };
+
+  const tinhThoiGianGui = (vao, ra) => {
+    if (!vao) return "—";
+    const end = ra ? new Date(ra) : new Date();
+    const diffMs = end - new Date(vao);
+    const gio = Math.floor(diffMs / (1000 * 60 * 60));
+    const phut = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    if (gio === 0) return `${phut} phút`;
+    return `${gio}h${phut}p`;
+  };
+
   return (
     <div className="noi-dung-trang-chu">
-
       {/* ===== LỜI CHÀO ===== */}
       <div className="khoi-chao">
         <div className="loi-chao">
           <h1>Xin chào!</h1>
-          <p>
-            Chào mừng bạn đến với hệ thống quản lý phương tiện chung cư.
-          </p>
+          <p>Chào mừng bạn đến với hệ thống quản lý phương tiện chung cư.</p>
         </div>
         <div className="hinh-minh-hoa">🏢🚗</div>
       </div>
 
       {/* ===== 3 THẺ THỐNG KÊ ===== */}
       <div className="hang-thong-ke">
-
         {/* PHƯƠNG TIỆN */}
         <div
           className="the-thong-ke xanh-duong"
@@ -175,7 +175,11 @@ function TrangChu() {
         </div>
 
         {/* LƯỢT GỬI XE */}
-        <div className="the-thong-ke xanh-la">
+        <div
+          className="the-thong-ke xanh-la"
+          onClick={xemTatCa}
+          style={{ cursor: "pointer" }}
+        >
           <div className="the-icon">🎫</div>
           <div className="the-noi-dung">
             <p className="the-tieu-de">Lượt gửi xe trong tháng</p>
@@ -197,17 +201,23 @@ function TrangChu() {
             <p className="the-mo-ta">đã thanh toán</p>
           </div>
         </div>
-
       </div>
 
       {/* ===== HÀNG DƯỚI ===== */}
       <div className="hang-duoi">
-
         {/* ===== BẢNG LỊCH SỬ ===== */}
         <div className="bang-lich-su">
           <div className="tieu-de-bang">
             <h3>Lịch sử gửi xe gần đây</h3>
-            <a href="/lich-su-gui-xe">Xem tất cả →</a>
+            <a
+              href="/lich-su-gui-xe"
+              onClick={(e) => {
+                e.preventDefault();
+                xemTatCa();
+              }}
+            >
+              Xem tất cả →
+            </a>
           </div>
 
           <table>
@@ -233,16 +243,32 @@ function TrangChu() {
                 </tr>
               ) : (
                 lichSuGui.map((lg, i) => (
-                  <tr key={i}>
-                    <td>{lg.ngayVao ?? lg.NgayVao ?? "—"}</td>
-                    <td>{lg.bienSo ?? lg.BienSo ?? "—"}</td>
-                    <td>{lg.loaiXe ?? lg.LoaiXe ?? "—"}</td>
-                    <td>{lg.viTri ?? lg.ViTri ?? "—"}</td>
-                    <td>{lg.thoiGianGui ?? lg.ThoiGianGui ?? "—"}</td>
+                  <tr key={lg.luotGuiXeId || i}>
+                    <td>{formatNgay(lg.thoiGianVao)}</td>
                     <td>
-                      <span className="trang-thai-da-thanh-toan">
-                        {lg.trangThai ?? lg.TrangThai ?? "—"}
-                      </span>
+                      <strong>{lg.bienSo || "—"}</strong>
+                    </td>
+                    <td>{lg.loaiXe || "—"}</td>
+                    <td>
+                      {lg.laXeKhach
+                        ? "Khách"
+                        : `${lg.cuDan || "—"}${
+                            lg.canHo ? ` (${lg.canHo})` : ""
+                          }`}
+                    </td>
+                    <td>
+                      {tinhThoiGianGui(lg.thoiGianVao, lg.thoiGianRa)}
+                    </td>
+                    <td>
+                      {lg.trangThai === "Đang gửi" ? (
+                        <span className="trang-thai-dang-gui">
+                          Đang gửi
+                        </span>
+                      ) : (
+                        <span className="trang-thai-da-thanh-toan">
+                          {lg.trangThai}
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -256,14 +282,10 @@ function TrangChu() {
           <div className="qc-icon">🚗</div>
           <h3>Quản lý phương tiện của bạn</h3>
           <p>Nhanh chóng, tiện lợi, an toàn</p>
-          <button
-            className="nut-xem-phuong-tien"
-            onClick={xemPhuongTien}
-          >
+          <button className="nut-xem-phuong-tien" onClick={xemPhuongTien}>
             Xem phương tiện
           </button>
         </div>
-
       </div>
     </div>
   );
