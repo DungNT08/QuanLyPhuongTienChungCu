@@ -1,524 +1,881 @@
-/* =========================
-   CONTAINER
-========================= */
+/* =========================================================
+   TRANG PHƯƠNG TIỆN CỦA TÔI
+========================================================= */
 
 .phuong-tien-container {
-  margin-left: 258px;
-  min-height: 100vh;
-  padding: 100px 30px 40px;
+  width: 100%;
+  min-height: calc(100vh - 72px);
+
+  margin: 0;
+
+  padding: 28px 30px 40px;
+
   background: #f4f8fc;
+
   box-sizing: border-box;
+
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 
-/* =========================
+/* =========================================================
    HEADER
-========================= */
+========================================================= */
 
 .phuong-tien-header {
+  width: 100%;
+
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+
   gap: 20px;
+
   margin-bottom: 24px;
 }
 
-.phuong-tien-header h1 {
-  margin: 0 0 8px;
-  font-size: 30px;
-  font-weight: 700;
-  color: #183b56;
+.phuong-tien-title {
+  min-width: 0;
 }
 
-.phuong-tien-header p {
+.phuong-tien-title h1 {
   margin: 0;
-  color: #7690a5;
-  font-size: 15px;
+
+  color: #183b56;
+
+  font-size: 27px;
+  font-weight: 700;
+
+  line-height: 1.25;
+}
+
+.phuong-tien-title p {
+  margin: 7px 0 0;
+
+  color: #7a8497;
+
+  font-size: 14px;
+
+  line-height: 1.5;
 }
 
 
-/* =========================
-   BUTTON THÊM
-========================= */
+/* =========================================================
+   NÚT THÊM
+========================================================= */
 
 .btn-them-phuong-tien {
-  display: flex;
+  display: inline-flex;
+
   align-items: center;
   justify-content: center;
+
   gap: 7px;
 
-  border: none;
-  border-radius: 10px;
+  min-height: 42px;
 
-  padding: 13px 20px;
+  padding: 0 18px;
 
-  background: #1877e8;
-  color: white;
+  flex-shrink: 0;
 
-  font-size: 15px;
+  border: 0;
+
+  border-radius: 9px;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  font-size: 14px;
+
   font-weight: 600;
 
   cursor: pointer;
 
-  transition: 0.2s;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
 }
 
 .btn-them-phuong-tien:hover {
-  background: #0f66cc;
-  transform: translateY(-1px);
+  background: #1d4ed8;
+
+  box-shadow:
+    0 5px 15px rgba(37, 99, 235, 0.2);
+}
+
+.btn-them-phuong-tien:active {
+  transform: translateY(1px);
 }
 
 .btn-them-phuong-tien span {
   font-size: 20px;
+
   line-height: 1;
 }
 
 
-/* =========================
-   DANH SÁCH
-========================= */
+/* =========================================================
+   THÔNG BÁO LỖI
+========================================================= */
 
-.danh-sach-phuong-tien {
+.thong-bao-loi {
+  width: 100%;
+
   display: flex;
-  flex-direction: column;
-  gap: 18px;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 18px;
+
+  padding: 13px 16px;
+
+  border: 1px solid #fecaca;
+
+  border-radius: 9px;
+
+  background: #fff1f2;
+
+  color: #b91c1c;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+
+  box-sizing: border-box;
+}
+
+.thong-bao-loi button {
+  flex-shrink: 0;
+
+  padding: 7px 14px;
+
+  border: 1px solid #fecaca;
+
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  color: #b91c1c;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.thong-bao-loi button:hover {
+  background: #fff7f7;
 }
 
 
-/* =========================
-   CARD
-========================= */
+/* =========================================================
+   LOADING
+========================================================= */
 
-.phuong-tien-card {
+.loading-box {
+  width: 100%;
+
+  min-height: 230px;
+
   display: flex;
+
   align-items: center;
 
-  min-height: 160px;
+  justify-content: center;
 
-  padding: 24px;
+  gap: 10px;
 
-  background: white;
+  border: 1px solid #e5e9f0;
 
-  border: 1px solid #e3ebf2;
-  border-radius: 14px;
+  border-radius: 13px;
 
-  box-shadow: 0 4px 14px rgba(30, 80, 120, 0.06);
+  background: #ffffff;
+
+  color: #7a8497;
+
+  font-size: 14px;
+}
+
+.loading-spinner {
+  width: 17px;
+  height: 17px;
+
+  border: 2px solid #dbe3f0;
+
+  border-top-color: #2563eb;
+
+  border-radius: 50%;
+
+  animation: xoay 0.7s linear infinite;
+}
+
+@keyframes xoay {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   KHỐI BẢNG
+========================================================= */
+
+.bang-phuong-tien {
+  width: 100%;
+
+  overflow: hidden;
+
+  border: 1px solid #e5e9f0;
+
+  border-radius: 13px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 2px 10px rgba(15, 23, 42, 0.04);
 
   box-sizing: border-box;
 }
 
 
-/* =========================
-   ICON
-========================= */
+/* =========================================================
+   HEADER BẢNG
+========================================================= */
 
-.phuong-tien-icon {
-  width: 70px;
-  height: 70px;
+.bang-header {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding: 17px 18px;
+
+  border-bottom: 1px solid #edf0f4;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
+}
+
+.bang-header h3 {
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 17px;
+
+  font-weight: 700;
+
+  line-height: 1.3;
+}
+
+.bang-header span {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #7a8497;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   TABLE SCROLL
+========================================================= */
+
+.table-scroll {
+  width: 100%;
+
+  overflow-x: auto;
+
+  overflow-y: hidden;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.phuong-tien-table {
+  width: 100%;
+
+  min-width: 1000px;
+
+  border-collapse: collapse;
+
+  table-layout: auto;
+
+  background: #ffffff;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   TABLE HEADER
+========================================================= */
+
+.phuong-tien-table thead {
+  background: #f8fafc;
+}
+
+.phuong-tien-table th {
+  height: 48px;
+
+  padding: 0 16px;
+
+  border-bottom: 1px solid #e5e9f0;
+
+  color: #667085;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  text-align: left;
+
+  text-transform: uppercase;
+
+  white-space: nowrap;
+
+  letter-spacing: 0.15px;
+}
+
+
+/* =========================================================
+   TABLE BODY
+========================================================= */
+
+.phuong-tien-table td {
+  height: 62px;
+
+  padding: 0 16px;
+
+  border-bottom: 1px solid #edf0f4;
+
+  color: #344054;
+
+  font-size: 14px;
+
+  vertical-align: middle;
+
+  white-space: nowrap;
+}
+
+.phuong-tien-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.phuong-tien-table tbody tr:hover {
+  background: #fafcff;
+}
+
+.phuong-tien-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+
+/* =========================================================
+   STT
+========================================================= */
+
+.cot-stt {
+  width: 65px;
+
+  min-width: 65px;
+
+  text-align: center !important;
+
+  color: #667085 !important;
+}
+
+
+/* =========================================================
+   BIỂN SỐ
+========================================================= */
+
+.bien-so-cell {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 9px;
+}
+
+.icon-xe-nho {
+  width: 34px;
+  height: 34px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
 
   flex-shrink: 0;
 
-  display: flex;
+  border-radius: 8px;
+
+  background: #eff6ff;
+
+  font-size: 17px;
+}
+
+.bien-so-cell strong {
+  color: #172033;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.1px;
+}
+
+
+/* =========================================================
+   LOẠI XE
+========================================================= */
+
+.phuong-tien-table td:nth-child(3) {
+  color: #344054;
+
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   CHỦ XE
+========================================================= */
+
+.chu-xe {
+  color: #344054;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   CĂN HỘ
+========================================================= */
+
+.badge-can-ho {
+  display: inline-flex;
+
   align-items: center;
+
   justify-content: center;
 
-  margin-right: 22px;
+  padding: 4px 9px;
 
-  background: #eaf5ff;
+  border-radius: 6px;
 
-  border-radius: 14px;
+  background: #eff6ff;
 
-  font-size: 35px;
+  color: #1d4ed8;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  white-space: nowrap;
 }
 
 
-/* =========================
-   THÔNG TIN
-========================= */
-
-.phuong-tien-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.dong-dau {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.dong-dau h2 {
-  margin: 0;
-
-  color: #173b56;
-
-  font-size: 21px;
-  font-weight: 700;
-}
+/* =========================================================
+   TRẠNG THÁI
+========================================================= */
 
 .trang-thai {
   display: inline-flex;
+
   align-items: center;
 
-  padding: 6px 11px;
+  gap: 7px;
 
-  border-radius: 20px;
+  padding: 6px 10px;
 
-  background: #dff7e9;
-  color: #159447;
+  border-radius: 999px;
 
-  font-size: 13px;
+  font-size: 12px;
+
   font-weight: 600;
+
+  white-space: nowrap;
 }
 
 .trang-thai::before {
-  content: "●";
-  margin-right: 5px;
-  font-size: 9px;
-}
+  content: "";
 
-.loai-xe {
-  margin: 8px 0 14px;
+  width: 6px;
+  height: 6px;
 
-  color: #668299;
-
-  font-size: 15px;
-}
-
-.thong-tin-dang-ky {
-  margin: 5px 0;
-
-  color: #8aa0b3;
-
-  font-size: 14px;
-}
-
-.thong-tin-dang-ky strong {
-  color: #35536b;
-}
-
-
-/* =========================
-   CHỨC NĂNG
-========================= */
-
-.phuong-tien-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-
-  margin-left: 20px;
-}
-
-.phuong-tien-actions button {
-  min-width: 80px;
-
-  padding: 9px 13px;
-
-  border-radius: 8px;
-
-  background: white;
-
-  font-size: 14px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition: 0.2s;
-}
-
-.btn-sua {
-  border: 1px solid #d7e5f0;
-  color: #42647b;
-}
-
-.btn-sua:hover {
-  background: #eef7ff;
-  border-color: #b9d8ef;
-}
-
-.btn-xoa {
-  border: 1px solid #f2d4d4;
-  color: #e34b4b;
-}
-
-.btn-xoa:hover {
-  background: #fff3f3;
-  border-color: #efb6b6;
-}
-
-.phuong-tien-actions span {
-  margin-right: 5px;
-}
-
-
-/* =========================
-   KHÔNG CÓ PHƯƠNG TIỆN
-========================= */
-
-.khong-co-phuong-tien {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  min-height: 350px;
-
-  padding: 40px;
-
-  background: white;
-
-  border: 1px solid #e3ebf2;
-  border-radius: 14px;
-
-  text-align: center;
-
-  box-shadow: 0 4px 14px rgba(30, 80, 120, 0.05);
-}
-
-.khong-co-icon {
-  width: 80px;
-  height: 80px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  margin-bottom: 15px;
+  flex: 0 0 6px;
 
   border-radius: 50%;
 
-  background: #edf6fd;
+  background: currentColor;
+}
 
-  font-size: 38px;
+.trang-thai.active {
+  background: #ecfdf3;
+
+  color: #027a48;
+}
+
+.trang-thai.inactive {
+  background: #fef3f2;
+
+  color: #b42318;
+}
+
+
+/* =========================================================
+   THAO TÁC
+========================================================= */
+
+.cot-thao-tac {
+  width: 115px;
+
+  min-width: 115px;
+
+  text-align: center !important;
+}
+
+.thao-tac {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+}
+
+
+/* =========================================================
+   NÚT SỬA / XÓA
+========================================================= */
+
+.btn-sua,
+.btn-xoa {
+  width: 34px;
+  height: 34px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: 1px solid #e4e7ec;
+
+  border-radius: 7px;
+
+  background: #ffffff;
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.btn-sua {
+  color: #2563eb;
+}
+
+.btn-sua:hover {
+  border-color: #bfdbfe;
+
+  background: #eff6ff;
+}
+
+.btn-xoa {
+  color: #d92d20;
+}
+
+.btn-xoa:hover {
+  border-color: #fecaca;
+
+  background: #fef2f2;
+}
+
+.btn-sua:active,
+.btn-xoa:active {
+  transform: scale(0.96);
+}
+
+
+/* =========================================================
+   KHÔNG CÓ DỮ LIỆU
+========================================================= */
+
+.khong-co-phuong-tien {
+  min-height: 280px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 40px;
+
+  background: #ffffff;
+
+  text-align: center;
+
+  box-sizing: border-box;
+}
+
+.khong-co-icon {
+  width: 70px;
+  height: 70px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  margin-bottom: 14px;
+
+  border-radius: 50%;
+
+  background: #eff6ff;
+
+  font-size: 34px;
 }
 
 .khong-co-phuong-tien h3 {
   margin: 5px 0 8px;
 
-  color: #294b63;
+  color: #172033;
 
-  font-size: 20px;
+  font-size: 18px;
+
+  font-weight: 700;
 }
 
 .khong-co-phuong-tien p {
   margin: 0 0 20px;
 
-  color: #8aa0b3;
+  color: #7a8497;
 
-  font-size: 14px;
+  font-size: 13px;
 }
 
 
 /* =========================================================
-   LỚP PHỦ POPUP
-   SỬA LỖI FORM BỊ HEADER CHE
+   POPUP
 ========================================================= */
 
 .lop-phu {
   position: fixed;
 
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
 
-  width: 100%;
-  height: 100%;
-
-  z-index: 999999;
+  z-index: 2147483647;
 
   display: flex;
 
-  align-items: flex-start;
+  align-items: center;
+
   justify-content: center;
 
-  padding: 90px 20px 30px;
+  padding: 20px;
 
-  background: rgba(15, 35, 50, 0.45);
+  background: rgba(15, 23, 42, 0.48);
 
   box-sizing: border-box;
-
-  overflow-y: auto;
 }
 
 
 /* =========================================================
-   FORM POPUP
-   QUAN TRỌNG: GIỚI HẠN CHIỀU CAO
+   FORM
 ========================================================= */
 
 .form-phuong-tien {
-  width: 100%;
+  position: relative;
 
-  max-width: 500px;
+  width: min(500px, 100%);
 
-  /*
-    Không cho form cao hơn màn hình.
-  */
-  max-height: calc(100vh - 120px);
+  max-height: calc(100vh - 40px);
 
-  background: white;
+  display: flex;
 
-  border-radius: 16px;
+  flex-direction: column;
 
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
 
-  overflow-y: auto;
-  overflow-x: hidden;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 24px 70px rgba(15, 23, 42, 0.25);
 
   box-sizing: border-box;
-
-  flex-shrink: 0;
 }
 
 
 /* =========================================================
-   THANH CUỘN FORM
-========================================================= */
-
-.form-phuong-tien::-webkit-scrollbar {
-  width: 7px;
-}
-
-.form-phuong-tien::-webkit-scrollbar-track {
-  background: #f5f7f9;
-  border-radius: 10px;
-}
-
-.form-phuong-tien::-webkit-scrollbar-thumb {
-  background: #c7d7e3;
-  border-radius: 10px;
-}
-
-.form-phuong-tien::-webkit-scrollbar-thumb:hover {
-  background: #aebfcd;
-}
-
-
-/* =========================
    FORM HEADER
-========================= */
+========================================================= */
 
 .form-header {
   display: flex;
-  justify-content: space-between;
+
   align-items: flex-start;
 
-  padding: 22px 24px;
+  justify-content: space-between;
 
-  border-bottom: 1px solid #edf1f4;
+  gap: 20px;
+
+  padding: 21px 23px;
+
+  border-bottom: 1px solid #edf0f4;
+
+  background: #ffffff;
 
   box-sizing: border-box;
-
-  position: sticky;
-  top: 0;
-
-  background: white;
-
-  z-index: 5;
 }
 
 .form-header h2 {
-  margin: 0 0 6px;
+  margin: 0;
 
-  color: #183b56;
+  color: #172033;
 
-  font-size: 21px;
+  font-size: 19px;
+
+  font-weight: 700;
+
+  line-height: 1.3;
 }
 
 .form-header p {
-  margin: 0;
+  margin: 6px 0 0;
 
-  color: #8aa0b3;
+  color: #7a8497;
 
   font-size: 13px;
+
+  line-height: 1.45;
 }
 
 .btn-dong-form {
-  width: 34px;
-  height: 34px;
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  width: 32px;
+
+  height: 32px;
 
   flex-shrink: 0;
 
-  border: none;
-  border-radius: 8px;
+  margin-top: -3px;
 
-  background: #f2f5f7;
+  border: 0;
 
-  color: #6d8293;
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #667085;
 
   font-size: 24px;
+
+  line-height: 1;
 
   cursor: pointer;
 }
 
 .btn-dong-form:hover {
-  background: #e8edf1;
+  background: #f2f4f7;
+
+  color: #1d2939;
 }
 
 
-/* =========================
+/* =========================================================
    FORM BODY
-========================= */
+========================================================= */
 
 .form-phuong-tien form {
-  padding: 24px;
+  flex: 1 1 auto;
+
+  min-height: 0;
+
+  padding: 21px 23px;
+
+  overflow-y: auto;
 
   box-sizing: border-box;
 }
 
 
-/* =========================
+/* =========================================================
    FORM GROUP
-========================= */
+========================================================= */
 
 .form-group {
-  width: 100%;
-
-  margin-bottom: 18px;
-
-  box-sizing: border-box;
+  margin-bottom: 19px;
 }
 
-.form-group label {
+.form-group > label {
   display: block;
 
   margin-bottom: 8px;
 
-  color: #294b63;
+  color: #344054;
 
-  font-size: 14px;
+  font-size: 13px;
+
   font-weight: 600;
 }
 
 
-/* =========================
+/* =========================================================
    INPUT + SELECT
-========================= */
+========================================================= */
 
 .form-group input,
 .form-group select {
-  display: block;
-
   width: 100%;
 
-  max-width: 100%;
+  height: 42px;
 
-  height: 46px;
+  padding: 0 12px;
 
-  padding: 0 13px;
+  border: 1px solid #d7dce4;
 
-  border: 1px solid #d8e3eb;
-
-  border-radius: 9px;
+  border-radius: 8px;
 
   outline: none;
 
-  background: white;
+  background: #ffffff;
 
-  color: #294b63;
+  color: #1d2939;
 
   font-family: inherit;
 
@@ -526,39 +883,34 @@
 
   box-sizing: border-box;
 
-  transition: 0.2s;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .form-group input:focus,
 .form-group select:focus {
-  border-color: #2684df;
+  border-color: #2563eb;
 
-  box-shadow: 0 0 0 3px rgba(38, 132, 223, 0.1);
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.09);
 }
 
 .form-group input::placeholder {
-  color: #aab9c4;
+  color: #98a2b3;
+}
+
+.form-group input:disabled,
+.form-group select:disabled {
+  background: #f8fafc;
+
+  cursor: not-allowed;
 }
 
 
-/* =========================
-   INPUT FILE
-========================= */
-
-.form-group input[type="file"] {
-  height: auto;
-
-  min-height: 46px;
-
-  padding: 10px 12px;
-
-  cursor: pointer;
-}
-
-
-/* =========================
-   FORM BUTTON
-========================= */
+/* =========================================================
+   FORM ACTIONS
+========================================================= */
 
 .form-actions {
   display: flex;
@@ -567,17 +919,24 @@
 
   gap: 10px;
 
-  margin-top: 25px;
+  margin-top: 22px;
 
-  padding-bottom: 2px;
+  padding-top: 17px;
+
+  border-top: 1px solid #edf0f4;
 }
 
-.form-actions button {
-  height: 44px;
+.btn-huy,
+.btn-luu {
+  min-width: 100px;
 
-  padding: 0 18px;
+  height: 40px;
 
-  border-radius: 9px;
+  padding: 0 17px;
+
+  border-radius: 8px;
+
+  font-family: inherit;
 
   font-size: 14px;
 
@@ -585,31 +944,49 @@
 
   cursor: pointer;
 
-  box-sizing: border-box;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
 }
 
 .btn-huy {
-  border: 1px solid #d9e3ea;
+  border: 1px solid #d7dce4;
 
-  background: white;
+  background: #ffffff;
 
-  color: #60788a;
+  color: #475467;
 }
 
 .btn-huy:hover {
-  background: #f5f7f9;
+  background: #f8fafc;
 }
 
 .btn-luu {
-  border: none;
+  border: 1px solid #2563eb;
 
-  background: #1877e8;
+  background: #2563eb;
 
-  color: white;
+  color: #ffffff;
 }
 
 .btn-luu:hover {
-  background: #0f66cc;
+  border-color: #1d4ed8;
+
+  background: #1d4ed8;
+}
+
+.btn-huy:active,
+.btn-luu:active {
+  transform: translateY(1px);
+}
+
+.btn-huy:disabled,
+.btn-luu:disabled,
+.btn-dong-form:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
 }
 
 
@@ -621,6 +998,8 @@
 
   .phuong-tien-container {
     margin-left: 0;
+
+    width: 100%;
 
     padding: 90px 20px 30px;
   }
@@ -634,61 +1013,26 @@
   .btn-them-phuong-tien {
     width: 100%;
   }
-
-  /* POPUP */
-
-  .lop-phu {
-    padding: 80px 15px 20px;
-  }
-
-  .form-phuong-tien {
-    max-width: 500px;
-
-    max-height: calc(100vh - 100px);
-  }
 }
 
 
-/* =========================================================
-   MOBILE
-========================================================= */
-
 @media (max-width: 650px) {
 
-  .phuong-tien-card {
-    align-items: flex-start;
-
-    flex-direction: column;
+  .phuong-tien-container {
+    padding: 85px 15px 25px;
   }
 
-  .phuong-tien-icon {
-    margin-right: 0;
-
-    margin-bottom: 15px;
+  .phuong-tien-title h1 {
+    font-size: 24px;
   }
 
-  .phuong-tien-actions {
-    width: 100%;
-
-    flex-direction: row;
-
-    margin-left: 0;
-
-    margin-top: 18px;
+  .bang-header {
+    padding: 14px;
   }
 
-  .phuong-tien-actions button {
-    flex: 1;
+  .phuong-tien-table {
+    min-width: 1000px;
   }
-
-  .dong-dau h2 {
-    font-size: 18px;
-  }
-
-
-  /* =========================
-     POPUP MOBILE
-  ========================= */
 
   .lop-phu {
     align-items: flex-start;
@@ -697,17 +1041,11 @@
   }
 
   .form-phuong-tien {
-    width: 100%;
-
-    max-width: none;
-
     max-height: calc(100vh - 85px);
-
-    border-radius: 14px;
   }
 
   .form-header {
-    padding: 18px 18px;
+    padding: 18px;
   }
 
   .form-phuong-tien form {
@@ -715,12 +1053,167 @@
   }
 
   .form-actions {
-    flex-direction: row;
+    display: grid;
 
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .btn-huy,
+  .btn-luu {
+    width: 100%;
+    min-width: 0;
+  }
+}
+/* =========================================================
+   TÌM KIẾM PHƯƠNG TIỆN
+========================================================= */
+
+.bang-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.bang-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tim-kiem-phuong-tien {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 420px;
+  max-width: 100%;
+}
+
+.tim-kiem-icon {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 17px;
+  pointer-events: none;
+}
+
+.tim-kiem-phuong-tien input {
+  width: 100%;
+  height: 42px;
+  box-sizing: border-box;
+
+  padding: 0 42px 0 40px;
+
+  border: 1px solid #d9e2ec;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  font-size: 14px;
+  color: #263238;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.tim-kiem-phuong-tien input::placeholder {
+  color: #98a2b3;
+}
+
+.tim-kiem-phuong-tien input:focus {
+  border-color: #4f8edc;
+  box-shadow: 0 0 0 3px rgba(79, 142, 220, 0.1);
+}
+
+.xoa-tim-kiem {
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 26px;
+  height: 26px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: transparent;
+  color: #667085;
+
+  font-size: 19px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.xoa-tim-kiem:hover {
+  background: #f1f5f9;
+  color: #344054;
+}
+
+/* =========================================================
+   TRẠNG THÁI CHỜ DUYỆT
+========================================================= */
+
+.trang-thai.pending {
+  background: #fff7e6;
+  color: #b54708;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+  .bang-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .tim-kiem-phuong-tien {
     width: 100%;
   }
+}
+/* =========================================================
+   THÔNG BÁO CHỜ QUẢN TRỊ VIÊN DUYỆT
+========================================================= */
 
-  .form-actions button {
-    flex: 1;
-  }
+.thong-bao-cho-duyet {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  margin-top: 4px;
+  padding: 12px 14px;
+
+  border: 1px solid #f5d48a;
+  border-radius: 8px;
+
+  background: #fffaf0;
+  color: #8a5a00;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.icon-thong-bao-cho-duyet {
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+/* =========================================================
+   TRẠNG THÁI CHỜ DUYỆT
+========================================================= */
+
+.trang-thai.pending {
+  background: #fff7e6;
+  color: #b54708;
 }
