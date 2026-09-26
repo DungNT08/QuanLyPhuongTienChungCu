@@ -14,6 +14,10 @@ public class User
 
     public string Email { get; set; } = string.Empty;
 
+    // =====================================================
+    // THÔNG TIN CÁ NHÂN
+    // =====================================================
+
     // Số điện thoại
     public string? SoDienThoai { get; set; }
 
