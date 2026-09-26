@@ -1,9 +1,9 @@
-using Microsoft.EntityFrameworkCore;
-using QuanLyPhuongTienChungCu.Data;
-using QuanLyPhuongTienChungCu.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using QuanLyPhuongTienChungCu.Data;
+using QuanLyPhuongTienChungCu.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,9 +23,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReact", policy =>
     {
         policy
-            .WithOrigins(
-                "http://localhost:5173"
-            )
+            .WithOrigins("http://localhost:5173")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -35,8 +33,7 @@ builder.Services.AddCors(options =>
 // JWT
 // =====================================================
 
-var jwtKey =
-    builder.Configuration["Jwt:Key"];
+var jwtKey = builder.Configuration["Jwt:Key"];
 
 if (string.IsNullOrWhiteSpace(jwtKey))
 {
@@ -44,6 +41,12 @@ if (string.IsNullOrWhiteSpace(jwtKey))
         "Chưa cấu hình Jwt:Key trong appsettings.json"
     );
 }
+
+var jwtIssuer =
+    builder.Configuration["Jwt:Issuer"];
+
+var jwtAudience =
+    builder.Configuration["Jwt:Audience"];
 
 builder.Services
     .AddAuthentication(
@@ -59,11 +62,9 @@ builder.Services
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
 
-                ValidIssuer =
-                    builder.Configuration["Jwt:Issuer"],
+                ValidIssuer = jwtIssuer,
 
-                ValidAudience =
-                    builder.Configuration["Jwt:Audience"],
+                ValidAudience = jwtAudience,
 
                 IssuerSigningKey =
                     new SymmetricSecurityKey(
@@ -104,7 +105,7 @@ builder.Services.AddSwaggerGen(options =>
             In = ParameterLocation.Header,
 
             Description =
-                "Nhap JWT token theo dang: Bearer {token}"
+                "Nhập JWT token theo dạng: Bearer {token}"
         }
     );
 

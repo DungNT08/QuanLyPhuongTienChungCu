@@ -10,6 +10,8 @@ public class BangGiaDto
 
     public decimal DonGia { get; set; }
 
+    public string LoaiTinhPhi { get; set; } = "PER_TURN";
+
     public DateTime HieuLucTu { get; set; }
 
     public DateTime? HieuLucDen { get; set; }

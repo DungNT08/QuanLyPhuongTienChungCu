@@ -8,6 +8,10 @@ public class BangGia
 
     public decimal DonGia { get; set; }
 
+    // PER_TURN = Khách
+    // MONTHLY = Cư dân
+    public string LoaiTinhPhi { get; set; } = "PER_TURN";
+
     public DateTime HieuLucTu { get; set; }
 
     public DateTime? HieuLucDen { get; set; }

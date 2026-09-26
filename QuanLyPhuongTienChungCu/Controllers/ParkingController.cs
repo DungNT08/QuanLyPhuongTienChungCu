@@ -459,7 +459,7 @@ public class ParkingController : ControllerBase
     }
 
     // =====================================================
-    // ACTIVE
+    // ACTIVE - CHỈ XE CƯ DÂN
     // GET: /api/Parking/active
     // =====================================================
 
@@ -473,7 +473,9 @@ public class ParkingController : ControllerBase
                 .Include(x => x.PhuongTien)
                 .Include(x => x.LoaiPhuongTien)
                 .Where(x =>
-                    x.TrangThai == "ACTIVE")
+                    x.TrangThai == "ACTIVE"
+                    &&
+                    x.PhuongTienId != null)
                 .AsQueryable();
 
         var role = LayRole();
@@ -589,9 +591,9 @@ public class ParkingController : ControllerBase
                                 .FirstOrDefault()
                             : null,
 
-                    // XE KHÁCH
+                    // VÌ ACTIVE CHỈ CÓ XE CƯ DÂN
                     laXeKhach =
-                        x.PhuongTienId == null
+                        false
                 })
                 .ToListAsync();
 
@@ -910,19 +912,12 @@ public class ParkingController : ControllerBase
     //
     // GET: /api/Parking/history?tuNgay=...&denNgay=...
     //
-    // TẤT CẢ / CƯ DÂN / XE KHÁCH
+    // ADMIN / BẢO VỆ:
+    //   - XE CƯ DÂN
+    //   - XE KHÁCH
     //
-    // Bao gồm:
-    // - Biển số
-    // - Loại xe
-    // - Cư dân
-    // - Căn hộ
-    // - Thời gian vào
-    // - Người ghi vào
-    // - Thời gian ra
-    // - Người ghi ra
-    // - Trạng thái
-    // - Số tiền
+    // CƯ DÂN:
+    //   - CHỈ XE CỦA MÌNH
     // =====================================================
 
     [Authorize(Roles = "Admin,BaoVe,CuDan")]
@@ -934,6 +929,9 @@ public class ParkingController : ControllerBase
     {
         // -------------------------------------------------
         // QUERY GỐC
+        // KHÔNG LỌC PhuongTienId
+        //
+        // => ADMIN / BAO VE XEM CẢ 2 LOẠI XE
         // -------------------------------------------------
 
         var query =
@@ -981,7 +979,9 @@ public class ParkingController : ControllerBase
         if (denNgay.HasValue)
         {
             // Cộng thêm 1 ngày để bao gồm cả ngày kết thúc
-            var denNgayFull = denNgay.Value.AddDays(1);
+            var denNgayFull =
+                denNgay.Value.AddDays(1);
+
             query = query.Where(x =>
                 x.ThoiGianVao <= denNgayFull);
         }
