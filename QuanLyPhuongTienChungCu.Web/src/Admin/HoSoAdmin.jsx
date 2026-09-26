@@ -86,7 +86,26 @@ const HoSoAdmin = () => {
       setLoading(true);
       setLoi("");
 
-      const response = await fetch(`${API_URL}/User/me`, {
+      // ✅ Lấy userId từ localStorage
+      let userId = null;
+      try {
+        const userStr = localStorage.getItem("user");
+        if (userStr) {
+          const u = JSON.parse(userStr);
+          userId = u.userId ?? u.UserId ?? null;
+        }
+      } catch (e) {
+        console.warn("Không đọc được user từ localStorage:", e);
+      }
+
+      if (!userId) {
+        throw new Error(
+          "Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại."
+        );
+      }
+
+      // ✅ Gọi /User/{id} thay vì /User/me
+      const response = await fetch(`${API_URL}/User/${userId}`, {
         method: "GET",
         headers: taoHeaders(),
       });
@@ -172,13 +191,18 @@ const HoSoAdmin = () => {
         soDienThoai: formSua.soDienThoai,
         email: formSua.email,
         cccd: formSua.cccd,
+        roleId: formSua.roleId ?? 1,        // ⚠️ Controller Update yêu cầu RoleId
+        trangThai: formSua.trangThai ?? "ACTIVE",
       };
 
-      const response = await fetch(`${API_URL}/User/me`, {
-        method: "PUT",
-        headers: taoHeaders(true),
-        body: JSON.stringify(body),
-      });
+      const response = await fetch(
+        `${API_URL}/User/${hoSo.userId}`,     // ✅ dùng id thật
+        {
+          method: "PUT",
+          headers: taoHeaders(true),
+          body: JSON.stringify(body),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(await layNoiDungLoi(response));

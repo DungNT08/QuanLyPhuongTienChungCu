@@ -2,30 +2,39 @@
    WRAPPER TỔNG
 ========================= */
 .hs-wrapper {
-  width: 100%;
-  min-height: 100vh;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box;
   background: #f4f9fc;
   font-family: Arial, Helvetica, sans-serif;
 }
 
 .hs-body {
-  margin-left: 240px;
-  width: calc(100% - 240px);
-  min-height: 100vh;
-  padding-top: 68px;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
   box-sizing: border-box;
   background: #f4f9fc;
 }
 
 /* TIÊU ĐỀ */
 .hs-title-bar {
+  width: 100%;
   padding: 25px 30px 15px 30px;
+  box-sizing: border-box;
 }
+
 .hs-title-bar h1 {
   font-size: 24px;
   color: #0f3b56;
   font-weight: 800;
   margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* LƯỚI 2 CỘT */
@@ -33,7 +42,9 @@
   display: grid;
   grid-template-columns: 320px 1fr;
   gap: 20px;
-  margin: 0 30px 20px 30px;
+  width: calc(100% - 60px) !important;
+  margin: 0 30px 20px 30px !important;
+  box-sizing: border-box;
 }
 
 /* CARD CHUNG */
@@ -43,6 +54,7 @@
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(35, 88, 116, 0.03);
   padding: 24px;
+  box-sizing: border-box;
 }
 
 /* =========================
@@ -56,7 +68,6 @@
   padding: 30px 24px;
 }
 
-/* Wrapper avatar — có thể click */
 .hs-avatar-wrap {
   position: relative;
   display: inline-block;
@@ -85,7 +96,6 @@
   transition: border-color 0.2s ease;
 }
 
-/* Ảnh đại diện */
 .hs-avatar-img {
   width: 100%;
   height: 100%;
@@ -98,7 +108,6 @@
   color: #4a8db0;
 }
 
-/* Icon máy ảnh ở góc avatar */
 .hs-avatar-camera {
   position: absolute;
   bottom: 4px;
@@ -123,6 +132,7 @@
   color: #0f3b56;
   font-weight: 800;
   margin: 0 0 6px 0;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .hs-role {
@@ -130,6 +140,7 @@
   color: #6b8fa3;
   font-weight: 500;
   margin: 0 0 20px 0;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .hs-info-mini {
@@ -141,6 +152,7 @@
   background: #f7fbfd;
   border-radius: 8px;
   margin-bottom: 20px;
+  box-sizing: border-box;
 }
 
 .hs-info-mini-row {
@@ -149,16 +161,19 @@
   align-items: center;
   gap: 12px;
   font-size: 13px;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .hs-info-mini-label {
   color: #6b8fa3;
   font-weight: 600;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .hs-info-mini-value {
   color: #1b405a;
   font-weight: 700;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .hs-btn-edit {
@@ -170,6 +185,7 @@
   color: #1d7fb0;
   font-size: 14px;
   font-weight: 700;
+  font-family: Arial, Helvetica, sans-serif;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -185,7 +201,7 @@
 ========================= */
 .hs-card-right {
   padding: 28px;
-  text-align: left;      
+  text-align: left;
 }
 
 .hs-card-title {
@@ -194,7 +210,8 @@
   font-weight: 800;
   margin: 0 0 24px 0;
   letter-spacing: 0.2px;
-  text-align: left;      
+  text-align: left;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .hs-field {
@@ -202,7 +219,7 @@
   flex-direction: column;
   gap: 6px;
   margin-bottom: 22px;
-  text-align: left;  
+  text-align: left;
 }
 
 .hs-field:last-child {
@@ -213,20 +230,24 @@
   font-size: 13px;
   color: #6b8fa3;
   font-weight: 600;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .hs-field span {
   font-size: 15px;
   color: #1b405a;
   font-weight: 700;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* =========================
    CARD ĐỔI MẬT KHẨU
 ========================= */
 .hs-card-password {
-  margin: 0 30px 30px 30px;
+  width: calc(100% - 60px) !important;
+  margin: 0 30px 30px 30px !important;
   padding: 18px 24px;
+  box-sizing: border-box;
 }
 
 .hs-btn-password {
@@ -239,6 +260,7 @@
   color: #1d7fb0;
   font-size: 15px;
   font-weight: 700;
+  font-family: Arial, Helvetica, sans-serif;
   cursor: pointer;
   transition: color 0.2s ease;
 }
@@ -271,6 +293,7 @@
   min-width: 460px;
   max-width: 92vw;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .hs-modal-title {
@@ -278,6 +301,7 @@
   color: #0f3b56;
   font-weight: 800;
   margin: 0 0 22px 0;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .hs-modal-field {
@@ -291,6 +315,7 @@
   font-size: 13px;
   color: #4f7a92;
   font-weight: 700;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .hs-modal-field input {
@@ -301,6 +326,7 @@
   background: #f7fbfd;
   font-size: 14px;
   color: #1b405a;
+  font-family: Arial, Helvetica, sans-serif !important;
   outline: none;
   transition: all 0.2s ease;
 }
@@ -326,6 +352,7 @@
   color: #4f7a92;
   font-size: 14px;
   font-weight: 700;
+  font-family: Arial, Helvetica, sans-serif;
   cursor: pointer;
 }
 
@@ -341,6 +368,7 @@
   color: #ffffff;
   font-size: 14px;
   font-weight: 700;
+  font-family: Arial, Helvetica, sans-serif;
   cursor: pointer;
 }
 
@@ -354,17 +382,22 @@
 @media (max-width: 900px) {
   .hs-grid {
     grid-template-columns: 1fr;
-    margin-left: 18px;
-    margin-right: 18px;
+    width: calc(100% - 36px) !important;
+    margin-left: 18px !important;
+    margin-right: 18px !important;
   }
+
   .hs-card-password {
-    margin-left: 18px;
-    margin-right: 18px;
+    width: calc(100% - 36px) !important;
+    margin-left: 18px !important;
+    margin-right: 18px !important;
   }
+
   .hs-title-bar {
     padding-left: 18px;
     padding-right: 18px;
   }
+
   .hs-modal {
     min-width: auto;
     width: 92%;
