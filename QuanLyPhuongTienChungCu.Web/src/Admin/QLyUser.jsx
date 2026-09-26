@@ -306,10 +306,22 @@ const QLyUser = () => {
   const hienThiTrangThai = (tt) =>
     String(tt).toUpperCase() === "ACTIVE" ? "Hoạt động" : "Ngừng hoạt động";
 
+  const hienThiTenRole = (tenRole) => {
+    const mapRole = {
+      admin: "Quản trị viên",
+      baove: "Bảo vệ",
+      cudan: "Cư dân",
+      ketoan: "Kế toán",
+      nhanvien: "Nhân viên",
+    };
+
+    return mapRole[String(tenRole || "").toLowerCase()] || tenRole;
+  };
+
   const hienThiRole = (roleId, tenRole) => {
-    if (tenRole) return tenRole;
+    if (tenRole) return hienThiTenRole(tenRole);
     const r = danhSachRole.find((x) => Number(x.roleId) === Number(roleId));
-    return r ? r.tenRole : `Role ${roleId}`;
+    return r ? hienThiTenRole(r.tenRole) : `Role ${roleId}`;
   };
 
   const inputClass = (tenTruong) =>
@@ -640,7 +652,7 @@ const QLyUser = () => {
                   <option value="">-- Chọn vai trò --</option>
                   {danhSachRole.map((r) => (
                     <option key={r.roleId} value={r.roleId}>
-                      {r.tenRole}
+                      {hienThiTenRole(r.tenRole)}
                     </option>
                   ))}
                 </select>

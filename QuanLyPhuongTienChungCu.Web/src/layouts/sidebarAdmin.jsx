@@ -2,18 +2,45 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./sidebarAdmin.css";
 
+
 const danhSachMenu = [
+  // =========================
+  // TỔNG QUAN
+  // =========================
   { icon: "⌂", ten: "Trang chủ", duongDan: "/admin" },
+
+  // =========================
+  // QUẢN LÝ CƯ DÂN & CĂN HỘ
+  // =========================
+  { icon: "🏢", ten: "Quản lý căn hộ", duongDan: "/admin/can-ho" },
+  { icon: "♙", ten: "Quản lý cư dân", duongDan: "/admin/cu-dan" },
+  { icon: "♙", ten: "Quản lý người dùng", duongDan: "/admin/nguoi-dung" },
+
+  // =========================
+  // QUẢN LÝ PHƯƠNG TIỆN
+  // =========================
   { icon: "🚗", ten: "Phương tiện cư dân", duongDan: "/admin/phuong-tien" },
   { icon: "🚙", ten: "Xe khách", duongDan: "/admin/xe-khach" },
-  { icon: "◷", ten: "Lượt gửi xe", duongDan: "/admin/luot-gui-xe" },
+
+  // =========================
+  // QUẢN LÝ GỬI XE
+  // =========================
+  { icon: "◷", ten: "Xe đang gửi", duongDan: "/admin/luot-gui-xe" },
   { icon: "◇", ten: "Bảng giá", duongDan: "/admin/bang-gia" },
+
+  // =========================
+  // BÁO CÁO & LỊCH SỬ
+  // =========================
   { icon: "◴", ten: "Lịch sử", duongDan: "/admin/lich-su" },
   { icon: "▥", ten: "Báo cáo", duongDan: "/admin/bao-cao" },
-  { icon: "♙", ten: "Quản lý người dùng", duongDan: "/admin/nguoi-dung" },
-  { icon: "♙", ten: "Quản lý cư dân", duongDan: "/admin/cu-dan" },
+
+  // =========================
+  // TÀI KHOẢN
+  // =========================
   { icon: "👤", ten: "Hồ sơ cá nhân", duongDan: "/admin/ho-so" },
 ];
+
+
 
 function SidebarAdmin({ duLieuTimKiem = [], onTimKiem }) {
   const location = useLocation();

@@ -23,6 +23,7 @@ import LichSu from "./Admin/LichSu";
 import BaoCao from "./Admin/BaoCao";
 import QLyUser from "./Admin/QLyUser";
 import QLyCuDan from "./Admin/QLyCuDan";
+import QLyCanHo from "./Admin/QLyCanHo";
 import Login from "./Login/Login";
 import HoSoAdmin from "./Admin/HoSoAdmin";
 
@@ -96,6 +97,15 @@ function App() {
             <LayoutUser>
               <TrangChuUser />
             </LayoutUser>
+          }
+        />
+
+        <Route
+          path="/admin/can-ho"
+          element={
+            <LayoutAdmin>
+              <QLyCanHo />
+            </LayoutAdmin>
           }
         />
 

@@ -3,8 +3,6 @@ import "./QLyCuDan.css";
 
 const API_URL = "http://localhost:5022/api";
 
-const ROLE_CU_DAN = 4;
-
 const FORM_MAC_DINH = {
   tenDangNhap: "",
   hoTen: "",
@@ -12,7 +10,7 @@ const FORM_MAC_DINH = {
   matKhau: "",
   soDienThoai: "",
   cccd: "",
-  roleId: ROLE_CU_DAN,
+  roleId: 4,
   trangThai: "ACTIVE",
 };
 
@@ -190,13 +188,15 @@ const QLyCuDan = () => {
       matKhau: "",
       soDienThoai: item.soDienThoai || "",
       cccd: item.cccd || "",
-      roleId: ROLE_CU_DAN,
+      roleId: item.roleId || 4,
       trangThai: item.trangThai || "ACTIVE",
     });
+
     setLoi("");
     setLoiField({});
     setHienThiModal(true);
   };
+    
 
   const dongModal = () => {
     if (dangLuu) return;
@@ -227,7 +227,7 @@ const QLyCuDan = () => {
         email: form.email.trim(),
         soDienThoai: form.soDienThoai.trim(),
         cccd: form.cccd.trim(),
-        roleId: ROLE_CU_DAN,
+        roleId: Number(form.roleId),
         trangThai: form.trangThai,
         ...(dangSua ? {} : { matKhau: form.matKhau }),
       };
@@ -616,6 +616,43 @@ const QLyCuDan = () => {
                   )}
                 </div>
               )}
+
+              {/* VAI TRÒ */}
+              <div className="cd-form-group">
+                <label>
+                  Vai trò <span>*</span>
+                </label>
+
+                <select
+                  value={form.roleId}
+                  onChange={(e) => {
+                    setForm({
+                      ...form,
+                      roleId: Number(e.target.value),
+                    });
+
+                    if (loiField.roleId) {
+                      setLoiField({
+                        ...loiField,
+                        roleId: "",
+                      });
+                    }
+                  }}
+                  disabled={dangLuu}
+                  className={inputClass("roleId")}
+                >
+                  <option value={1}>Admin</option>
+                  <option value={3}>Bảo vệ</option>
+                  <option value={4}>Cư dân</option>
+                  <option value={5}>Kế toán</option>
+                </select>
+
+                {loiField.roleId && (
+                  <div className="cd-field-error">
+                    ⚠️ {loiField.roleId}
+                  </div>
+                )}
+              </div>             
 
               {/* TRẠNG THÁI */}
               <div className="cd-form-group">
