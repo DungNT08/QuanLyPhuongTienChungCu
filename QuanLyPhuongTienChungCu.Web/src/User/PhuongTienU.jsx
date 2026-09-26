@@ -3,9 +3,9 @@ import "./PhuongTienU.css";
 import { apiFetch } from "../api/api";
 
 function PhuongTienU() {
-  // =========================
+  // =========================================================
   // STATE
-  // =========================
+  // =========================================================
 
   const [danhSachXe, setDanhSachXe] = useState([]);
 
@@ -19,18 +19,37 @@ function PhuongTienU() {
 
   const [idDangSua, setIdDangSua] = useState(null);
 
-  const [formData, setFormData] = useState({
-    bienSo: "",
-    loaiXe: "Xe máy",
-    hangXe: "",
-    trangThai: "Đang hoạt động",
-    anh: null,
-    anhPreview: null,
-  });
-
+  const [dangLuu, setDangLuu] = useState(false);
 
   // =========================================================
-  // LẤY DANH SÁCH PHƯƠNG TIỆN TỪ BACKEND
+  // TÌM KIẾM
+  // =========================================================
+
+  const [tuKhoa, setTuKhoa] = useState("");
+
+  const [formData, setFormData] = useState({
+    bienSo: "",
+    loaiPhuongTienId: "1",
+    trangThai: "PENDING",
+  });
+
+  // =========================================================
+  // RESET FORM
+  // =========================================================
+
+  const resetForm = () => {
+    setFormData({
+      bienSo: "",
+      loaiPhuongTienId: "1",
+      trangThai: "PENDING",
+    });
+
+    setDangSua(false);
+    setIdDangSua(null);
+  };
+
+  // =========================================================
+  // LẤY DANH SÁCH PHƯƠNG TIỆN
   // =========================================================
 
   const layDanhSachPhuongTien = async () => {
@@ -40,14 +59,15 @@ function PhuongTienU() {
 
       const data = await apiFetch("/PhuongTien");
 
-      // Backend có thể trả về mảng trực tiếp
-      // hoặc { data: [...] }
+      console.log("Danh sách phương tiện:", data);
+
       const danhSach = Array.isArray(data)
         ? data
-        : data.data ?? [];
+        : Array.isArray(data?.data)
+        ? data.data
+        : [];
 
       setDanhSachXe(danhSach);
-
     } catch (error) {
       console.error(
         "Lỗi lấy danh sách phương tiện:",
@@ -57,192 +77,359 @@ function PhuongTienU() {
       setDanhSachXe([]);
 
       setLoi(
-        "Không thể tải danh sách phương tiện từ hệ thống."
+        error?.message ||
+          "Không thể tải danh sách phương tiện từ hệ thống."
       );
-
     } finally {
       setLoading(false);
     }
   };
 
-
   // =========================================================
   // CHẠY KHI MỞ TRANG
   // =========================================================
-      useEffect(() => {
-        layDanhSachPhuongTien();
-      }, []);
+
+  useEffect(() => {
+    layDanhSachPhuongTien();
+  }, []);
+
+  // =========================================================
+  // LẤY ID
+  // =========================================================
+
+  const layId = (xe) => {
+    return (
+      xe?.phuongTienId ??
+      xe?.PhuongTienId ??
+      xe?.id ??
+      xe?.ID ??
+      null
+    );
+  };
+
+  // =========================================================
+  // LẤY BIỂN SỐ
+  // =========================================================
+
+  const layBienSo = (xe) => {
+    return (
+      xe?.bienSo ??
+      xe?.BienSo ??
+      "Chưa có"
+    );
+  };
+
+  // =========================================================
+  // LẤY LOẠI XE
+  // =========================================================
+
+  const layLoaiXe = (xe) => {
+    const tenLoai =
+      xe?.loaiXe ??
+      xe?.LoaiXe;
+
+    if (tenLoai) {
+      return tenLoai;
+    }
+
+    const loaiId =
+      xe?.loaiPhuongTienId ??
+      xe?.LoaiPhuongTienId;
+
+    if (Number(loaiId) === 1) {
+      return "Xe máy";
+    }
+
+    if (Number(loaiId) === 3) {
+      return "Ô tô";
+    }
+
+    if (Number(loaiId) === 4) {
+      return "Xe đạp";
+    }
+
+    return "Chưa xác định";
+  };
+
+  // =========================================================
+  // LẤY CHỦ XE
+  // =========================================================
+
+  const layChuXe = (xe) => {
+    return (
+      xe?.tenChuXe ??
+      xe?.TenChuXe ??
+      "Cư dân"
+    );
+  };
+
+  // =========================================================
+  // LẤY CĂN HỘ
+  // =========================================================
+
+  const layCanHo = (xe) => {
+    return (
+      xe?.maCanHo ??
+      xe?.MaCanHo ??
+      "Chưa cập nhật"
+    );
+  };
+
+  // =========================================================
+  // LẤY TRẠNG THÁI
+  // =========================================================
+
+  const layTrangThai = (xe) => {
+    const value =
+      xe?.trangThai ??
+      xe?.TrangThai ??
+      "";
+
+    if (
+      value === "ACTIVE" ||
+      value === "DANG_HOAT_DONG"
+    ) {
+      return "Đang hoạt động";
+    }
+
+    if (
+      value === "INACTIVE" ||
+      value === "TAM_NGUNG"
+    ) {
+      return "Tạm ngưng";
+    }
+
+    if (
+      value === "PENDING" ||
+      value === "CHO_DUYET"
+    ) {
+      return "Chờ duyệt";
+    }
+
+    if (value) {
+      return value;
+    }
+
+    return "Đang hoạt động";
+  };
+
+  // =========================================================
+  // CLASS TRẠNG THÁI
+  // =========================================================
+
+  const layClassTrangThai = (xe) => {
+    const value = String(
+      xe?.trangThai ??
+        xe?.TrangThai ??
+        ""
+    ).toUpperCase();
+
+    if (
+      value === "ACTIVE" ||
+      value === "DANG_HOAT_DONG"
+    ) {
+      return "trang-thai active";
+    }
+
+    if (
+      value === "PENDING" ||
+      value === "CHO_DUYET"
+    ) {
+      return "trang-thai pending";
+    }
+
+    return "trang-thai inactive";
+  };
+
+  // =========================================================
+  // LẤY NGÀY TẠO
+  // =========================================================
+
+  const layNgayThem = (xe) => {
+    const ngay =
+      xe?.ngayTao ??
+      xe?.NgayTao ??
+      xe?.ngayThem ??
+      xe?.NgayThem;
+
+    if (!ngay) {
+      return "Chưa có";
+    }
+
+    const date = new Date(ngay);
+
+    if (Number.isNaN(date.getTime())) {
+      return String(ngay);
+    }
+
+    return date.toLocaleDateString(
+      "vi-VN"
+    );
+  };
+
+  // =========================================================
+  // ICON LOẠI XE
+  // =========================================================
+
+  const layIconLoaiXe = (xe) => {
+    const loai =
+      layLoaiXe(xe).toLowerCase();
+
+    if (
+      loai.includes("ô tô") ||
+      loai.includes("oto")
+    ) {
+      return "🚘";
+    }
+
+    if (loai.includes("đạp")) {
+      return "🚲";
+    }
+
+    return "🏍️";
+  };
+
+  // =========================================================
+  // TÌM KIẾM DANH SÁCH
+  // =========================================================
+
+  const danhSachLoc = danhSachXe.filter(
+    (xe) => {
+      const tuKhoaLower =
+        tuKhoa
+          .trim()
+          .toLowerCase();
+
+      if (!tuKhoaLower) {
+        return true;
+      }
+
+      const bienSo =
+        layBienSo(xe)
+          .toLowerCase();
+
+      const loaiXe =
+        layLoaiXe(xe)
+          .toLowerCase();
+
+      const chuXe =
+        layChuXe(xe)
+          .toLowerCase();
+
+      const canHo =
+        layCanHo(xe)
+          .toLowerCase();
+
+      const trangThai =
+        layTrangThai(xe)
+          .toLowerCase();
+
+      return (
+        bienSo.includes(
+          tuKhoaLower
+        ) ||
+        loaiXe.includes(
+          tuKhoaLower
+        ) ||
+        chuXe.includes(
+          tuKhoaLower
+        ) ||
+        canHo.includes(
+          tuKhoaLower
+        ) ||
+        trangThai.includes(
+          tuKhoaLower
+        )
+      );
+    }
+  );
 
   // =========================================================
   // MỞ FORM THÊM
   // =========================================================
 
   const themPhuongTien = () => {
-    setDangSua(false);
-
-    setIdDangSua(null);
-
-    setFormData({
-      bienSo: "",
-      loaiXe: "Xe máy",
-      hangXe: "",
-      trangThai: "Đang hoạt động",
-      anh: null,
-      anhPreview: null,
-    });
-
+    resetForm();
     setHienForm(true);
   };
-
 
   // =========================================================
   // MỞ FORM SỬA
   // =========================================================
 
   const suaPhuongTien = (xe) => {
-    const id =
-      xe.id ??
-      xe.ID ??
-      xe.phuongTienId ??
-      xe.PhuongTienID;
+    const id = layId(xe);
 
-    const bienSo =
-      xe.bienSo ??
-      xe.BienSo ??
-      "";
+    if (!id) {
+      alert(
+        "Không xác định được mã phương tiện."
+      );
+      return;
+    }
 
-    const loaiXe =
-      xe.loaiXe ??
-      xe.LoaiXe ??
-      "";
+    const bienSo = layBienSo(xe);
 
-    const hangXe =
-      xe.hangXe ??
-      xe.HangXe ??
-      "";
+    const loaiPhuongTienId =
+      xe?.loaiPhuongTienId ??
+      xe?.LoaiPhuongTienId ??
+      1;
 
     const trangThai =
-      xe.trangThai ??
-      xe.TrangThai ??
-      "Đang hoạt động";
-
-    const anh =
-      xe.anh ??
-      xe.Anh ??
-      xe.hinhAnh ??
-      xe.HinhAnh ??
-      null;
+      xe?.trangThai ??
+      xe?.TrangThai ??
+      "ACTIVE";
 
     setDangSua(true);
 
     setIdDangSua(id);
 
     setFormData({
-      bienSo,
-      loaiXe,
-      hangXe,
-      trangThai,
-      anh,
-      anhPreview: anh,
+      bienSo:
+        bienSo === "Chưa có"
+          ? ""
+          : bienSo,
+
+      loaiPhuongTienId:
+        String(
+          loaiPhuongTienId
+        ),
+
+      trangThai:
+        trangThai,
     });
 
     setHienForm(true);
   };
-
 
   // =========================================================
   // ĐÓNG FORM
   // =========================================================
 
   const dongForm = () => {
+    if (dangLuu) {
+      return;
+    }
+
     setHienForm(false);
 
-    setDangSua(false);
-
-    setIdDangSua(null);
-
-    setFormData({
-      bienSo: "",
-      loaiXe: "Xe máy",
-      hangXe: "",
-      trangThai: "Đang hoạt động",
-      anh: null,
-      anhPreview: null,
-    });
+    resetForm();
   };
 
-
   // =========================================================
-  // NHẬP FORM
+  // THAY ĐỔI FORM
   // =========================================================
 
   const thayDoiThongTin = (e) => {
-    const { name, value } = e.target;
+    const {
+      name,
+      value,
+    } = e.target;
 
     setFormData((cu) => ({
       ...cu,
       [name]: value,
     }));
   };
-
-
-  // =========================================================
-  // CHỌN ẢNH
-  // =========================================================
-
-  const chonAnh = (e) => {
-    const file = e.target.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
-    // Kiểm tra file ảnh
-    if (!file.type.startsWith("image/")) {
-      alert("Vui lòng chọn file hình ảnh.");
-
-      return;
-    }
-
-    // Giới hạn 5MB
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Ảnh không được lớn hơn 5MB.");
-
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      setFormData((cu) => ({
-        ...cu,
-
-        // File thật để gửi backend
-        anh: file,
-
-        // Ảnh xem trước
-        anhPreview: reader.result,
-      }));
-    };
-
-    reader.readAsDataURL(file);
-  };
-
-
-  // =========================================================
-  // XÓA ẢNH ĐANG CHỌN
-  // =========================================================
-
-  const xoaAnh = () => {
-    setFormData((cu) => ({
-      ...cu,
-
-      anh: null,
-
-      anhPreview: null,
-    }));
-  };
-
 
   // =========================================================
   // LƯU THÊM / SỬA
@@ -251,279 +438,253 @@ function PhuongTienU() {
   const luuPhuongTien = async (e) => {
     e.preventDefault();
 
-    // =========================
-    // KIỂM TRA
-    // =========================
+    if (dangLuu) {
+      return;
+    }
 
     if (!formData.bienSo.trim()) {
-      alert("Vui lòng nhập biển số xe.");
-
+      alert(
+        "Vui lòng nhập biển số xe."
+      );
       return;
     }
 
-    if (!formData.loaiXe.trim()) {
-      alert("Vui lòng chọn loại xe.");
-
+    if (!formData.loaiPhuongTienId) {
+      alert(
+        "Vui lòng chọn loại phương tiện."
+      );
       return;
     }
-
-    if (!formData.hangXe.trim()) {
-      alert("Vui lòng nhập hãng xe.");
-
-      return;
-    }
-
 
     try {
-      // =====================================================
-      // DÙNG FORMDATA ĐỂ CÓ THỂ GỬI ẢNH
-      // =====================================================
+      setDangLuu(true);
 
-      const dataGui = new FormData();
-
-      dataGui.append(
-        "BienSo",
-        formData.bienSo.trim()
-      );
-
-      dataGui.append(
-        "LoaiXe",
-        formData.loaiXe
-      );
-
-      dataGui.append(
-        "HangXe",
-        formData.hangXe.trim()
-      );
-
-      dataGui.append(
-        "TrangThai",
-        formData.trangThai
-      );
-
-
-      // Nếu người dùng chọn ảnh mới
-      if (formData.anh instanceof File) {
-        dataGui.append(
-          "HinhAnh",
-          formData.anh
-        );
-      }
-
-
-      // =====================================================
+      // ===================================================
       // THÊM
-      // =====================================================
+      // ===================================================
 
       if (!dangSua) {
-        const response = await fetch(
-          "/api/phuongtien",
+        const duLieuGui = {
+          bienSo:
+            formData.bienSo
+              .trim()
+              .toUpperCase(),
+
+          loaiPhuongTienId:
+            Number(
+              formData.loaiPhuongTienId
+            ),
+
+          // LUÔN CHỜ ADMIN DUYỆT
+          trangThai: "PENDING",
+        };
+
+        console.log(
+          "Dữ liệu thêm:",
+          duLieuGui
+        );
+
+        await apiFetch(
+          "/PhuongTien",
           {
             method: "POST",
-            body: dataGui,
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body:
+              JSON.stringify(
+                duLieuGui
+              ),
           }
         );
 
-        if (!response.ok) {
-          throw new Error(
-            `Thêm thất bại: ${response.status}`
-          );
-        }
-
         alert(
-          "Thêm phương tiện thành công."
+          "Đăng ký phương tiện thành công!\n\n" +
+          "Phương tiện đang chờ quản trị viên duyệt.\n" +
+          "Sau khi được duyệt, phương tiện sẽ hiển thị trong danh sách của bạn."
         );
       }
 
-
-      // =====================================================
+      // ===================================================
       // SỬA
-      // =====================================================
+      // ===================================================
 
       else {
-        const response = await fetch(
-          `/api/phuongtien/${idDangSua}`,
-          {
-            method: "PUT",
-            body: dataGui,
-          }
+        const duLieuGui = {
+          phuongTienId:
+            Number(
+              idDangSua
+            ),
+
+          bienSo:
+            formData.bienSo
+              .trim()
+              .toUpperCase(),
+
+          loaiPhuongTienId:
+            Number(
+              formData.loaiPhuongTienId
+            ),
+
+          trangThai:
+            formData.trangThai,
+        };
+
+        console.log(
+          "Dữ liệu sửa:",
+          duLieuGui
         );
 
-        if (!response.ok) {
-          throw new Error(
-            `Cập nhật thất bại: ${response.status}`
-          );
-        }
+        await apiFetch(
+          `/PhuongTien/${idDangSua}`,
+          {
+            method: "PUT",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body:
+              JSON.stringify(
+                duLieuGui
+              ),
+          }
+        );
 
         alert(
           "Cập nhật phương tiện thành công."
         );
       }
 
+      setHienForm(false);
 
-      // =====================================================
-      // TẢI LẠI DỮ LIỆU TỪ DATABASE
-      // =====================================================
+      resetForm();
 
       await layDanhSachPhuongTien();
-
-      dongForm();
-
     } catch (error) {
       console.error(
         "Lỗi lưu phương tiện:",
         error
       );
 
-      alert(
-        "Không thể lưu phương tiện. Vui lòng kiểm tra backend."
-      );
+      const message =
+        error?.message || "";
+
+      if (
+        message.includes("401")
+      ) {
+        alert(
+          "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+        );
+      } else if (
+        message.includes("403")
+      ) {
+        alert(
+          "Bạn không có quyền thực hiện thao tác này."
+        );
+      } else if (
+        message.includes("409")
+      ) {
+        alert(
+          "Biển số xe này đã tồn tại."
+        );
+      } else {
+        alert(
+          message ||
+            "Không thể lưu phương tiện."
+        );
+      }
+    } finally {
+      setDangLuu(false);
     }
   };
 
-
   // =========================================================
-  // XÓA PHƯƠNG TIỆN
+  // XÓA
   // =========================================================
 
   const xoaPhuongTien = async (xe) => {
-    const id =
-      xe.id ??
-      xe.ID ??
-      xe.phuongTienId ??
-      xe.PhuongTienID;
+    const id = layId(xe);
 
-    const bienSo =
-      xe.bienSo ??
-      xe.BienSo ??
-      "phương tiện này";
+    const bienSo = layBienSo(xe);
 
-    const xacNhan = window.confirm(
-      `Bạn có chắc muốn xóa ${bienSo} không?`
-    );
+    if (!id) {
+      alert(
+        "Không xác định được mã phương tiện."
+      );
+      return;
+    }
+
+    const xacNhan =
+      window.confirm(
+        `Bạn có chắc muốn xóa ${bienSo} không?`
+      );
 
     if (!xacNhan) {
       return;
     }
 
-
     try {
-      const response = await fetch(
-        `/api/phuongtien/${id}`,
-        {
-          method: "DELETE",
-        }
+      const result =
+        await apiFetch(
+          `/PhuongTien/${id}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+      console.log(
+        "Kết quả xóa:",
+        result
       );
 
-
-      if (!response.ok) {
-        throw new Error(
-          `Xóa thất bại: ${response.status}`
+      if (
+        result?.trangThai ===
+        "INACTIVE"
+      ) {
+        alert(
+          "Phương tiện đã có lịch sử gửi xe nên được chuyển sang trạng thái tạm ngưng."
+        );
+      } else {
+        alert(
+          "Xóa phương tiện thành công."
         );
       }
 
-
-      alert(
-        "Xóa phương tiện thành công."
-      );
-
-
-      // Lấy lại dữ liệu thật từ database
       await layDanhSachPhuongTien();
-
     } catch (error) {
       console.error(
         "Lỗi xóa phương tiện:",
         error
       );
 
-      alert(
-        "Không thể xóa phương tiện."
-      );
+      const message =
+        error?.message || "";
+
+      if (
+        message.includes("401")
+      ) {
+        alert(
+          "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+        );
+      } else if (
+        message.includes("403")
+      ) {
+        alert(
+          "Bạn không có quyền xóa phương tiện này."
+        );
+      } else {
+        alert(
+          message ||
+            "Không thể xóa phương tiện."
+        );
+      }
     }
   };
-
-
-  // =========================================================
-  // LẤY GIÁ TRỊ FIELD
-  // =========================================================
-
-  const layId = (xe) => {
-    return (
-      xe.id ??
-      xe.ID ??
-      xe.phuongTienId ??
-      xe.PhuongTienID
-    );
-  };
-
-
-  const layBienSo = (xe) => {
-    return (
-      xe.bienSo ??
-      xe.BienSo ??
-      "Chưa có biển số"
-    );
-  };
-
-
-  const layLoaiXe = (xe) => {
-    return (
-      xe.loaiXe ??
-      xe.LoaiXe ??
-      "Chưa xác định"
-    );
-  };
-
-
-  const layHangXe = (xe) => {
-    return (
-      xe.hangXe ??
-      xe.HangXe ??
-      ""
-    );
-  };
-
-
-  const layTrangThai = (xe) => {
-    return (
-      xe.trangThai ??
-      xe.TrangThai ??
-      "Đang hoạt động"
-    );
-  };
-
-
-  const layNguoiDangKy = (xe) => {
-    return (
-      xe.nguoiDangKy ??
-      xe.NguoiDangKy ??
-      "Cư dân"
-    );
-  };
-
-
-  const layNgayThem = (xe) => {
-    return (
-      xe.ngayThem ??
-      xe.NgayThem ??
-      xe.ngayDangKy ??
-      xe.NgayDangKy ??
-      "Chưa có"
-    );
-  };
-
-
-  const layAnh = (xe) => {
-    return (
-      xe.anh ??
-      xe.Anh ??
-      xe.hinhAnh ??
-      xe.HinhAnh ??
-      null
-    );
-  };
-
 
   // =========================================================
   // LOADING
@@ -541,22 +702,27 @@ function PhuongTienU() {
               Phương tiện của tôi
             </h1>
 
+            <p>
+              Quản lý các phương tiện đã đăng ký
+            </p>
+
           </div>
 
         </div>
 
-        <div className="khong-co-phuong-tien">
+        <div className="loading-box">
 
-          <p>
+          <div className="loading-spinner"></div>
+
+          <span>
             Đang tải danh sách phương tiện...
-          </p>
+          </span>
 
         </div>
 
       </div>
     );
   }
-
 
   // =========================================================
   // GIAO DIỆN
@@ -565,9 +731,9 @@ function PhuongTienU() {
   return (
     <div className="phuong-tien-container">
 
-      {/* =====================================================
+      {/* ===================================================
           HEADER
-      ===================================================== */}
+      =================================================== */}
 
       <div className="phuong-tien-header">
 
@@ -577,52 +743,108 @@ function PhuongTienU() {
             Phương tiện của tôi
           </h1>
 
+          <p>
+            Quản lý các phương tiện đã đăng ký
+          </p>
 
         </div>
 
-
         <button
+          type="button"
           className="btn-them-phuong-tien"
-          onClick={themPhuongTien}
+          onClick={
+            themPhuongTien
+          }
         >
+          <span>+</span>
 
-          <span>
-            +
-          </span>
-
-          Thêm tiện ích
-
+          Thêm phương tiện
         </button>
 
       </div>
 
-
-      {/* =====================================================
+      {/* ===================================================
           LỖI
-      ===================================================== */}
+      =================================================== */}
 
       {loi && (
-
         <div className="thong-bao-loi">
 
-          {loi}
+          <span>
+            {loi}
+          </span>
 
           <button
-            onClick={layDanhSachPhuongTien}
+            type="button"
+            onClick={
+              layDanhSachPhuongTien
+            }
           >
             Thử lại
           </button>
 
         </div>
-
       )}
 
+      {/* ===================================================
+          TABLE
+      =================================================== */}
 
-      {/* =====================================================
-          DANH SÁCH PHƯƠNG TIỆN
-      ===================================================== */}
+      <div className="bang-phuong-tien">
 
-      <div className="danh-sach-phuong-tien">
+        <div className="bang-header">
+
+          <div className="bang-header-left">
+
+            <h3>
+              Danh sách phương tiện
+            </h3>
+
+            <span>
+              {tuKhoa.trim()
+                ? `${danhSachLoc.length}/${danhSachXe.length} phương tiện`
+                : `${danhSachXe.length} phương tiện`}
+            </span>
+
+          </div>
+
+          {/* =================================================
+              TÌM KIẾM
+          ================================================= */}
+
+          <div className="tim-kiem-phuong-tien">
+
+            <span className="tim-kiem-icon">
+              🔍
+            </span>
+
+            <input
+              type="text"
+              value={tuKhoa}
+              onChange={(e) =>
+                setTuKhoa(
+                  e.target.value
+                )
+              }
+              placeholder="Tìm biển số, loại xe, chủ xe, căn hộ..."
+            />
+
+            {tuKhoa && (
+              <button
+                type="button"
+                className="xoa-tim-kiem"
+                onClick={() =>
+                  setTuKhoa("")
+                }
+                title="Xóa tìm kiếm"
+              >
+                ×
+              </button>
+            )}
+
+          </div>
+
+        </div>
 
         {danhSachXe.length === 0 ? (
 
@@ -641,199 +863,254 @@ function PhuongTienU() {
             </p>
 
             <button
+              type="button"
               className="btn-them-phuong-tien"
-              onClick={themPhuongTien}
+              onClick={
+                themPhuongTien
+              }
             >
-
-              <span>
-                +
-              </span>
+              <span>+</span>
 
               Thêm phương tiện
+            </button>
 
+          </div>
+
+        ) : danhSachLoc.length === 0 ? (
+
+          <div className="khong-co-phuong-tien">
+
+            <div className="khong-co-icon">
+              🔍
+            </div>
+
+            <h3>
+              Không tìm thấy phương tiện
+            </h3>
+
+            <p>
+              Không có phương tiện nào phù hợp với từ khóa "{tuKhoa}".
+            </p>
+
+            <button
+              type="button"
+              className="btn-them-phuong-tien"
+              onClick={() =>
+                setTuKhoa("")
+              }
+            >
+              Xóa tìm kiếm
             </button>
 
           </div>
 
         ) : (
 
-          danhSachXe.map((xe) => {
+          <div className="table-scroll">
 
-            const id = layId(xe);
+            <table className="phuong-tien-table">
 
-            const bienSo = layBienSo(xe);
+              <thead>
 
-            const loaiXe = layLoaiXe(xe);
+                <tr>
 
-            const hangXe = layHangXe(xe);
+                  <th className="cot-stt">
+                    STT
+                  </th>
 
-            const trangThai = layTrangThai(xe);
+                  <th>
+                    Biển số
+                  </th>
 
-            const nguoiDangKy =
-              layNguoiDangKy(xe);
+                  <th>
+                    Loại xe
+                  </th>
 
-            const ngayThem =
-              layNgayThem(xe);
+                  <th>
+                    Chủ xe
+                  </th>
 
-            const anh = layAnh(xe);
+                  <th>
+                    Căn hộ
+                  </th>
 
+                  <th>
+                    Ngày thêm
+                  </th>
 
-            return (
+                  <th>
+                    Trạng thái
+                  </th>
 
-              <div
-                className="phuong-tien-card"
-                key={id}
-              >
+                  <th className="cot-thao-tac">
+                    Thao tác
+                  </th>
 
-                {/* =========================
-                    ẢNH XE
-                ========================= */}
+                </tr>
 
-                <div className="phuong-tien-icon">
+              </thead>
 
-                  {anh ? (
+              <tbody>
 
-                    <img
-                      src={anh}
-                      alt="Phương tiện"
-                    />
+                {danhSachLoc.map(
+                  (xe, index) => {
 
-                  ) : (
+                    const id =
+                      layId(xe);
 
-                    <span>
+                    return (
 
-                      {loaiXe
-                        .toLowerCase()
-                        .includes("máy")
-                        ? "🏍️"
-                        : "🚘"}
+                      <tr key={id}>
 
-                    </span>
+                        {/* STT */}
 
-                  )}
+                        <td className="cot-stt">
+                          {index + 1}
+                        </td>
 
-                </div>
+                        {/* BIỂN SỐ */}
 
+                        <td>
 
-                {/* =========================
-                    THÔNG TIN
-                ========================= */}
+                          <div className="bien-so-cell">
 
-                <div className="phuong-tien-info">
+                            <span className="icon-xe-nho">
+                              {layIconLoaiXe(
+                                xe
+                              )}
+                            </span>
 
-                  <div className="dong-dau">
+                            <strong>
+                              {layBienSo(
+                                xe
+                              )}
+                            </strong>
 
-                    <h2>
-                      {bienSo}
-                    </h2>
+                          </div>
 
-                    <span className="trang-thai">
-                      {trangThai}
-                    </span>
+                        </td>
 
-                  </div>
+                        {/* LOẠI */}
 
+                        <td>
+                          {layLoaiXe(
+                            xe
+                          )}
+                        </td>
 
-                  <p className="loai-xe">
+                        {/* CHỦ XE */}
 
-                    {loaiXe}
+                        <td>
 
-                    {hangXe && (
-                      <>
-                        <span className="dau-cham">
-                          •
-                        </span>
+                          <span className="chu-xe">
+                            {layChuXe(
+                              xe
+                            )}
+                          </span>
 
-                        {hangXe}
-                      </>
-                    )}
+                        </td>
 
-                  </p>
+                        {/* CĂN HỘ */}
 
+                        <td>
 
-                  <p className="thong-tin-dang-ky">
+                          <span className="badge-can-ho">
+                            {layCanHo(
+                              xe
+                            )}
+                          </span>
 
-                    Đăng ký bởi:
+                        </td>
 
-                    <strong>
-                      {" "}
-                      {nguoiDangKy}
-                    </strong>
+                        {/* NGÀY */}
 
-                  </p>
+                        <td>
+                          {layNgayThem(
+                            xe
+                          )}
+                        </td>
 
+                        {/* TRẠNG THÁI */}
 
-                  <p className="thong-tin-dang-ky">
+                        <td>
 
-                    Ngày thêm:
+                          <span
+                            className={
+                              layClassTrangThai(
+                                xe
+                              )
+                            }
+                          >
+                            {layTrangThai(
+                              xe
+                            )}
+                          </span>
 
-                    {" "}
+                        </td>
 
-                    {ngayThem}
+                        {/* THAO TÁC */}
 
-                  </p>
+                        <td className="cot-thao-tac">
 
-                </div>
+                          <div className="thao-tac">
 
+                            <button
+                              type="button"
+                              className="btn-sua"
+                              onClick={() =>
+                                suaPhuongTien(
+                                  xe
+                                )
+                              }
+                              title="Sửa phương tiện"
+                            >
+                              ✎
+                            </button>
 
-                {/* =========================
-                    CHỨC NĂNG
-                ========================= */}
+                            <button
+                              type="button"
+                              className="btn-xoa"
+                              onClick={() =>
+                                xoaPhuongTien(
+                                  xe
+                                )
+                              }
+                              title="Xóa phương tiện"
+                            >
+                              🗑
+                            </button>
 
-                <div className="phuong-tien-actions">
+                          </div>
 
-                  <button
-                    className="btn-sua"
-                    onClick={() =>
-                      suaPhuongTien(xe)
-                    }
-                  >
+                        </td>
 
-                    <span>
-                      ✎
-                    </span>
+                      </tr>
 
-                    Sửa
+                    );
+                  }
+                )}
 
-                  </button>
+              </tbody>
 
+            </table>
 
-                  <button
-                    className="btn-xoa"
-                    onClick={() =>
-                      xoaPhuongTien(xe)
-                    }
-                  >
-
-                    <span>
-                      ×
-                    </span>
-
-                    Xóa
-
-                  </button>
-
-                </div>
-
-              </div>
-
-            );
-          })
+          </div>
 
         )}
 
       </div>
 
-
-      {/* =====================================================
+      {/* ===================================================
           FORM THÊM / SỬA
-      ===================================================== */}
+      =================================================== */}
 
       {hienForm && (
 
         <div
           className="lop-phu"
-          onClick={dongForm}
+          onClick={
+            dongForm
+          }
         >
 
           <div
@@ -843,9 +1120,7 @@ function PhuongTienU() {
             }
           >
 
-            {/* =========================
-                HEADER FORM
-            ========================= */}
+            {/* HEADER */}
 
             <div className="form-header">
 
@@ -860,29 +1135,34 @@ function PhuongTienU() {
                 </h2>
 
                 <p>
-                  Nhập thông tin phương tiện
+                  {dangSua
+                    ? "Cập nhật thông tin phương tiện"
+                    : "Nhập thông tin phương tiện"}
                 </p>
 
               </div>
 
-
               <button
                 type="button"
                 className="btn-dong-form"
-                onClick={dongForm}
+                onClick={
+                  dongForm
+                }
+                disabled={
+                  dangLuu
+                }
               >
                 ×
               </button>
 
             </div>
 
-
-            {/* =========================
-                FORM
-            ========================= */}
+            {/* FORM */}
 
             <form
-              onSubmit={luuPhuongTien}
+              onSubmit={
+                luuPhuongTien
+              }
             >
 
               {/* BIỂN SỐ */}
@@ -896,14 +1176,20 @@ function PhuongTienU() {
                 <input
                   type="text"
                   name="bienSo"
-                  value={formData.bienSo}
-                  onChange={thayDoiThongTin}
-                  placeholder="Ví dụ: 30A-123.45"
+                  value={
+                    formData.bienSo
+                  }
+                  onChange={
+                    thayDoiThongTin
+                  }
+                  placeholder="Ví dụ: 30A-12345"
                   required
+                  disabled={
+                    dangLuu
+                  }
                 />
 
               </div>
-
 
               {/* LOẠI XE */}
 
@@ -914,153 +1200,128 @@ function PhuongTienU() {
                 </label>
 
                 <select
-                  name="loaiXe"
-                  value={formData.loaiXe}
-                  onChange={thayDoiThongTin}
+                  name="loaiPhuongTienId"
+                  value={
+                    formData.loaiPhuongTienId
+                  }
+                  onChange={
+                    thayDoiThongTin
+                  }
+                  disabled={
+                    dangLuu
+                  }
                 >
 
-                  <option value="Xe máy">
+                  <option value="1">
                     Xe máy
                   </option>
 
-                  <option value="Ô tô">
+                  <option value="3">
                     Ô tô
                   </option>
 
-                </select>
-
-              </div>
-
-
-              {/* HÃNG XE */}
-
-              <div className="form-group">
-
-                <label>
-                  Hãng xe
-                </label>
-
-                <input
-                  type="text"
-                  name="hangXe"
-                  value={formData.hangXe}
-                  onChange={thayDoiThongTin}
-                  placeholder="Ví dụ: Honda Wave"
-                  required
-                />
-
-              </div>
-
-
-              {/* TRẠNG THÁI */}
-
-              <div className="form-group">
-
-                <label>
-                  Trạng thái
-                </label>
-
-                <select
-                  name="trangThai"
-                  value={formData.trangThai}
-                  onChange={thayDoiThongTin}
-                >
-
-                  <option value="Đang hoạt động">
-                    Đang hoạt động
-                  </option>
-
-                  <option value="Tạm ngưng">
-                    Tạm ngưng
+                  <option value="4">
+                    Xe đạp
                   </option>
 
                 </select>
 
               </div>
 
+              {/* =================================================
+                  TRẠNG THÁI
+                  CHỈ HIỆN KHI ĐANG SỬA
+              ================================================= */}
 
-              {/* =========================
-                  ẢNH
-              ========================= */}
+              {dangSua && (
 
-              <div className="form-group">
+                <div className="form-group">
 
-                <label>
-                  Ảnh phương tiện
-                </label>
-
-
-                {formData.anhPreview ? (
-
-                  <div className="anh-preview">
-
-                    <img
-                      src={formData.anhPreview}
-                      alt="Xem trước phương tiện"
-                    />
-
-                    <button
-                      type="button"
-                      className="btn-xoa-anh"
-                      onClick={xoaAnh}
-                    >
-                      ×
-                    </button>
-
-                  </div>
-
-                ) : (
-
-                  <label className="upload-label">
-
-                    <div className="upload-icon">
-                      📷
-                    </div>
-
-                    <span>
-                      Chọn ảnh phương tiện
-                    </span>
-
-                    <small>
-                      PNG, JPG, JPEG - tối đa 5MB
-                    </small>
-
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg,image/jpg"
-                      onChange={chonAnh}
-                    />
-
+                  <label>
+                    Trạng thái
                   </label>
 
-                )}
+                  <select
+                    name="trangThai"
+                    value={
+                      formData.trangThai
+                    }
+                    onChange={
+                      thayDoiThongTin
+                    }
+                    disabled={
+                      dangLuu
+                    }
+                  >
 
-              </div>
+                    <option value="ACTIVE">
+                      Đang hoạt động
+                    </option>
 
+                    <option value="INACTIVE">
+                      Tạm ngưng
+                    </option>
 
-              {/* =========================
-                  BUTTON
-              ========================= */}
+                    <option value="PENDING">
+                      Chờ duyệt
+                    </option>
+
+                  </select>
+
+                </div>
+
+              )}
+
+              {/* =================================================
+                  THÔNG BÁO KHI THÊM MỚI
+              ================================================= */}
+
+              {!dangSua && (
+
+                <div className="thong-bao-cho-duyet">
+
+                  <span className="icon-thong-bao-cho-duyet">
+                    ⏳
+                  </span>
+
+                  <span>
+                    Phương tiện mới sẽ được gửi đến quản trị viên để chờ duyệt.
+                  </span>
+
+                </div>
+
+              )}
+
+              {/* BUTTON */}
 
               <div className="form-actions">
 
                 <button
                   type="button"
                   className="btn-huy"
-                  onClick={dongForm}
+                  onClick={
+                    dongForm
+                  }
+                  disabled={
+                    dangLuu
+                  }
                 >
                   Hủy
                 </button>
 
-
                 <button
                   type="submit"
                   className="btn-luu"
+                  disabled={
+                    dangLuu
+                  }
                 >
 
-                  {dangSua
+                  {dangLuu
+                    ? "Đang lưu..."
+                    : dangSua
                     ? "Lưu thay đổi"
-                    : "Thêm phương tiện"}
+                    : "Gửi đăng ký"}
 
                 </button>
 
