@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./sidebarUser.css";
 
+const API_URL = "http://localhost:5022/api";
+
 const danhSachMenu = [
   { icon: "🏠", ten: "Trang chủ", duongDan: "/trang-chu" },
   {
@@ -39,6 +41,9 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
   const [hienDropdown, setHienDropdown] = useState(false);
   const [hienMenuUser, setHienMenuUser] = useState(false);
 
+  // ✅ Số thông báo chưa đọc
+  const [soThongBaoMoi, setSoThongBaoMoi] = useState(0);
+
   // =====================================================
   // THÔNG TIN NGƯỜI ĐANG ĐĂNG NHẬP
   // =====================================================
@@ -68,26 +73,19 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
 
       for (const key of cacKey) {
         const raw = localStorage.getItem(key);
-
         if (!raw) continue;
-
         try {
           const parsed = JSON.parse(raw);
-
           if (parsed && typeof parsed === "object") {
             duLieu = parsed;
             break;
           }
         } catch (error) {
-          // Không phải JSON thì bỏ qua
+          // bỏ qua
         }
       }
 
-      if (!duLieu) {
-        return;
-      }
-
-      console.log("Thông tin người dùng:", duLieu);
+      if (!duLieu) return;
 
       setNguoiDung({
         hoTen:
@@ -96,12 +94,10 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
           duLieu.name ||
           duLieu.ten ||
           "Người dùng",
-
         email:
           duLieu.email ||
           duLieu.Email ||
           "Chưa có email",
-
         tenRole:
           duLieu.tenRole ||
           duLieu.TenRole ||
@@ -115,6 +111,65 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
   }, []);
 
   // =====================================================
+  // ✅ ĐẾM SỐ THÔNG BÁO CHƯA ĐỌC
+  // =====================================================
+  const demThongBaoChuaDoc = async () => {
+    try {
+      // Lấy userId
+      let userId = null;
+      try {
+        const userStr = localStorage.getItem("user");
+        if (userStr) {
+          const u = JSON.parse(userStr);
+          userId = u.userId ?? u.UserId ?? null;
+        }
+      } catch {
+        // bỏ qua
+      }
+
+      if (!userId) return;
+
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const response = await fetch(
+        `${API_URL}/ThongBao/cua-toi/${userId}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) return;
+
+      const data = await response.json();
+
+      // Đếm số chưa đọc
+      const chuaDoc = (Array.isArray(data) ? data : []).filter(
+        (tb) => tb.daDoc !== true
+      );
+
+      setSoThongBaoMoi(chuaDoc.length);
+    } catch (error) {
+      console.error("Lỗi đếm thông báo:", error);
+    }
+  };
+
+  // Chạy 1 lần khi mount + mỗi khi route đổi (để refresh số)
+  useEffect(() => {
+    demThongBaoChuaDoc();
+  }, [location.pathname]);
+
+  // Refresh mỗi 30 giây
+  useEffect(() => {
+    const interval = setInterval(demThongBaoChuaDoc, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // =====================================================
   // ĐÓNG DROPDOWN KHI CLICK RA NGOÀI
   // =====================================================
   useEffect(() => {
@@ -122,7 +177,6 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
       if (userRef.current && !userRef.current.contains(e.target)) {
         setHienMenuUser(false);
       }
-
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setHienDropdown(false);
       }
@@ -144,15 +198,9 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
       )
     : [];
 
-  // =====================================================
-  // XỬ LÝ ENTER TÌM KIẾM
-  // =====================================================
   const xuLyEnter = (e) => {
     if (e.key === "Enter") {
-      if (onTimKiem) {
-        onTimKiem(tuKhoa);
-      }
-
+      if (onTimKiem) onTimKiem(tuKhoa);
       if (ketQuaTimKiem.length > 0) {
         navigate(ketQuaTimKiem[0].duongDan);
         setTuKhoa("");
@@ -165,57 +213,46 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
   // ĐĂNG XUẤT
   // =====================================================
   const dangXuat = () => {
-  if (window.confirm("Bạn chắc chắn muốn đăng xuất?")) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    sessionStorage.clear();
-
-    setHienMenuUser(false);
-
-    navigate("/login", { replace: true });
-  }
-};
+    if (window.confirm("Bạn chắc chắn muốn đăng xuất?")) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      sessionStorage.clear();
+      setHienMenuUser(false);
+      navigate("/login", { replace: true });
+    }
+  };
 
   // =====================================================
   // HIỂN THỊ ROLE
   // =====================================================
   const hienThiRole = () => {
     const role = String(nguoiDung.tenRole || "").toLowerCase();
-
-    if (role === "admin") {
-      return "Quản trị viên";
-    }
-
-    if (role === "nhanvien") {
-      return "Nhân viên";
-    }
-
-    if (role === "cudan") {
-      return "Cư dân";
-    }
-
+    if (role === "admin") return "Quản trị viên";
+    if (role === "nhanvien") return "Nhân viên";
+    if (role === "cudan") return "Cư dân";
     return nguoiDung.tenRole || "Cư dân";
+  };
+
+  // =====================================================
+  // CLICK CHUÔNG THÔNG BÁO
+  // =====================================================
+  const moTrangThongBao = () => {
+    navigate("/thong-bao");
   };
 
   return (
     <>
-      {/* =================================================
-          HEADER CHUNG
-      ================================================= */}
       <header className="header-trang-chu">
         {/* LOGO */}
         <div className="logo-header">
           <div className="logo-header-icon">🏢</div>
-
           <div className="logo-header-text">
             <strong>Chung cư Sunrise</strong>
             <span>Hệ thống quản lý phương tiện</span>
           </div>
         </div>
 
-        {/* =================================================
-            Ô TÌM KIẾM
-        ================================================= */}
+        {/* Ô TÌM KIẾM */}
         <div
           className="o-tim-kiem"
           ref={searchRef}
@@ -235,103 +272,102 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
             onKeyDown={xuLyEnter}
           />
 
-          {hienDropdown &&
-            tuKhoa.trim() &&
-            duLieuTimKiem.length > 0 && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: "calc(100% + 6px)",
-                  left: 0,
-                  right: 0,
-                  background: "#ffffff",
-                  border: "1px solid #dce7ed",
-                  borderRadius: 8,
-                  boxShadow:
-                    "0 6px 20px rgba(35, 88, 116, 0.12)",
-                  maxHeight: 300,
-                  overflowY: "auto",
-                  zIndex: 10001,
-                }}
-              >
-                {ketQuaTimKiem.length === 0 ? (
+          {hienDropdown && tuKhoa.trim() && duLieuTimKiem.length > 0 && (
+            <div
+              style={{
+                position: "absolute",
+                top: "calc(100% + 6px)",
+                left: 0,
+                right: 0,
+                background: "#ffffff",
+                border: "1px solid #dce7ed",
+                borderRadius: 8,
+                boxShadow: "0 6px 20px rgba(35, 88, 116, 0.12)",
+                maxHeight: 300,
+                overflowY: "auto",
+                zIndex: 10001,
+              }}
+            >
+              {ketQuaTimKiem.length === 0 ? (
+                <div
+                  style={{
+                    padding: "12px 16px",
+                    fontSize: 13,
+                    color: "#6b8fa3",
+                    textAlign: "center",
+                  }}
+                >
+                  Không tìm thấy kết quả
+                </div>
+              ) : (
+                ketQuaTimKiem.map((item, i) => (
                   <div
-                    style={{
-                      padding: "12px 16px",
-                      fontSize: 13,
-                      color: "#6b8fa3",
-                      textAlign: "center",
+                    key={i}
+                    onClick={() => {
+                      navigate(item.duongDan);
+                      setTuKhoa("");
+                      setHienDropdown(false);
                     }}
+                    style={{
+                      padding: "10px 14px",
+                      cursor: "pointer",
+                      borderBottom:
+                        i < ketQuaTimKiem.length - 1
+                          ? "1px solid #f0f5f8"
+                          : "none",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background = "#f4f9fc")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = "#ffffff")
+                    }
                   >
-                    Không tìm thấy kết quả
-                  </div>
-                ) : (
-                  ketQuaTimKiem.map((item, i) => (
                     <div
-                      key={i}
-                      onClick={() => {
-                        navigate(item.duongDan);
-                        setTuKhoa("");
-                        setHienDropdown(false);
-                      }}
                       style={{
-                        padding: "10px 14px",
-                        cursor: "pointer",
-                        borderBottom:
-                          i < ketQuaTimKiem.length - 1
-                            ? "1px solid #f0f5f8"
-                            : "none",
+                        fontSize: 11,
+                        color: "#4f7a92",
+                        fontWeight: 700,
+                        marginBottom: 3,
                       }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.background =
-                          "#f4f9fc")
-                      }
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.background =
-                          "#ffffff")
-                      }
                     >
-                      <div
-                        style={{
-                          fontSize: 11,
-                          color: "#4f7a92",
-                          fontWeight: 700,
-                          marginBottom: 3,
-                        }}
-                      >
-                        {item.loai}
-                      </div>
-
-                      <div
-                        style={{
-                          fontSize: 13,
-                          color: "#1b405a",
-                          fontWeight: 500,
-                        }}
-                      >
-                        {item.ten}
-                      </div>
+                      {item.loai}
                     </div>
-                  ))
-                )}
-              </div>
-            )}
+                    <div
+                      style={{
+                        fontSize: 13,
+                        color: "#1b405a",
+                        fontWeight: 500,
+                      }}
+                    >
+                      {item.ten}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
 
-        {/* =================================================
-            KHU VỰC USER
-        ================================================= */}
+        {/* KHU VỰC USER */}
         <div
           className="thong-tin-admin"
           ref={userRef}
-          style={{
-            position: "relative",
-          }}
+          style={{ position: "relative" }}
         >
-          {/* THÔNG BÁO */}
-          <button className="nut-thong-bao" type="button">
+          {/* ✅ CHUÔNG THÔNG BÁO — số động + click để đến /thong-bao */}
+          <button
+            className="nut-thong-bao"
+            type="button"
+            onClick={moTrangThongBao}
+            title="Xem thông báo"
+          >
             🔔
-            <span className="so-thong-bao">3</span>
+            {soThongBaoMoi > 0 && (
+              <span className="so-thong-bao">
+                {soThongBaoMoi > 99 ? "99+" : soThongBaoMoi}
+              </span>
+            )}
           </button>
 
           {/* THÔNG TIN USER */}
@@ -346,19 +382,14 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
             }}
           >
             <div className="anh-admin">👤</div>
-
             <div className="thong-tin-admin-text">
               <strong>{nguoiDung.hoTen}</strong>
-
               <span>{hienThiRole()}</span>
             </div>
-
             <span className="mui-ten-admin">▾</span>
           </div>
 
-          {/* =================================================
-              DROPDOWN USER
-          ================================================= */}
+          {/* DROPDOWN USER */}
           {hienMenuUser && (
             <div
               style={{
@@ -369,13 +400,11 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
                 background: "#ffffff",
                 border: "1px solid #dce7ed",
                 borderRadius: 10,
-                boxShadow:
-                  "0 8px 24px rgba(35, 88, 116, 0.15)",
+                boxShadow: "0 8px 24px rgba(35, 88, 116, 0.15)",
                 overflow: "hidden",
                 zIndex: 10002,
               }}
             >
-              {/* THÔNG TIN */}
               <div
                 style={{
                   padding: "12px 16px",
@@ -392,7 +421,6 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
                 >
                   {nguoiDung.hoTen}
                 </div>
-
                 <div
                   style={{
                     fontSize: 11,
@@ -403,7 +431,6 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
                 >
                   {nguoiDung.email}
                 </div>
-
                 <div
                   style={{
                     fontSize: 11,
@@ -416,7 +443,6 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
                 </div>
               </div>
 
-              {/* THÔNG TIN CÁ NHÂN */}
               <button
                 onClick={() => {
                   navigate("/ho-so");
@@ -437,20 +463,16 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
                   gap: 10,
                 }}
                 onMouseEnter={(e) =>
-                  (e.currentTarget.style.background =
-                    "#f4f9fc")
+                  (e.currentTarget.style.background = "#f4f9fc")
                 }
                 onMouseLeave={(e) =>
-                  (e.currentTarget.style.background =
-                    "#ffffff")
+                  (e.currentTarget.style.background = "#ffffff")
                 }
               >
                 <span>👤</span>
                 <span>Thông tin cá nhân</span>
               </button>
 
-
-              {/* ĐƯỜNG KẺ */}
               <div
                 style={{
                   height: 1,
@@ -459,7 +481,6 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
                 }}
               />
 
-              {/* ĐĂNG XUẤT */}
               <button
                 onClick={dangXuat}
                 style={{
@@ -477,12 +498,10 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
                   gap: 10,
                 }}
                 onMouseEnter={(e) =>
-                  (e.currentTarget.style.background =
-                    "#fef2f2")
+                  (e.currentTarget.style.background = "#fef2f2")
                 }
                 onMouseLeave={(e) =>
-                  (e.currentTarget.style.background =
-                    "#ffffff")
+                  (e.currentTarget.style.background = "#ffffff")
                 }
               >
                 <span>🚪</span>
@@ -493,9 +512,7 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
         </div>
       </header>
 
-      {/* =================================================
-          SIDEBAR
-      ================================================= */}
+      {/* SIDEBAR */}
       <aside className="sidebar-admin">
         <nav className="menu-admin">
           {danhSachMenu.map((menu) => (
@@ -507,17 +524,10 @@ function SidebarUser({ duLieuTimKiem = [], onTimKiem }) {
                   ? "menu-admin-active"
                   : ""
               }`}
-              style={{
-                textDecoration: "none",
-              }}
+              style={{ textDecoration: "none" }}
             >
-              <span className="menu-admin-icon">
-                {menu.icon}
-              </span>
-
-              <span className="menu-admin-name">
-                {menu.ten}
-              </span>
+              <span className="menu-admin-icon">{menu.icon}</span>
+              <span className="menu-admin-name">{menu.ten}</span>
             </Link>
           ))}
         </nav>
