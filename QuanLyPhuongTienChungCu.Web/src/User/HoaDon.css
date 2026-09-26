@@ -2,17 +2,23 @@
    WRAPPER TỔNG
 ========================= */
 .hd-wrapper {
-  width: 100%;
-  min-height: 100vh;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box;
   background: #f4f9fc;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Arial", "Helvetica Neue", Helvetica, "Segoe UI",
+    Roboto, "Noto Sans", "Liberation Sans", sans-serif;
 }
 
 .hd-body {
-  margin-left: 240px;
-  width: calc(100% - 240px);
-  min-height: 100vh;
-  padding-top: 68px;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
   box-sizing: border-box;
   background: #f4f9fc;
 }
@@ -20,12 +26,14 @@
 /* TIÊU ĐỀ */
 .hd-title-bar {
   padding: 25px 30px 15px 30px;
+  text-align: left;
 }
 .hd-title-bar h1 {
   font-size: 24px;
   color: #0f3b56;
   font-weight: 800;
   margin: 0;
+  text-align: left;
 }
 
 /* KHUNG BẢNG */
@@ -89,10 +97,11 @@
   color: #2f5470;
   font-size: 14px;
   font-weight: 500;
+  text-align: left;
 }
 
 .hd-empty {
-  text-align: center;
+  text-align: center !important;
   padding: 40px !important;
   color: #6b8fa3 !important;
   font-weight: 500 !important;
@@ -189,14 +198,16 @@
   border-radius: 10px;
   border: 1px solid #dfeaf0;
   box-shadow: 0 2px 8px rgba(35, 88, 116, 0.03);
+  text-align: left;        /* ✅ Bắt buộc căn trái */
 }
 
 .hd-card-title {
   margin: 0 0 20px 0;
-  font-size: 15px;
+  font-size: 16px;
   color: #0f3b56;
   font-weight: 800;
   letter-spacing: 0.2px;
+  text-align: left;        /* ✅ */
 }
 
 /* Khối header thông tin hóa đơn */
@@ -204,10 +215,13 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 20px;
+  text-align: left;        /* ✅ */
 }
 
 .hd-info-row {
   margin-bottom: 10px;
+  text-align: left;        /* ✅ */
 }
 
 .hd-info-row:last-child {
@@ -220,25 +234,29 @@
   color: #4f7a92;
   font-size: 13px;
   font-weight: 700;
+  text-align: left;        /* ✅ */
 }
 
 .hd-info-value {
   color: #1b405a;
   font-size: 14px;
   font-weight: 600;
+  text-align: left;        /* ✅ */
 }
 
 /* Lưới 2 cột thông tin phương tiện */
 .hd-grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px 30px;
+  gap: 20px 40px;
+  text-align: left;        /* ✅ */
 }
 
 .hd-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  text-align: left;        /* ✅ */
 }
 
 .hd-field-full {
@@ -249,12 +267,16 @@
   font-size: 12px;
   color: #4f7a92;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  text-align: left;        /* ✅ */
 }
 
 .hd-field span {
-  font-size: 14px;
+  font-size: 15px;
   color: #1b405a;
-  font-weight: 600;
+  font-weight: 700;
+  text-align: left;        /* ✅ */
 }
 
 /* Bảng chi tiết phí */
@@ -266,7 +288,7 @@
 
 .hd-table-detail th {
   text-align: left;
-  padding: 10px 14px;
+  padding: 12px 14px;
   background-color: #f4f9fc;
   color: #4f7a92;
   font-size: 12px;
@@ -278,11 +300,12 @@
 }
 
 .hd-table-detail td {
-  padding: 12px 14px;
+  padding: 14px;
   border-bottom: 1px solid #edf2f5;
   color: #2f5470;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
+  text-align: left;
 }
 
 /* Tổng tiền */
@@ -291,18 +314,20 @@
   justify-content: flex-end;
   align-items: center;
   gap: 20px;
-  padding: 12px 14px 0;
+  padding: 16px 14px 0;
+  border-top: 2px solid #edf2f5;
+  margin-top: 8px;
 }
 
 .hd-total-label {
   color: #4f7a92;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
 }
 
 .hd-total-value {
   color: #0f3b56;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 900;
   letter-spacing: -0.3px;
 }

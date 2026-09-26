@@ -24,6 +24,24 @@ public class ThanhToanController : ControllerBase
         _auditLogService = auditLogService;
     }
 
+    // =========================================================
+    // HELPER
+    // =========================================================
+
+    private long? LayUserIdHienTai()
+    {
+        var claim = User.FindFirst(
+            System.Security.Claims.ClaimTypes.NameIdentifier
+        )?.Value;
+
+        return long.TryParse(claim, out var id) ? id : null;
+    }
+
+    // =========================================================
+    // TẠO THANH TOÁN
+    // POST: api/ThanhToan
+    // =========================================================
+
     [HttpPost]
     public async Task<ActionResult<ThanhToanDto>> Create(
         ThanhToan thanhToan)
@@ -85,13 +103,12 @@ public class ThanhToanController : ControllerBase
         _context.ThanhToans.Add(thanhToan);
         await _context.SaveChangesAsync();
 
-        // Ghi AuditLog sau khi thanh toan thanh cong
         await _auditLogService.GhiLog(
             userId,
             "CREATE",
             "ThanhToan",
             thanhToan.ThanhToanId,
-           $"Thanh toan luot gui xe {luotGuiXe.LuotGuiXeId}, bien so {luotGuiXe.BienSo}, so tien {thanhToan.SoTien:0}"
+            $"Thanh toan luot gui xe {luotGuiXe.LuotGuiXeId}, bien so {luotGuiXe.BienSo}, so tien {thanhToan.SoTien:0}"
         );
 
         var ketQua = new ThanhToanDto
@@ -108,8 +125,13 @@ public class ThanhToanController : ControllerBase
         return Ok(ketQua);
     }
 
+    // =========================================================
+    // LẤY TẤT CẢ THANH TOÁN (ADMIN / KẾ TOÁN)
+    // GET: api/ThanhToan
+    // =========================================================
 
     [HttpGet]
+    [Authorize(Roles = "Admin,KeToan")]
     public async Task<ActionResult<IEnumerable<ThanhToanDto>>> GetAll()
     {
         var danhSach = await _context.ThanhToans
@@ -129,6 +151,11 @@ public class ThanhToanController : ControllerBase
 
         return Ok(danhSach);
     }
+
+    // =========================================================
+    // LẤY THANH TOÁN THEO ID
+    // GET: api/ThanhToan/5
+    // =========================================================
 
     [HttpGet("{id}")]
     public async Task<ActionResult<ThanhToanDto>> GetById(long id)
@@ -154,5 +181,87 @@ public class ThanhToanController : ControllerBase
         }
 
         return Ok(thanhToan);
+    }
+
+    // =========================================================
+    // HÓA ĐƠN CỦA CƯ DÂN
+    // GET: api/ThanhToan/cua-toi/{userId}
+    // - Admin/KeToan: xem bất kỳ ai
+    // - Cư dân: chỉ xem chính mình
+    // =========================================================
+
+    [HttpGet("cua-toi/{userId:long}")]
+    public async Task<IActionResult> GetHoaDonCuaToi(long userId)
+    {
+        var userIdHienTai = LayUserIdHienTai();
+        var laAdmin = User.IsInRole("Admin") || User.IsInRole("KeToan");
+
+        // ✅ Chỉ Admin/KeToan HOẶC chính chủ mới xem được
+        if (!laAdmin && userIdHienTai != userId)
+        {
+            return Forbid();
+        }
+
+        // Lấy các lượt gửi xe thuộc phương tiện của cư dân này
+        var danhSach = await _context.LuotGuiXes
+            .AsNoTracking()
+            .Include(l => l.PhuongTien)
+                .ThenInclude(p => p!.LoaiPhuongTien)
+            .Where(l =>
+                l.PhuongTien != null &&
+                l.PhuongTien.UserId == userId)
+            .OrderByDescending(l => l.ThoiGianVao)
+            .Select(l => new
+            {
+                id = l.LuotGuiXeId,
+
+                maHoaDon = "HD" + l.LuotGuiXeId.ToString("D6"),
+
+                ngayTao = l.ThoiGianRa != null
+                    ? l.ThoiGianRa.Value.ToString("dd/MM/yyyy HH:mm")
+                    : l.ThoiGianVao.ToString("dd/MM/yyyy HH:mm"),
+
+                loaiXe = l.PhuongTien != null &&
+                         l.PhuongTien.LoaiPhuongTien != null
+                            ? l.PhuongTien.LoaiPhuongTien.TenLoai
+                            : "—",
+
+                bienSo = l.BienSo,
+
+                soTien = l.SoTien ?? 0,
+
+                trangThai = _context.ThanhToans
+                    .Any(t => t.LuotGuiXeId == l.LuotGuiXeId)
+                        ? "Đã thanh toán"
+                        : (l.ThoiGianRa != null
+                            ? "Chờ thanh toán"
+                            : "Đang gửi"),
+
+                thoiGianGui =
+                    l.ThoiGianVao.ToString("dd/MM/yyyy HH:mm") +
+                    " - " +
+                    (l.ThoiGianRa != null
+                        ? l.ThoiGianRa.Value.ToString("dd/MM/yyyy HH:mm")
+                        : "N/A"),
+
+                chiTietPhi = new[]
+                {
+                    new
+                    {
+                        loaiPhi = "Phí gửi xe",
+                        donGia = (l.SoTien ?? 0).ToString("N0") + "đ",
+                        thoiGian =
+                            l.ThoiGianVao.ToString("dd/MM HH:mm") +
+                            " - " +
+                            (l.ThoiGianRa != null
+                                ? l.ThoiGianRa.Value.ToString("dd/MM HH:mm")
+                                : "N/A"),
+                        thanhTien = l.SoTien ?? 0
+                    }
+                }
+            })
+            .ToListAsync();
+
+        return Ok(danhSach);
     }
 }

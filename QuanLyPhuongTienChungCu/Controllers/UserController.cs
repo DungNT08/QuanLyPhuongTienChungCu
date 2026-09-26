@@ -10,7 +10,7 @@ namespace QuanLyPhuongTienChungCu.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Authorize]   // ✅ CHỈ cần đăng nhập — không ép Admin ở cấp class nữa
 public class UserController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -56,6 +56,7 @@ public class UserController : ControllerBase
     // =========================================================
 
     [HttpGet("roles")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetRoles()
     {
         var roles = await _context.Roles
@@ -77,6 +78,7 @@ public class UserController : ControllerBase
     // =========================================================
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetAll()
     {
         var danhSach = await _context.Users
@@ -95,25 +97,16 @@ public class UserController : ControllerBase
             .Select(x => new UserDto
             {
                 UserId = x.UserId,
-
                 HoTen = x.HoTen,
-
                 TenDangNhap = x.TenDangNhap,
-
                 Email = x.Email,
-
                 SoDienThoai = x.SoDienThoai,
-
                 CCCD = x.CCCD,
-
                 RoleId = x.RoleId,
-
                 TenRole = x.Role != null
                     ? x.Role.TenRole
                     : "",
-
                 TrangThai = x.TrangThai,
-
                 NgayTao = x.NgayTao
             })
             .ToListAsync();
@@ -127,6 +120,7 @@ public class UserController : ControllerBase
     // =========================================================
 
     [HttpGet("cu-dan")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetCuDan()
     {
         var danhSach = await _context.Users
@@ -140,25 +134,16 @@ public class UserController : ControllerBase
             .Select(x => new
             {
                 userId = x.UserId,
-
                 hoTen = x.HoTen,
-
                 tenDangNhap = x.TenDangNhap,
-
                 email = x.Email,
-
                 soDienThoai = x.SoDienThoai,
-
                 cccd = x.CCCD,
-
                 roleId = x.RoleId,
-
                 tenRole = x.Role != null
                     ? x.Role.TenRole
                     : "",
-
                 trangThai = x.TrangThai,
-
                 ngayTao = x.NgayTao,
 
                 maCanHo = _context.CanHos
@@ -180,12 +165,22 @@ public class UserController : ControllerBase
     // =========================================================
     // GET BY ID
     // GET: api/User/1
+    // - Admin: xem bất kỳ ai
+    // - Cư dân / nhân viên: chỉ xem chính mình
     // =========================================================
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<UserDto>> GetById(
-        long id)
+    public async Task<ActionResult<UserDto>> GetById(long id)
     {
+        var userIdHienTai = LayUserIdHienTai();
+        var laAdmin = User.IsInRole("Admin");
+
+        // ✅ Chỉ Admin HOẶC chính chủ mới xem được
+        if (!laAdmin && userIdHienTai != id)
+        {
+            return Forbid();
+        }
+
         var user = await _context.Users
             .AsNoTracking()
             .Include(x => x.Role)
@@ -195,34 +190,23 @@ public class UserController : ControllerBase
             .Select(x => new UserDto
             {
                 UserId = x.UserId,
-
                 HoTen = x.HoTen,
-
                 TenDangNhap = x.TenDangNhap,
-
                 Email = x.Email,
-
                 SoDienThoai = x.SoDienThoai,
-
                 CCCD = x.CCCD,
-
                 RoleId = x.RoleId,
-
                 TenRole = x.Role != null
                     ? x.Role.TenRole
                     : "",
-
                 TrangThai = x.TrangThai,
-
                 NgayTao = x.NgayTao
             })
             .FirstOrDefaultAsync();
 
         if (user == null)
         {
-            return NotFound(
-                "User khong ton tai."
-            );
+            return NotFound("User khong ton tai.");
         }
 
         return Ok(user);
@@ -234,46 +218,33 @@ public class UserController : ControllerBase
     // =========================================================
 
     [HttpPost]
-    public async Task<ActionResult<UserDto>> Create(
-        User user)
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<UserDto>> Create(User user)
     {
         if (string.IsNullOrWhiteSpace(user.HoTen))
         {
-            return BadRequest(
-                "Ho ten khong duoc de trong."
-            );
+            return BadRequest("Ho ten khong duoc de trong.");
         }
 
-        if (string.IsNullOrWhiteSpace(
-            user.TenDangNhap))
+        if (string.IsNullOrWhiteSpace(user.TenDangNhap))
         {
-            return BadRequest(
-                "Ten dang nhap khong duoc de trong."
-            );
+            return BadRequest("Ten dang nhap khong duoc de trong.");
         }
 
-        if (string.IsNullOrWhiteSpace(
-            user.MatKhau))
+        if (string.IsNullOrWhiteSpace(user.MatKhau))
         {
-            return BadRequest(
-                "Mat khau khong duoc de trong."
-            );
+            return BadRequest("Mat khau khong duoc de trong.");
         }
 
-        if (string.IsNullOrWhiteSpace(
-            user.Email))
+        if (string.IsNullOrWhiteSpace(user.Email))
         {
-            return BadRequest(
-                "Email khong duoc de trong."
-            );
+            return BadRequest("Email khong duoc de trong.");
         }
 
         if (!LaNhanVien(user.RoleId) &&
             user.RoleId != 4)
         {
-            return BadRequest(
-                "RoleId khong hop le."
-            );
+            return BadRequest("RoleId khong hop le.");
         }
 
         var role = await _context.Roles
@@ -282,9 +253,7 @@ public class UserController : ControllerBase
 
         if (role == null)
         {
-            return BadRequest(
-                "Role khong ton tai."
-            );
+            return BadRequest("Role khong ton tai.");
         }
 
         var tenDangNhapDaTonTai =
@@ -295,31 +264,15 @@ public class UserController : ControllerBase
 
         if (tenDangNhapDaTonTai)
         {
-            return Conflict(
-                "Ten dang nhap da ton tai."
-            );
+            return Conflict("Ten dang nhap da ton tai.");
         }
 
-        user.HoTen =
-            user.HoTen.Trim();
-
-        user.TenDangNhap =
-            user.TenDangNhap.Trim();
-
-        user.Email =
-            user.Email.Trim();
-
-        user.MatKhau =
-            _passwordService.HashPassword(
-                user.MatKhau
-            );
-
-        user.NgayTao =
-            DateTime.Now;
-
-        user.TrangThai =
-            "ACTIVE";
-
+        user.HoTen = user.HoTen.Trim();
+        user.TenDangNhap = user.TenDangNhap.Trim();
+        user.Email = user.Email.Trim();
+        user.MatKhau = _passwordService.HashPassword(user.MatKhau);
+        user.NgayTao = DateTime.Now;
+        user.TrangThai = "ACTIVE";
         user.Role = null;
 
         _context.Users.Add(user);
@@ -336,43 +289,21 @@ public class UserController : ControllerBase
 
         var ketQua = new UserDto
         {
-            UserId =
-                user.UserId,
-
-            HoTen =
-                user.HoTen,
-
-            TenDangNhap =
-                user.TenDangNhap,
-
-            Email =
-                user.Email,
-
-            SoDienThoai =
-                user.SoDienThoai,
-
-            CCCD =
-                user.CCCD,
-
-            RoleId =
-                user.RoleId,
-
-            TenRole =
-                role.TenRole,
-
-            TrangThai =
-                user.TrangThai,
-
-            NgayTao =
-                user.NgayTao
+            UserId = user.UserId,
+            HoTen = user.HoTen,
+            TenDangNhap = user.TenDangNhap,
+            Email = user.Email,
+            SoDienThoai = user.SoDienThoai,
+            CCCD = user.CCCD,
+            RoleId = user.RoleId,
+            TenRole = role.TenRole,
+            TrangThai = user.TrangThai,
+            NgayTao = user.NgayTao
         };
 
         return CreatedAtAction(
             nameof(GetById),
-            new
-            {
-                id = user.UserId
-            },
+            new { id = user.UserId },
             ketQua
         );
     }
@@ -380,91 +311,94 @@ public class UserController : ControllerBase
     // =========================================================
     // UPDATE
     // PUT: api/User/1
+    // - Admin: sửa tất cả (kể cả role, trạng thái)
+    // - Cư dân / nhân viên: chỉ sửa hồ sơ của mình
+    //   (không được đổi RoleId / TrangThai)
     // =========================================================
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(
-        long id,
-        User user)
+    public async Task<IActionResult> Update(long id, User user)
     {
-        if (string.IsNullOrWhiteSpace(
-            user.HoTen))
+        var userIdHienTai = LayUserIdHienTai();
+        var laAdmin = User.IsInRole("Admin");
+
+        // ✅ Chỉ Admin HOẶC chính chủ mới sửa được
+        if (!laAdmin && userIdHienTai != id)
         {
-            return BadRequest(
-                "Ho ten khong duoc de trong."
-            );
+            return Forbid();
         }
 
-        if (string.IsNullOrWhiteSpace(
-            user.Email))
+        if (string.IsNullOrWhiteSpace(user.HoTen))
         {
-            return BadRequest(
-                "Email khong duoc de trong."
-            );
+            return BadRequest("Ho ten khong duoc de trong.");
         }
 
-        var userHienTai =
-            await _context.Users
-                .FirstOrDefaultAsync(x =>
-                    x.UserId == id);
+        if (string.IsNullOrWhiteSpace(user.Email))
+        {
+            return BadRequest("Email khong duoc de trong.");
+        }
+
+        var userHienTai = await _context.Users
+            .FirstOrDefaultAsync(x => x.UserId == id);
 
         if (userHienTai == null)
         {
-            return NotFound(
-                "User khong ton tai."
-            );
+            return NotFound("User khong ton tai.");
         }
 
-        if (userHienTai.TrangThai ==
-            "DELETED")
+        if (userHienTai.TrangThai == "DELETED")
         {
-            return BadRequest(
-                "User da bi xoa."
-            );
+            return BadRequest("User da bi xoa.");
         }
 
-        if (user.RoleId < 1 ||
-            user.RoleId > 5)
+        // =====================================================
+        // CHÍNH CHỦ (không phải Admin) — CHỈ sửa thông tin cá nhân
+        // =====================================================
+        if (!laAdmin)
         {
-            return BadRequest(
-                "RoleId khong hop le."
-            );
-        }
+            userHienTai.HoTen = user.HoTen.Trim();
 
-        var role =
-            await _context.Roles
+            userHienTai.Email =
+                string.IsNullOrWhiteSpace(user.Email)
+                    ? userHienTai.Email
+                    : user.Email.Trim();
+
+            userHienTai.SoDienThoai = user.SoDienThoai;
+            userHienTai.CCCD = user.CCCD;
+
+            // ❌ KHÔNG cho cư dân tự đổi RoleId / TrangThai
+        }
+        else
+        {
+            // =================================================
+            // ADMIN — sửa tất cả
+            // =================================================
+            if (user.RoleId < 1 || user.RoleId > 5)
+            {
+                return BadRequest("RoleId khong hop le.");
+            }
+
+            var role = await _context.Roles
                 .FirstOrDefaultAsync(x =>
                     x.RoleId == user.RoleId);
 
-        if (role == null)
-        {
-            return BadRequest(
-                "Role khong ton tai."
-            );
+            if (role == null)
+            {
+                return BadRequest("Role khong ton tai.");
+            }
+
+            userHienTai.HoTen = user.HoTen.Trim();
+            userHienTai.Email = user.Email.Trim();
+            userHienTai.SoDienThoai = user.SoDienThoai;
+            userHienTai.CCCD = user.CCCD;
+            userHienTai.RoleId = user.RoleId;
+            userHienTai.TrangThai = user.TrangThai;
         }
-
-        userHienTai.HoTen =
-            user.HoTen.Trim();
-
-        userHienTai.Email =
-            user.Email.Trim();
-
-        userHienTai.SoDienThoai =
-            user.SoDienThoai;
-
-        userHienTai.CCCD =
-            user.CCCD;
-
-        userHienTai.RoleId =
-            user.RoleId;
-
-        userHienTai.TrangThai =
-            user.TrangThai;
 
         await _context.SaveChangesAsync();
 
         await _auditLogService.GhiLog(
-            LayUserIdHienTai(),
+            userIdHienTai,
             "UPDATE",
             "User",
             userHienTai.UserId,
@@ -477,6 +411,8 @@ public class UserController : ControllerBase
     // =========================================================
     // ĐỔI MẬT KHẨU
     // PUT: api/User/1/doi-mat-khau
+    // - Admin: đổi mật khẩu bất kỳ ai
+    // - Cư dân / nhân viên: chỉ đổi mật khẩu của chính mình
     // =========================================================
 
     [HttpPut("{id}/doi-mat-khau")]
@@ -484,35 +420,34 @@ public class UserController : ControllerBase
         long id,
         DoiMatKhauDto dto)
     {
-        if (string.IsNullOrWhiteSpace(
-            dto.MatKhauMoi))
+        var userIdHienTai = LayUserIdHienTai();
+        var laAdmin = User.IsInRole("Admin");
+
+        // ✅ Chỉ Admin HOẶC chính chủ mới đổi được mật khẩu
+        if (!laAdmin && userIdHienTai != id)
         {
-            return BadRequest(
-                "Mat khau moi khong duoc de trong."
-            );
+            return Forbid();
         }
 
-        var user =
-            await _context.Users
-                .FirstOrDefaultAsync(x =>
-                    x.UserId == id);
+        if (string.IsNullOrWhiteSpace(dto.MatKhauMoi))
+        {
+            return BadRequest("Mat khau moi khong duoc de trong.");
+        }
+
+        var user = await _context.Users
+            .FirstOrDefaultAsync(x => x.UserId == id);
 
         if (user == null)
         {
-            return NotFound(
-                "User khong ton tai."
-            );
+            return NotFound("User khong ton tai.");
         }
 
-        user.MatKhau =
-            _passwordService.HashPassword(
-                dto.MatKhauMoi
-            );
+        user.MatKhau = _passwordService.HashPassword(dto.MatKhauMoi);
 
         await _context.SaveChangesAsync();
 
         await _auditLogService.GhiLog(
-            LayUserIdHienTai(),
+            userIdHienTai,
             "UPDATE",
             "User",
             user.UserId,
@@ -521,62 +456,51 @@ public class UserController : ControllerBase
 
         return Ok(new
         {
-            message =
-                "Doi mat khau thanh cong."
+            message = "Doi mat khau thanh cong."
         });
     }
 
     // =========================================================
-    // DELETE
+    // DELETE (XÓA MỀM)
     // DELETE: api/User/1
-    // XÓA MỀM
     // =========================================================
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(
-        long id)
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Delete(long id)
     {
-        var user =
-            await _context.Users
-                .FirstOrDefaultAsync(x =>
-                    x.UserId == id);
+        var user = await _context.Users
+            .FirstOrDefaultAsync(x => x.UserId == id);
 
         if (user == null)
         {
             return NotFound(new
             {
-                message =
-                    "User khong ton tai."
+                message = "User khong ton tai."
             });
         }
 
-        var userIdHienTai =
-            LayUserIdHienTai();
+        var userIdHienTai = LayUserIdHienTai();
 
         if (userIdHienTai.HasValue &&
             userIdHienTai.Value == id)
         {
             return BadRequest(new
             {
-                message =
-                    "Khong the xoa chinh minh."
+                message = "Khong the xoa chinh minh."
             });
         }
 
-        if (user.TrangThai ==
-            "DELETED")
+        if (user.TrangThai == "DELETED")
         {
             return Ok(new
             {
-                message =
-                    "User da bi xoa truoc do.",
-
+                message = "User da bi xoa truoc do.",
                 userId = id
             });
         }
 
-        user.TrangThai =
-            "DELETED";
+        user.TrangThai = "DELETED";
 
         await _context.SaveChangesAsync();
 
@@ -590,9 +514,7 @@ public class UserController : ControllerBase
 
         return Ok(new
         {
-            message =
-                "Xoa user thanh cong.",
-
+            message = "Xoa user thanh cong.",
             userId = id
         });
     }
