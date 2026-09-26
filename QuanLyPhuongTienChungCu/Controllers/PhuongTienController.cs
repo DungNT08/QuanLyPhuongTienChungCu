@@ -30,21 +30,84 @@ public class PhuongTienController : ControllerBase
 
     private string? LayRole()
     {
-        return User.FindFirst(ClaimTypes.Role)?.Value;
+        var role =
+            User.FindFirst(ClaimTypes.Role)?.Value;
+
+        if (!string.IsNullOrWhiteSpace(role))
+        {
+            return role;
+        }
+
+        role =
+            User.FindFirst("role")?.Value;
+
+        return role;
     }
 
     private long? LayUserId()
     {
-        var userIdClaim = User.FindFirst(
-            ClaimTypes.NameIdentifier
-        )?.Value;
+        var userIdClaim =
+            User.FindFirst(
+                ClaimTypes.NameIdentifier
+            )?.Value;
 
-        if (long.TryParse(userIdClaim, out var userId))
+        if (
+            long.TryParse(
+                userIdClaim,
+                out var userId
+            )
+        )
         {
             return userId;
         }
 
+        // Trường hợp JWT dùng sub
+        userIdClaim =
+            User.FindFirst("sub")?.Value;
+
+        if (
+            long.TryParse(
+                userIdClaim,
+                out var userIdSub
+            )
+        )
+        {
+            return userIdSub;
+        }
+
+        // Trường hợp JWT dùng userId
+        userIdClaim =
+            User.FindFirst("userId")?.Value;
+
+        if (
+            long.TryParse(
+                userIdClaim,
+                out var userIdCustom
+            )
+        )
+        {
+            return userIdCustom;
+        }
+
         return null;
+    }
+
+    private bool LaCuDan()
+    {
+        return string.Equals(
+            LayRole(),
+            "CuDan",
+            StringComparison.OrdinalIgnoreCase
+        );
+    }
+
+    private bool LaAdmin()
+    {
+        return string.Equals(
+            LayRole(),
+            "Admin",
+            StringComparison.OrdinalIgnoreCase
+        );
     }
 
     // =====================================================
@@ -55,124 +118,222 @@ public class PhuongTienController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<object>>> GetAll()
     {
-        var role = LayRole();
+        var query =
+            _context.PhuongTiens
+                .Include(
+                    x => x.LoaiPhuongTien
+                )
+                .AsQueryable();
 
-        var query = _context.PhuongTiens
-            .Include(x => x.LoaiPhuongTien)
-            .AsQueryable();
+        // =================================================
+        // CƯ DÂN
+        // Chỉ hiển thị xe đã được duyệt
+        // =================================================
 
-        // -------------------------------------------------
-        // CƯ DÂN CHỈ XEM PHƯƠNG TIỆN CỦA MÌNH
-        // -------------------------------------------------
-
-        if (role == "CuDan")
+        if (LaCuDan())
         {
-            var userId = LayUserId();
+            var userId =
+                LayUserId();
 
             if (userId == null)
             {
-                return Unauthorized();
+                return Unauthorized(new
+                {
+                    message =
+                        "Không xác định được người dùng."
+                });
             }
 
-            query = query.Where(x => x.UserId == userId);
+            query =
+                query.Where(
+                    x =>
+                        x.UserId ==
+                        userId.Value
+                        &&
+                        x.TrangThai ==
+                        "ACTIVE"
+                );
         }
 
-        // -------------------------------------------------
-        // DANH SÁCH
-        // -------------------------------------------------
+        // =================================================
+        // LẤY DANH SÁCH
+        // =================================================
 
-        var danhSach = await query
-            .OrderBy(x => x.PhuongTienId)
-            .Select(x => new
-            {
-                phuongTienId = x.PhuongTienId,
+        var danhSach =
+            await query
+                .OrderBy(
+                    x =>
+                        x.PhuongTienId
+                )
+                .Select(x => new
+                {
+                    phuongTienId =
+                        x.PhuongTienId,
 
-                bienSo = x.BienSo,
+                    bienSo =
+                        x.BienSo,
 
-                loaiPhuongTienId = x.LoaiPhuongTienId,
+                    loaiPhuongTienId =
+                        x.LoaiPhuongTienId,
 
-                loaiXe = x.LoaiPhuongTien != null
-                    ? x.LoaiPhuongTien.TenLoai
-                    : "",
+                    loaiXe =
+                        x.LoaiPhuongTien != null
+                            ? x.LoaiPhuongTien.TenLoai
+                            : "",
 
-                userId = x.UserId,
+                    userId =
+                        x.UserId,
 
-                tenChuXe = x.TenChuXe,
+                    // LẤY TÊN CHỦ XE MỚI NHẤT TỪ USERS
+                    tenChuXe =
+                        _context.Users
+                            .Where(
+                                u =>
+                                    u.UserId ==
+                                    x.UserId
+                            )
+                            .Select(
+                                u =>
+                                    u.HoTen
+                            )
+                            .FirstOrDefault()
+                            ?? x.TenChuXe
+                            ?? "Cư dân",
 
-                maCanHo = x.MaCanHo,
+                    maCanHo =
+                        x.MaCanHo,
 
-                trangThai = x.TrangThai,
+                    trangThai =
+                        x.TrangThai,
 
-                ngayTao = x.NgayTao
-            })
-            .ToListAsync();
+                    ngayTao =
+                        x.NgayTao
+                })
+                .ToListAsync();
 
         return Ok(danhSach);
     }
 
     // =====================================================
     // GET BY ID
-    // GET: api/PhuongTien/1
+    // GET: api/PhuongTien/2
     // =====================================================
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<object>> GetById(long id)
+    [HttpGet("{id:long}")]
+    public async Task<ActionResult<object>> GetById(
+        long id
+    )
     {
-        var phuongTien = await _context.PhuongTiens
-            .Include(x => x.LoaiPhuongTien)
-            .FirstOrDefaultAsync(
-                x => x.PhuongTienId == id
-            );
+        var phuongTien =
+            await _context.PhuongTiens
+                .Include(
+                    x =>
+                        x.LoaiPhuongTien
+                )
+                .FirstOrDefaultAsync(
+                    x =>
+                        x.PhuongTienId ==
+                        id
+                );
 
         if (phuongTien == null)
         {
-            return NotFound(
-                "Phuong tien khong ton tai."
-            );
+            return NotFound(new
+            {
+                message =
+                    "Phương tiện không tồn tại."
+            });
         }
 
-        var role = LayRole();
+        // =================================================
+        // CƯ DÂN
+        // Chỉ xem xe của mình + đã duyệt
+        // =================================================
 
-        // -------------------------------------------------
-        // CƯ DÂN CHỈ ĐƯỢC XEM XE CỦA MÌNH
-        // -------------------------------------------------
-
-        if (role == "CuDan")
+        if (LaCuDan())
         {
-            var userId = LayUserId();
+            var userId =
+                LayUserId();
 
             if (userId == null)
             {
-                return Unauthorized();
+                return Unauthorized(new
+                {
+                    message =
+                        "Không xác định được người dùng."
+                });
             }
 
-            if (phuongTien.UserId != userId)
+            if (
+                phuongTien.UserId !=
+                userId.Value
+            )
             {
                 return Forbid();
             }
+
+            if (
+                phuongTien.TrangThai !=
+                "ACTIVE"
+            )
+            {
+                return NotFound(new
+                {
+                    message =
+                        "Phương tiện chưa được duyệt."
+                });
+            }
         }
+
+        // =================================================
+        // LẤY TÊN CHỦ XE MỚI NHẤT TỪ USERS
+        // =================================================
+
+        var tenChuXe =
+            await _context.Users
+                .Where(
+                    u =>
+                        u.UserId ==
+                        phuongTien.UserId
+                )
+                .Select(
+                    u =>
+                        u.HoTen
+                )
+                .FirstOrDefaultAsync();
 
         return Ok(new
         {
-            phuongTienId = phuongTien.PhuongTienId,
+            phuongTienId =
+                phuongTien.PhuongTienId,
 
-            bienSo = phuongTien.BienSo,
+            bienSo =
+                phuongTien.BienSo,
 
             loaiPhuongTienId =
                 phuongTien.LoaiPhuongTienId,
 
             loaiXe =
-                phuongTien.LoaiPhuongTien?.TenLoai,
+                phuongTien.LoaiPhuongTien != null
+                    ? phuongTien.LoaiPhuongTien.TenLoai
+                    : "",
 
-            userId = phuongTien.UserId,
+            userId =
+                phuongTien.UserId,
 
-            tenChuXe = phuongTien.TenChuXe,
+            tenChuXe =
+                tenChuXe
+                ?? phuongTien.TenChuXe
+                ?? "Cư dân",
 
-            maCanHo = phuongTien.MaCanHo,
+            maCanHo =
+                phuongTien.MaCanHo,
 
-            trangThai = phuongTien.TrangThai,
+            trangThai =
+                phuongTien.TrangThai,
 
-            ngayTao = phuongTien.NgayTao
+            ngayTao =
+                phuongTien.NgayTao
         });
     }
 
@@ -185,19 +346,44 @@ public class PhuongTienController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<IEnumerable<object>>> GetCanHo()
     {
-        var danhSach = await _context.CanHos
-            .OrderBy(x => x.MaCanHo)
-            .Select(x => new
-            {
-                maCanHo = x.MaCanHo,
+        var danhSach =
+            await _context
+                .CanHos
+                .OrderBy(
+                    x =>
+                        x.MaCanHo
+                )
+                .Select(x => new
+                {
+                    canHoId =
+                        x.CanHoId,
 
-                userId = x.UserId,
+                    maCanHo =
+                        x.MaCanHo,
 
-                hoTen = x.User != null
-                    ? x.User.HoTen
-                    : ""
-            })
-            .ToListAsync();
+                    trangThai =
+                        x.TrangThai,
+
+                    // CanHo.UserId
+                    userId =
+                        x.UserId,
+
+                    // Lấy tên user theo CanHo.UserId
+                    hoTen =
+                        _context.Users
+                            .Where(
+                                u =>
+                                    u.UserId ==
+                                    x.UserId
+                            )
+                            .Select(
+                                u =>
+                                    u.HoTen
+                            )
+                            .FirstOrDefault()
+                            ?? ""
+                })
+                .ToListAsync();
 
         return Ok(danhSach);
     }
@@ -209,133 +395,324 @@ public class PhuongTienController : ControllerBase
 
     [HttpPost]
     public async Task<ActionResult<object>> Create(
-        PhuongTien phuongTien)
+        PhuongTien phuongTien
+    )
     {
-        // -------------------------------------------------
+        // =================================================
+        // ROLE
+        // =================================================
+
+        var role =
+            LayRole();
+
+        if (
+            role != "Admin" &&
+            role != "CuDan"
+        )
+        {
+            return Forbid();
+        }
+
+        // =================================================
         // KIỂM TRA LOẠI PHƯƠNG TIỆN
-        // -------------------------------------------------
+        // =================================================
 
         var loaiPhuongTien =
-            await _context.LoaiPhuongTiens
+            await _context
+                .LoaiPhuongTiens
                 .FindAsync(
                     phuongTien.LoaiPhuongTienId
                 );
 
         if (loaiPhuongTien == null)
         {
-            return BadRequest(
-                "Loai phuong tien khong ton tai."
-            );
+            return BadRequest(new
+            {
+                message =
+                    "Loại phương tiện không tồn tại."
+            });
         }
 
-        // -------------------------------------------------
+        // =================================================
         // KIỂM TRA BIỂN SỐ
-        // -------------------------------------------------
+        // =================================================
+
+        if (
+            string.IsNullOrWhiteSpace(
+                phuongTien.BienSo
+            )
+        )
+        {
+            return BadRequest(new
+            {
+                message =
+                    "Vui lòng nhập biển số xe."
+            });
+        }
+
+        phuongTien.BienSo =
+            phuongTien.BienSo
+                .Trim()
+                .ToUpper();
+
+        // =================================================
+        // KIỂM TRA TRÙNG BIỂN SỐ
+        // =================================================
 
         var bienSoDaTonTai =
-            await _context.PhuongTiens
-                .AnyAsync(x =>
-                    x.BienSo == phuongTien.BienSo
+            await _context
+                .PhuongTiens
+                .AnyAsync(
+                    x =>
+                        x.BienSo ==
+                        phuongTien.BienSo
+                        &&
+                        (
+                            x.TrangThai ==
+                                "ACTIVE"
+                            ||
+                            x.TrangThai ==
+                                "PENDING"
+                        )
                 );
 
         if (bienSoDaTonTai)
         {
-            return Conflict(
-                "Bien so da ton tai."
-            );
+            return Conflict(new
+            {
+                message =
+                    "Biển số xe đã tồn tại hoặc đang chờ duyệt."
+            });
         }
 
-        var role = LayRole();
-
         // =================================================
-        // ADMIN
-        // Chọn căn hộ -> tự tìm UserId + HoTen
+        // ADMIN THÊM XE
+        //
+        // Admin chọn căn hộ
+        // → CanHo.UserId
+        // → User.UserId
+        // → lấy cư dân
+        // → ACTIVE
         // =================================================
 
-        if (role == "Admin")
+        if (LaAdmin())
         {
-            if (string.IsNullOrWhiteSpace(
-                phuongTien.MaCanHo))
+            if (
+                string.IsNullOrWhiteSpace(
+                    phuongTien.MaCanHo
+                )
+            )
             {
-                return BadRequest(
-                    "Vui long chon can ho."
-                );
+                return BadRequest(new
+                {
+                    message =
+                        "Vui lòng chọn căn hộ."
+                });
             }
 
-            var canHo = await _context.CanHos
-                .Include(x => x.User)
-                .FirstOrDefaultAsync(
-                    x => x.MaCanHo ==
-                         phuongTien.MaCanHo
-                );
+            var canHo =
+                await _context
+                    .CanHos
+                    .FirstOrDefaultAsync(
+                        x =>
+                            x.MaCanHo ==
+                            phuongTien.MaCanHo
+                    );
 
             if (canHo == null)
             {
-                return BadRequest(
-                    "Can ho khong ton tai."
-                );
+                return BadRequest(new
+                {
+                    message =
+                        "Căn hộ không tồn tại."
+                });
+            }
+
+            // =================================================
+            // CĂN HỘ CHƯA CÓ USER
+            // =================================================
+
+            if (canHo.UserId == null)
+            {
+                return BadRequest(new
+                {
+                    message =
+                        "Căn hộ này chưa có cư dân."
+                });
+            }
+
+            // =================================================
+            // TÌM CƯ DÂN THEO CanHo.UserId
+            // =================================================
+
+            var user =
+                await _context
+                    .Users
+                    .FirstOrDefaultAsync(
+                        u =>
+                            u.UserId ==
+                            canHo.UserId.Value
+                            &&
+                            u.RoleId ==
+                            4
+                    );
+
+            if (user == null)
+            {
+                return BadRequest(new
+                {
+                    message =
+                        "Căn hộ này chưa có cư dân."
+                });
             }
 
             phuongTien.UserId =
-                canHo.UserId;
+                user.UserId;
 
             phuongTien.TenChuXe =
-                canHo.User?.HoTen ?? "";
+                user.HoTen;
+
+            phuongTien.MaCanHo =
+                canHo.MaCanHo;
+
+            // Admin thêm → hoạt động luôn
+            phuongTien.TrangThai =
+                "ACTIVE";
         }
 
         // =================================================
-        // CƯ DÂN
-        // Không cho frontend tự truyền UserId
+        // CƯ DÂN THÊM XE
+        //
+        // User đăng nhập
+        // → tìm CanHo.UserId
+        // → lấy MaCanHo
+        // → PENDING
         // =================================================
 
-        if (role == "CuDan")
+        if (LaCuDan())
         {
-            var userId = LayUserId();
+            var userId =
+                LayUserId();
 
             if (userId == null)
             {
-                return Unauthorized();
+                return Unauthorized(new
+                {
+                    message =
+                        "Không xác định được người dùng từ token."
+                });
             }
 
-            phuongTien.UserId = userId.Value;
+            var user =
+                await _context
+                    .Users
+                    .FirstOrDefaultAsync(
+                        x =>
+                            x.UserId ==
+                            userId.Value
+                    );
 
-            var user = await _context.Users
-                .FindAsync(userId.Value);
-
-            if (user != null)
+            if (user == null)
             {
-                phuongTien.TenChuXe =
-                    user.HoTen;
+                return Unauthorized(new
+                {
+                    message =
+                        "Tài khoản không tồn tại."
+                });
             }
+
+            // =================================================
+            // GÁN USER
+            // =================================================
+
+            phuongTien.UserId =
+                user.UserId;
+
+            phuongTien.TenChuXe =
+                user.HoTen;
+
+            // =================================================
+            // TÌM CĂN HỘ THEO CanHo.UserId
+            // =================================================
+
+            var canHo =
+                await _context
+                    .CanHos
+                    .FirstOrDefaultAsync(
+                        x =>
+                            x.UserId ==
+                            user.UserId
+                    );
+
+            if (canHo == null)
+            {
+                return BadRequest(new
+                {
+                    message =
+                        "Tài khoản của bạn chưa được gán căn hộ."
+                });
+            }
+
+            phuongTien.MaCanHo =
+                canHo.MaCanHo;
+
+            // =================================================
+            // CƯ DÂN THÊM → CHỜ DUYỆT
+            // =================================================
+
+            phuongTien.TrangThai =
+                "PENDING";
         }
 
-        // -------------------------------------------------
-        // LƯU
-        // -------------------------------------------------
+        // =================================================
+        // NGÀY TẠO
+        // =================================================
 
-        _context.PhuongTiens.Add(phuongTien);
+        if (
+            phuongTien.NgayTao ==
+            default
+        )
+        {
+            phuongTien.NgayTao =
+                DateTime.UtcNow;
+        }
 
-        await _context.SaveChangesAsync();
+        // =================================================
+        // LƯU DATABASE
+        // =================================================
 
-        // -------------------------------------------------
+        _context
+            .PhuongTiens
+            .Add(phuongTien);
+
+        await _context
+            .SaveChangesAsync();
+
+        // =================================================
         // AUDIT LOG
-        // -------------------------------------------------
+        // =================================================
 
-        var currentUserId = LayUserId();
+        var currentUserId =
+            LayUserId();
 
         await _auditLogService.GhiLog(
             currentUserId,
             "CREATE",
             "PhuongTien",
             phuongTien.PhuongTienId,
-            $"Tao phuong tien {phuongTien.BienSo}"
+            $"Tao phuong tien {phuongTien.BienSo} - Trang thai: {phuongTien.TrangThai}"
         );
+
+        // =================================================
+        // TRẢ KẾT QUẢ
+        // =================================================
 
         return CreatedAtAction(
             nameof(GetById),
             new
             {
-                id = phuongTien.PhuongTienId
+                id =
+                    phuongTien.PhuongTienId
             },
             new
             {
@@ -371,193 +748,342 @@ public class PhuongTienController : ControllerBase
     // PUT: api/PhuongTien/2
     // =====================================================
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:long}")]
     public async Task<IActionResult> Update(
         long id,
-        PhuongTien phuongTien)
+        PhuongTien phuongTien
+    )
     {
-        // -------------------------------------------------
-        // KIỂM TRA ID
-        // -------------------------------------------------
-
-        if (id != phuongTien.PhuongTienId)
-        {
-            return BadRequest(
-                "Id khong khop."
-            );
-        }
-
-        // -------------------------------------------------
-        // TÌM PHƯƠNG TIỆN CŨ
-        // -------------------------------------------------
+        // =================================================
+        // TÌM XE CŨ
+        // =================================================
 
         var phuongTienCu =
-            await _context.PhuongTiens
+            await _context
+                .PhuongTiens
                 .FirstOrDefaultAsync(
-                    x => x.PhuongTienId == id
+                    x =>
+                        x.PhuongTienId ==
+                        id
                 );
 
         if (phuongTienCu == null)
         {
-            return NotFound(
-                "Phuong tien khong ton tai."
-            );
+            return NotFound(new
+            {
+                message =
+                    "Phương tiện không tồn tại."
+            });
         }
 
-        var role = LayRole();
+        // =================================================
+        // ROLE
+        // =================================================
+
+        var role =
+            LayRole();
+
+        if (
+            role != "Admin" &&
+            role != "CuDan"
+        )
+        {
+            return Forbid();
+        }
 
         // =================================================
         // CƯ DÂN CHỈ SỬA XE CỦA MÌNH
         // =================================================
 
-        if (role == "CuDan")
+        if (LaCuDan())
         {
-            var userId = LayUserId();
+            var userId =
+                LayUserId();
 
             if (userId == null)
             {
-                return Unauthorized();
+                return Unauthorized(new
+                {
+                    message =
+                        "Không xác định được người dùng."
+                });
             }
 
-            if (phuongTienCu.UserId != userId)
+            if (
+                phuongTienCu.UserId !=
+                userId.Value
+            )
             {
                 return Forbid();
             }
         }
 
-        // -------------------------------------------------
-        // KIỂM TRA LOẠI PHƯƠNG TIỆN
-        // -------------------------------------------------
+        // =================================================
+        // KIỂM TRA LOẠI XE
+        // =================================================
 
         var loaiPhuongTien =
-            await _context.LoaiPhuongTiens
+            await _context
+                .LoaiPhuongTiens
                 .FindAsync(
                     phuongTien.LoaiPhuongTienId
                 );
 
         if (loaiPhuongTien == null)
         {
-            return BadRequest(
-                "Loai phuong tien khong ton tai."
-            );
+            return BadRequest(new
+            {
+                message =
+                    "Loại phương tiện không tồn tại."
+            });
         }
 
-        // -------------------------------------------------
-        // KIỂM TRA BIỂN SỐ TRÙNG
-        // -------------------------------------------------
+        // =================================================
+        // KIỂM TRA BIỂN SỐ
+        // =================================================
+
+        if (
+            string.IsNullOrWhiteSpace(
+                phuongTien.BienSo
+            )
+        )
+        {
+            return BadRequest(new
+            {
+                message =
+                    "Vui lòng nhập biển số xe."
+            });
+        }
+
+        phuongTien.BienSo =
+            phuongTien.BienSo
+                .Trim()
+                .ToUpper();
+
+        // =================================================
+        // KIỂM TRA TRÙNG BIỂN SỐ
+        // =================================================
 
         var bienSoDaTonTai =
-            await _context.PhuongTiens
-                .AnyAsync(x =>
-                    x.BienSo ==
-                    phuongTien.BienSo
-                    &&
-                    x.PhuongTienId != id
+            await _context
+                .PhuongTiens
+                .AnyAsync(
+                    x =>
+                        x.BienSo ==
+                        phuongTien.BienSo
+                        &&
+                        x.PhuongTienId !=
+                        id
+                        &&
+                        (
+                            x.TrangThai ==
+                                "ACTIVE"
+                            ||
+                            x.TrangThai ==
+                                "PENDING"
+                        )
                 );
 
         if (bienSoDaTonTai)
         {
-            return Conflict(
-                "Bien so da ton tai."
-            );
+            return Conflict(new
+            {
+                message =
+                    "Biển số xe đã tồn tại."
+            });
         }
 
         // =================================================
-        // CẬP NHẬT CƠ BẢN
+        // CẬP NHẬT BIỂN SỐ
         // =================================================
 
         phuongTienCu.BienSo =
             phuongTien.BienSo;
 
+        // =================================================
+        // CẬP NHẬT LOẠI XE
+        // =================================================
+
         phuongTienCu.LoaiPhuongTienId =
             phuongTien.LoaiPhuongTienId;
 
-        phuongTienCu.TrangThai =
-            phuongTien.TrangThai;
-
         // =================================================
-        // ADMIN ĐỔI CĂN HỘ
+        // ADMIN
+        // Có thể đổi căn hộ + trạng thái
         // =================================================
 
-        if (role == "Admin")
+        if (LaAdmin())
         {
-            if (string.IsNullOrWhiteSpace(
-                phuongTien.MaCanHo))
+            if (
+                string.IsNullOrWhiteSpace(
+                    phuongTien.MaCanHo
+                )
+            )
             {
-                return BadRequest(
-                    "Vui long chon can ho."
-                );
+                return BadRequest(new
+                {
+                    message =
+                        "Vui lòng chọn căn hộ."
+                });
             }
 
-            var canHo = await _context.CanHos
-                .Include(x => x.User)
-                .FirstOrDefaultAsync(
-                    x => x.MaCanHo ==
-                         phuongTien.MaCanHo
-                );
+            var canHo =
+                await _context
+                    .CanHos
+                    .FirstOrDefaultAsync(
+                        x =>
+                            x.MaCanHo ==
+                            phuongTien.MaCanHo
+                    );
 
             if (canHo == null)
             {
-                return BadRequest(
-                    "Can ho khong ton tai."
-                );
+                return BadRequest(new
+                {
+                    message =
+                        "Căn hộ không tồn tại."
+                });
             }
 
-            // CẬP NHẬT CĂN HỘ
+            // =================================================
+            // CĂN HỘ CHƯA CÓ USER
+            // =================================================
+
+            if (canHo.UserId == null)
+            {
+                return BadRequest(new
+                {
+                    message =
+                        "Căn hộ này chưa có cư dân."
+                });
+            }
+
+            // =================================================
+            // TÌM USER THEO CanHo.UserId
+            // =================================================
+
+            var user =
+                await _context
+                    .Users
+                    .FirstOrDefaultAsync(
+                        u =>
+                            u.UserId ==
+                            canHo.UserId.Value
+                            &&
+                            u.RoleId ==
+                            4
+                    );
+
+            if (user == null)
+            {
+                return BadRequest(new
+                {
+                    message =
+                        "Căn hộ này chưa có cư dân."
+                });
+            }
+
             phuongTienCu.MaCanHo =
                 canHo.MaCanHo;
 
-            // CẬP NHẬT USER ID
             phuongTienCu.UserId =
-                canHo.UserId;
+                user.UserId;
 
-            // CẬP NHẬT TÊN CƯ DÂN
             phuongTienCu.TenChuXe =
-                canHo.User?.HoTen ?? "";
+                user.HoTen;
+
+            // Admin có thể đổi trạng thái
+            if (
+                !string.IsNullOrWhiteSpace(
+                    phuongTien.TrangThai
+                )
+            )
+            {
+                phuongTienCu.TrangThai =
+                    phuongTien.TrangThai;
+            }
         }
 
         // =================================================
         // CƯ DÂN
-        // Không cho tự đổi UserId
+        // Không đổi UserId
+        // Không đổi căn hộ
+        // Không đổi trạng thái
         // =================================================
 
-        if (role == "CuDan")
+        if (LaCuDan())
         {
-            var userId = LayUserId();
+            var userId =
+                LayUserId();
 
             if (userId == null)
             {
-                return Unauthorized();
+                return Unauthorized(new
+                {
+                    message =
+                        "Không xác định được người dùng."
+                });
             }
-
-            // Giữ nguyên căn hộ hiện tại.
-            // Không lấy MaCanHo từ frontend để tránh
-            // cư dân tự đổi sang căn hộ khác.
-            phuongTienCu.UserId =
-                userId.Value;
 
             var user =
-                await _context.Users
-                    .FindAsync(userId.Value);
+                await _context
+                    .Users
+                    .FirstOrDefaultAsync(
+                        x =>
+                            x.UserId ==
+                            userId.Value
+                    );
 
-            if (user != null)
+            if (user == null)
             {
-                phuongTienCu.TenChuXe =
-                    user.HoTen;
+                return Unauthorized(new
+                {
+                    message =
+                        "Tài khoản không tồn tại."
+                });
             }
+
+            phuongTienCu.UserId =
+                user.UserId;
+
+            phuongTienCu.TenChuXe =
+                user.HoTen;
+
+            // =================================================
+            // TÌM CĂN HỘ THEO CanHo.UserId
+            // =================================================
+
+            var canHo =
+                await _context
+                    .CanHos
+                    .FirstOrDefaultAsync(
+                        x =>
+                            x.UserId ==
+                            user.UserId
+                    );
+
+            if (canHo != null)
+            {
+                phuongTienCu.MaCanHo =
+                    canHo.MaCanHo;
+            }
+
+            // Không sửa TrangThai
         }
 
-        // -------------------------------------------------
+        // =================================================
         // SAVE
-        // -------------------------------------------------
+        // =================================================
 
-        await _context.SaveChangesAsync();
+        await _context
+            .SaveChangesAsync();
 
-        // -------------------------------------------------
+        // =================================================
         // AUDIT
-        // -------------------------------------------------
+        // =================================================
 
-        var currentUserId = LayUserId();
+        var currentUserId =
+            LayUserId();
 
         await _auditLogService.GhiLog(
             currentUserId,
@@ -571,147 +1097,310 @@ public class PhuongTienController : ControllerBase
     }
 
     // =====================================================
-// DELETE
-// DELETE: api/PhuongTien/{id}
-//
-// Quy tắc:
-// - Chưa từng có lượt gửi xe:
-//      => Xóa vật lý.
-//
-// - Đã có lượt gửi xe:
-//      => KHÔNG xóa vật lý.
-//      => Chuyển TrangThai = "INACTIVE"
-//         để giữ lại lịch sử.
-// =====================================================
+    // DELETE
+    // DELETE: api/PhuongTien/{id}
+    // =====================================================
 
-[HttpDelete("{id}")]
-public async Task<IActionResult> Delete(long id)
-{
-    // -------------------------------------------------
-    // TÌM PHƯƠNG TIỆN
-    // -------------------------------------------------
-
-    var phuongTien = await _context.PhuongTiens
-        .FirstOrDefaultAsync(x => x.PhuongTienId == id);
-
-    if (phuongTien == null)
+    [HttpDelete("{id:long}")]
+    public async Task<IActionResult> Delete(
+        long id
+    )
     {
-        return NotFound(new
+        // =================================================
+        // TÌM XE
+        // =================================================
+
+        var phuongTien =
+            await _context
+                .PhuongTiens
+                .FirstOrDefaultAsync(
+                    x =>
+                        x.PhuongTienId ==
+                        id
+                );
+
+        if (phuongTien == null)
         {
-            message = "Phương tiện không tồn tại."
-        });
-    }
-
-    // -------------------------------------------------
-    // KIỂM TRA ROLE
-    // -------------------------------------------------
-
-    var role = LayRole();
-
-    // -------------------------------------------------
-    // CƯ DÂN CHỈ ĐƯỢC XÓA XE CỦA MÌNH
-    // -------------------------------------------------
-
-    if (role == "CuDan")
-    {
-        var userId = LayUserId();
-
-        if (userId == null)
-        {
-            return Unauthorized(new
+            return NotFound(new
             {
-                message = "Không xác định được người dùng."
+                message =
+                    "Phương tiện không tồn tại."
             });
         }
 
-        if (phuongTien.UserId != userId.Value)
+        // =================================================
+        // CƯ DÂN CHỈ XÓA XE CỦA MÌNH
+        // =================================================
+
+        if (LaCuDan())
         {
-            return Forbid();
+            var userId =
+                LayUserId();
+
+            if (userId == null)
+            {
+                return Unauthorized(new
+                {
+                    message =
+                        "Không xác định được người dùng."
+                });
+            }
+
+            if (
+                phuongTien.UserId !=
+                userId.Value
+            )
+            {
+                return Forbid();
+            }
         }
+
+        // =================================================
+        // KIỂM TRA LỊCH SỬ
+        // =================================================
+
+        var daCoLuotGuiXe =
+            await _context
+                .LuotGuiXes
+                .AsNoTracking()
+                .AnyAsync(
+                    x =>
+                        x.PhuongTienId ==
+                        id
+                );
+
+        // =================================================
+        // ĐÃ CÓ LỊCH SỬ
+        // → INACTIVE
+        // =================================================
+
+        if (daCoLuotGuiXe)
+        {
+            var bienSo =
+                phuongTien.BienSo;
+
+            phuongTien.TrangThai =
+                "INACTIVE";
+
+            await _context
+                .SaveChangesAsync();
+
+            var currentUserId =
+                LayUserId();
+
+            await _auditLogService.GhiLog(
+                currentUserId,
+                "UPDATE",
+                "PhuongTien",
+                phuongTien.PhuongTienId,
+                $"Chuyen phuong tien {bienSo} sang INACTIVE do da co lich su gui xe"
+            );
+
+            return Ok(new
+            {
+                message =
+                    "Phương tiện đã có lịch sử gửi xe nên không thể xóa. Đã chuyển sang trạng thái ngừng hoạt động.",
+
+                trangThai =
+                    "INACTIVE",
+
+                phuongTienId =
+                    phuongTien.PhuongTienId
+            });
+        }
+
+        // =================================================
+        // CHƯA CÓ LỊCH SỬ
+        // → XÓA THẬT
+        // =================================================
+
+        var bienSoXoa =
+            phuongTien.BienSo;
+
+        _context
+            .PhuongTiens
+            .Remove(
+                phuongTien
+            );
+
+        await _context
+            .SaveChangesAsync();
+
+        // =================================================
+        // AUDIT
+        // =================================================
+
+        var currentUserIdDelete =
+            LayUserId();
+
+        await _auditLogService.GhiLog(
+            currentUserIdDelete,
+            "DELETE",
+            "PhuongTien",
+            id,
+            $"Xoa phuong tien {bienSoXoa}"
+        );
+
+        return Ok(new
+        {
+            message =
+                "Xóa phương tiện thành công.",
+
+            phuongTienId =
+                id
+        });
     }
 
-    // -------------------------------------------------
-    // KIỂM TRA LỊCH SỬ GỬI XE
-    // -------------------------------------------------
+    // =====================================================
+    // DUYỆT PHƯƠNG TIỆN
+    // PUT: api/PhuongTien/{id}/duyet
+    // =====================================================
 
-    var daCoLuotGuiXe = await _context.LuotGuiXes
-        .AsNoTracking()
-        .AnyAsync(x => x.PhuongTienId == id);
-
-    // -------------------------------------------------
-    // ĐÃ CÓ LỊCH SỬ
-    //
-    // KHÔNG ĐƯỢC Remove()
-    //
-    // Vì FK:
-    // LuotGuiXes.PhuongTienId
-    // -> PhuongTiens.PhuongTienId
-    // ON DELETE RESTRICT
-    // -------------------------------------------------
-
-    if (daCoLuotGuiXe)
+    [HttpPut("{id:long}/duyet")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DuyetPhuongTien(
+        long id
+    )
     {
-        var bienSo = phuongTien.BienSo;
+        var phuongTien =
+            await _context
+                .PhuongTiens
+                .FirstOrDefaultAsync(
+                    x =>
+                        x.PhuongTienId ==
+                        id
+                );
 
-        // Chỉ chuyển trạng thái
-        phuongTien.TrangThai = "INACTIVE";
+        if (phuongTien == null)
+        {
+            return NotFound(new
+            {
+                message =
+                    "Phương tiện không tồn tại."
+            });
+        }
 
-        await _context.SaveChangesAsync();
+        if (
+            phuongTien.TrangThai !=
+            "PENDING"
+        )
+        {
+            return BadRequest(new
+            {
+                message =
+                    "Phương tiện này không ở trạng thái chờ duyệt."
+            });
+        }
 
-        // Audit
-        var currentUserId = LayUserId();
+        phuongTien.TrangThai =
+            "ACTIVE";
+
+        await _context
+            .SaveChangesAsync();
+
+        // =================================================
+        // AUDIT
+        // =================================================
+
+        var currentUserId =
+            LayUserId();
 
         await _auditLogService.GhiLog(
             currentUserId,
             "UPDATE",
             "PhuongTien",
             phuongTien.PhuongTienId,
-            $"Chuyen phuong tien {bienSo} sang INACTIVE do da co lich su gui xe"
+            $"Duyet phuong tien {phuongTien.BienSo}"
         );
 
         return Ok(new
         {
             message =
-                "Phương tiện đã có lịch sử gửi xe nên không thể xóa. Đã chuyển sang trạng thái ngừng hoạt động.",
+                "Duyệt phương tiện thành công.",
 
-            trangThai = "INACTIVE",
+            phuongTienId =
+                phuongTien.PhuongTienId,
 
-            phuongTienId = phuongTien.PhuongTienId
+            trangThai =
+                "ACTIVE"
         });
     }
 
-    // -------------------------------------------------
-    // CHƯA CÓ LỊCH SỬ
-    //
-    // Lúc này mới được Remove()
-    // -------------------------------------------------
+    // =====================================================
+    // TỪ CHỐI PHƯƠNG TIỆN
+    // PUT: api/PhuongTien/{id}/tu-choi
+    // =====================================================
 
-    var bienSoXoa = phuongTien.BienSo;
-
-    _context.PhuongTiens.Remove(phuongTien);
-
-    await _context.SaveChangesAsync();
-
-    // -------------------------------------------------
-    // AUDIT
-    // -------------------------------------------------
-
-    var currentUserIdDelete = LayUserId();
-
-    await _auditLogService.GhiLog(
-        currentUserIdDelete,
-        "DELETE",
-        "PhuongTien",
-        id,
-        $"Xoa phuong tien {bienSoXoa}"
-    );
-
-    return Ok(new
+    [HttpPut("{id:long}/tu-choi")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> TuChoiPhuongTien(
+        long id
+    )
     {
-        message = "Xóa phương tiện thành công.",
-        phuongTienId = id
-    });
-}
+        var phuongTien =
+            await _context
+                .PhuongTiens
+                .FirstOrDefaultAsync(
+                    x =>
+                        x.PhuongTienId ==
+                        id
+                );
+
+        if (phuongTien == null)
+        {
+            return NotFound(new
+            {
+                message =
+                    "Phương tiện không tồn tại."
+            });
+        }
+
+        if (
+            phuongTien.TrangThai !=
+            "PENDING"
+        )
+        {
+            return BadRequest(new
+            {
+                message =
+                    "Phương tiện này không ở trạng thái chờ duyệt."
+            });
+        }
+
+        phuongTien.TrangThai =
+            "INACTIVE";
+
+        await _context
+            .SaveChangesAsync();
+
+        // =================================================
+        // AUDIT
+        // =================================================
+
+        var currentUserId =
+            LayUserId();
+
+        await _auditLogService.GhiLog(
+            currentUserId,
+            "UPDATE",
+            "PhuongTien",
+            phuongTien.PhuongTienId,
+            $"Tu choi phuong tien {phuongTien.BienSo}"
+        );
+
+        return Ok(new
+        {
+            message =
+                "Đã từ chối phương tiện.",
+
+            phuongTienId =
+                phuongTien.PhuongTienId,
+
+            trangThai =
+                "INACTIVE"
+        });
+    }
+
     // =====================================================
     // GET DANH SÁCH LOẠI PHƯƠNG TIỆN
     // GET: api/PhuongTien/loai-phuong-tien
@@ -721,9 +1410,11 @@ public async Task<IActionResult> Delete(long id)
     public async Task<IActionResult> GetLoaiPhuongTien()
     {
         var danhSach =
-            await _context.LoaiPhuongTiens
+            await _context
+                .LoaiPhuongTiens
                 .OrderBy(
-                    x => x.LoaiPhuongTienId
+                    x =>
+                        x.LoaiPhuongTienId
                 )
                 .Select(x => new
                 {
@@ -746,57 +1437,86 @@ public async Task<IActionResult> Delete(long id)
     // GET: api/PhuongTien/2/history
     // =====================================================
 
-    [HttpGet("{id}/history")]
-    public async Task<ActionResult<IEnumerable<LuotGuiXe>>>
-        GetHistory(long id)
+    [HttpGet("{id:long}/history")]
+    public async Task<
+        ActionResult<IEnumerable<LuotGuiXe>>
+    > GetHistory(
+        long id
+    )
     {
-        // -------------------------------------------------
-        // KIỂM TRA PHƯƠNG TIỆN
-        // -------------------------------------------------
-
         var phuongTien =
-            await _context.PhuongTiens
-                .FindAsync(id);
+            await _context
+                .PhuongTiens
+                .FirstOrDefaultAsync(
+                    x =>
+                        x.PhuongTienId ==
+                        id
+                );
 
         if (phuongTien == null)
         {
-            return NotFound(
-                "Phuong tien khong ton tai."
-            );
+            return NotFound(new
+            {
+                message =
+                    "Phương tiện không tồn tại."
+            });
         }
 
-        var role = LayRole();
-
         // =================================================
-        // CƯ DÂN CHỈ XEM LỊCH SỬ XE CỦA MÌNH
+        // CƯ DÂN
+        // Chỉ xem lịch sử xe của mình
         // =================================================
 
-        if (role == "CuDan")
+        if (LaCuDan())
         {
-            var userId = LayUserId();
+            var userId =
+                LayUserId();
 
             if (userId == null)
             {
-                return Unauthorized();
+                return Unauthorized(new
+                {
+                    message =
+                        "Không xác định được người dùng."
+                });
             }
 
-            if (phuongTien.UserId != userId)
+            if (
+                phuongTien.UserId !=
+                userId.Value
+            )
             {
                 return Forbid();
             }
+
+            if (
+                phuongTien.TrangThai !=
+                "ACTIVE"
+            )
+            {
+                return NotFound(new
+                {
+                    message =
+                        "Phương tiện chưa được duyệt."
+                });
+            }
         }
 
-        // -------------------------------------------------
+        // =================================================
         // LẤY LỊCH SỬ
-        // -------------------------------------------------
+        // =================================================
 
         var lichSu =
-            await _context.LuotGuiXes
+            await _context
+                .LuotGuiXes
                 .Where(
-                    x => x.PhuongTienId == id
+                    x =>
+                        x.PhuongTienId ==
+                        id
                 )
                 .OrderByDescending(
-                    x => x.ThoiGianVao
+                    x =>
+                        x.ThoiGianVao
                 )
                 .ToListAsync();
 
