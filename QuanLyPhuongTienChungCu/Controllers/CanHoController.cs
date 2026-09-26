@@ -100,7 +100,7 @@ public class CanHoController : ControllerBase
 
         // Kiểm tra trùng mã căn hộ
         var daTonTai = await _context.CanHos
-            .AnyAsync(c => c.MaCanHo == request.MaCanHo);
+            .AnyAsync(c => c.MaCanHo == request.MaCanHo.Trim());
 
         if (daTonTai)
         {
@@ -128,7 +128,7 @@ public class CanHoController : ControllerBase
         var canHo = new CanHo
         {
             MaCanHo = request.MaCanHo.Trim(),
-            Toa = request.Toa?.Trim(),
+            Toa = request.Toa?.Trim() ?? string.Empty,
             Tang = request.Tang,
             SoPhong = request.SoPhong,
             TrangThai = string.IsNullOrWhiteSpace(request.TrangThai)
@@ -178,6 +178,7 @@ public class CanHoController : ControllerBase
             });
         }
 
+        // Kiểm tra mã căn hộ
         if (string.IsNullOrWhiteSpace(request.MaCanHo))
         {
             return BadRequest(new
@@ -189,7 +190,7 @@ public class CanHoController : ControllerBase
         // Kiểm tra trùng mã với căn hộ khác
         var trungMa = await _context.CanHos
             .AnyAsync(c =>
-                c.MaCanHo == request.MaCanHo &&
+                c.MaCanHo == request.MaCanHo.Trim() &&
                 c.CanHoId != id
             );
 
@@ -201,7 +202,7 @@ public class CanHoController : ControllerBase
             });
         }
 
-        // Kiểm tra UserId
+        // Kiểm tra UserId nếu có
         if (request.UserId.HasValue)
         {
             var userTonTai = await _context.Users
@@ -216,8 +217,9 @@ public class CanHoController : ControllerBase
             }
         }
 
+        // Cập nhật dữ liệu
         canHo.MaCanHo = request.MaCanHo.Trim();
-        canHo.Toa = request.Toa?.Trim();
+        canHo.Toa = request.Toa?.Trim() ?? string.Empty;
         canHo.Tang = request.Tang;
         canHo.SoPhong = request.SoPhong;
 
@@ -283,11 +285,14 @@ public class CanHoRequest
 
     public string? Toa { get; set; }
 
-    public int? Tang { get; set; }
+    // Phải là int vì Model CanHo đang dùng int
+    public int Tang { get; set; }
 
-    public int? SoPhong { get; set; }
+    // Phải là int vì Model CanHo đang dùng int
+    public int SoPhong { get; set; }
 
     public string TrangThai { get; set; } = "Trống";
 
+    // Có thể không có chủ hộ
     public long? UserId { get; set; }
 }

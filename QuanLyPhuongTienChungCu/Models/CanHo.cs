@@ -23,6 +23,7 @@ public class CanHo
     [MaxLength(50)]
     public string TrangThai { get; set; } = "Trống";
 
+    // Có thể null nếu căn hộ chưa có chủ hộ
     public long? UserId { get; set; }
 
     // Quan hệ với User
