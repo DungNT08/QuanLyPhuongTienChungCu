@@ -13,6 +13,16 @@ public class CanHo
     [MaxLength(50)]
     public string MaCanHo { get; set; } = string.Empty;
 
+    [MaxLength(50)]
+    public string Toa { get; set; } = string.Empty;
+
+    public int Tang { get; set; }
+
+    public int SoPhong { get; set; }
+
+    [MaxLength(50)]
+    public string TrangThai { get; set; } = "Trống";
+
     public long? UserId { get; set; }
 
     // Quan hệ với User
