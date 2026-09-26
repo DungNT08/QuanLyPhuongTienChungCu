@@ -1,5 +1,7 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./HoSo.css";
+
+const API_URL = "http://localhost:5022/api";
 
 const HoSo = () => {
   const [hoSo, setHoSo] = useState({
@@ -9,62 +11,211 @@ const HoSo = () => {
     canHo: "",
     soDienThoai: "",
     email: "",
-    diaChi: "",
-    anhDaiDien: "",        // 👈 URL hoặc base64 ảnh
+    cccd: "",
+    anhDaiDien: "",
+    userId: null,
+    roleId: null,
+    trangThai: "ACTIVE",
   });
+
+  const [loading, setLoading] = useState(true);
+  const [loi, setLoi] = useState("");
 
   const [hienModal, setHienModal] = useState(false);
   const [formSua, setFormSua] = useState({ ...hoSo });
+  const [dangLuu, setDangLuu] = useState(false);
 
-  // Ref đến input file ẩn
   const fileInputRef = useRef(null);
 
-  // Mở hộp chọn file
+  // =====================================================
+  // TOKEN
+  // =====================================================
+  const layToken = () => localStorage.getItem("token");
+
+  const taoHeaders = (coBody = false) => {
+    const token = layToken();
+    const headers = { Accept: "application/json" };
+    if (coBody) headers["Content-Type"] = "application/json";
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    return headers;
+  };
+
+  const layNoiDungLoi = async (response) => {
+    try {
+      const text = await response.text();
+      if (!text) return `HTTP ${response.status}`;
+      try {
+        const data = JSON.parse(text);
+        if (typeof data === "string") return data;
+        return data.message || data.title || data.error || `HTTP ${response.status}`;
+      } catch {
+        return text;
+      }
+    } catch {
+      return `HTTP ${response.status}`;
+    }
+  };
+
+  // =====================================================
+  // TẢI HỒ SƠ TỪ /User/{id}
+  // =====================================================
+  const taiHoSo = async () => {
+    try {
+      setLoading(true);
+      setLoi("");
+
+      // ✅ Lấy userId từ localStorage (giống HoSoAdmin)
+      let userId = null;
+      try {
+        const userStr = localStorage.getItem("user");
+        if (userStr) {
+          const u = JSON.parse(userStr);
+          userId = u.userId ?? u.UserId ?? null;
+        }
+      } catch (e) {
+        console.warn("Không đọc được user từ localStorage:", e);
+      }
+
+      if (!userId) {
+        throw new Error(
+          "Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại."
+        );
+      }
+
+      // ✅ Gọi /User/{id}
+      const response = await fetch(`${API_URL}/User/${userId}`, {
+        method: "GET",
+        headers: taoHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error(await layNoiDungLoi(response));
+      }
+
+      const data = await response.json();
+
+      setHoSo({
+        hoTen: data.hoTen ?? "",
+        vaiTro: data.tenRole ?? "Cư dân",
+        maCuDan: data.userId ?? "",
+        canHo: data.maCanHo ?? "",   // nếu API không trả, để trống
+        soDienThoai: data.soDienThoai ?? "",
+        email: data.email ?? "",
+        cccd: data.cccd ?? "",
+        anhDaiDien: data.anhDaiDien ?? "",
+        userId: data.userId ?? null,
+        roleId: data.roleId ?? null,
+        trangThai: data.trangThai ?? "ACTIVE",
+      });
+    } catch (error) {
+      console.error("Lỗi tải hồ sơ:", error);
+      setLoi(error.message || "Không thể tải thông tin hồ sơ.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    taiHoSo();
+  }, []);
+
+  // =====================================================
+  // CHỌN ẢNH
+  // =====================================================
   const moChonAnh = () => {
     fileInputRef.current?.click();
   };
 
-  // Xử lý khi chọn ảnh
   const xuLyChonAnh = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Kiểm tra định dạng
     if (!file.type.startsWith("image/")) {
       alert("Vui lòng chọn file ảnh (JPG, PNG...)");
       return;
     }
 
-    // Kiểm tra kích thước (tối đa 5MB)
     if (file.size > 5 * 1024 * 1024) {
       alert("Ảnh không được vượt quá 5MB");
       return;
     }
 
-    // Đọc file thành base64 để hiển thị ngay
     const reader = new FileReader();
     reader.onload = (event) => {
-      const anhMoi = event.target.result;
-      setHoSo((prev) => ({ ...prev, anhDaiDien: anhMoi }));
-      // TODO: gọi API upload ảnh lên server
+      setHoSo((prev) => ({ ...prev, anhDaiDien: event.target.result }));
     };
     reader.readAsDataURL(file);
   };
 
+  // =====================================================
+  // MỞ / LƯU MODAL
+  // =====================================================
   const moChinhSua = () => {
     setFormSua({ ...hoSo });
     setHienModal(true);
   };
 
-  const luuChinhSua = () => {
-    setHoSo({ ...formSua });
-    setHienModal(false);
-    alert("Đã lưu thông tin!");
+  const luuChinhSua = async () => {
+    if (dangLuu) return;
+
+    try {
+      setDangLuu(true);
+
+      // ⚠️ Controller Update yêu cầu RoleId và TrangThai → gửi kèm
+      const body = {
+        hoTen: formSua.hoTen,
+        soDienThoai: formSua.soDienThoai,
+        email: formSua.email,
+        cccd: formSua.cccd,
+        roleId: formSua.roleId ?? 4,           // 4 = Cư dân
+        trangThai: formSua.trangThai ?? "ACTIVE",
+      };
+
+      const response = await fetch(
+        `${API_URL}/User/${hoSo.userId}`,
+        {
+          method: "PUT",
+          headers: taoHeaders(true),
+          body: JSON.stringify(body),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(await layNoiDungLoi(response));
+      }
+
+      setHoSo({ ...formSua });
+      setHienModal(false);
+      alert("Đã lưu thông tin!");
+    } catch (error) {
+      console.error("Lỗi lưu hồ sơ:", error);
+      alert(error.message || "Không thể lưu thông tin hồ sơ.");
+    } finally {
+      setDangLuu(false);
+    }
   };
 
   const doiMatKhau = () => {
     alert("Mở trang đổi mật khẩu");
   };
+
+  // =====================================================
+  // RENDER
+  // =====================================================
+  if (loading) {
+    return (
+      <div className="hs-wrapper">
+        <div className="hs-body">
+          <div className="hs-title-bar">
+            <h1>Hồ sơ cá nhân</h1>
+          </div>
+          <div className="hs-card" style={{ textAlign: "center", padding: 40 }}>
+            Đang tải thông tin...
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="hs-wrapper">
@@ -73,7 +224,20 @@ const HoSo = () => {
           <h1>Hồ sơ cá nhân</h1>
         </div>
 
-        {/* INPUT FILE ẨN */}
+        {loi && (
+          <div
+            className="hs-card"
+            style={{
+              color: "#b91c1c",
+              background: "#fff1f2",
+              border: "1px solid #fecaca",
+              marginBottom: 20,
+            }}
+          >
+            ⚠️ {loi}
+          </div>
+        )}
+
         <input
           type="file"
           accept="image/*"
@@ -85,7 +249,6 @@ const HoSo = () => {
         <div className="hs-grid">
           {/* CỘT TRÁI */}
           <div className="hs-card hs-card-left">
-            {/* AVATAR — CLICK ĐỂ ĐỔI */}
             <div
               className="hs-avatar-wrap"
               onClick={moChonAnh}
@@ -102,8 +265,6 @@ const HoSo = () => {
                   <div className="hs-avatar-icon">👤</div>
                 )}
               </div>
-
-              {/* Icon máy ảnh nhỏ ở góc */}
               <div className="hs-avatar-camera">📷</div>
             </div>
 
@@ -118,6 +279,10 @@ const HoSo = () => {
               <div className="hs-info-mini-row">
                 <span className="hs-info-mini-label">Căn hộ:</span>
                 <span className="hs-info-mini-value">{hoSo.canHo || "—"}</span>
+              </div>
+              <div className="hs-info-mini-row">
+                <span className="hs-info-mini-label">CCCD:</span>
+                <span className="hs-info-mini-value">{hoSo.cccd || "—"}</span>
               </div>
             </div>
 
@@ -139,15 +304,9 @@ const HoSo = () => {
               <label>Email</label>
               <span>{hoSo.email || "Chưa cập nhật"}</span>
             </div>
-
-            <div className="hs-field">
-              <label>Địa chỉ</label>
-              <span>{hoSo.diaChi || "Chưa cập nhật"}</span>
-            </div>
           </div>
         </div>
 
-        {/* NÚT ĐỔI MẬT KHẨU */}
         <div className="hs-card hs-card-password">
           <button className="hs-btn-password" onClick={doiMatKhau}>
             <span className="hs-lock-icon">🔒</span>
@@ -156,7 +315,7 @@ const HoSo = () => {
         </div>
       </div>
 
-      {/* MODAL CHỈNH SỬA */}
+      {/* MODAL */}
       {hienModal && (
         <div className="hs-modal-overlay" onClick={() => setHienModal(false)}>
           <div className="hs-modal" onClick={(e) => e.stopPropagation()}>
@@ -167,7 +326,9 @@ const HoSo = () => {
               <input
                 type="text"
                 value={formSua.hoTen}
-                onChange={(e) => setFormSua({ ...formSua, hoTen: e.target.value })}
+                onChange={(e) =>
+                  setFormSua({ ...formSua, hoTen: e.target.value })
+                }
               />
             </div>
 
@@ -176,7 +337,9 @@ const HoSo = () => {
               <input
                 type="text"
                 value={formSua.soDienThoai}
-                onChange={(e) => setFormSua({ ...formSua, soDienThoai: e.target.value })}
+                onChange={(e) =>
+                  setFormSua({ ...formSua, soDienThoai: e.target.value })
+                }
               />
             </div>
 
@@ -185,25 +348,37 @@ const HoSo = () => {
               <input
                 type="email"
                 value={formSua.email}
-                onChange={(e) => setFormSua({ ...formSua, email: e.target.value })}
+                onChange={(e) =>
+                  setFormSua({ ...formSua, email: e.target.value })
+                }
               />
             </div>
 
             <div className="hs-modal-field">
-              <label>Địa chỉ</label>
+              <label>CCCD</label>
               <input
                 type="text"
-                value={formSua.diaChi}
-                onChange={(e) => setFormSua({ ...formSua, diaChi: e.target.value })}
+                value={formSua.cccd}
+                onChange={(e) =>
+                  setFormSua({ ...formSua, cccd: e.target.value })
+                }
               />
             </div>
 
             <div className="hs-modal-actions">
-              <button className="hs-btn-cancel" onClick={() => setHienModal(false)}>
+              <button
+                className="hs-btn-cancel"
+                onClick={() => setHienModal(false)}
+                disabled={dangLuu}
+              >
                 Hủy
               </button>
-              <button className="hs-btn-save" onClick={luuChinhSua}>
-                Lưu
+              <button
+                className="hs-btn-save"
+                onClick={luuChinhSua}
+                disabled={dangLuu}
+              >
+                {dangLuu ? "Đang lưu..." : "Lưu"}
               </button>
             </div>
           </div>

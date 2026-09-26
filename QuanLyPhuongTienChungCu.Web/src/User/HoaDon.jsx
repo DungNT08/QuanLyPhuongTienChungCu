@@ -1,10 +1,92 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./HoaDon.css";
+
+const API_URL = "http://localhost:5022/api";
 
 const HoaDon = () => {
   const [tab, setTab] = useState("tat-ca");
-  const [danhSach] = useState([]);
+  const [danhSach, setDanhSach] = useState([]);
   const [hoaDonChon, setHoaDonChon] = useState(null);
+
+  const [loading, setLoading] = useState(true);
+  const [loi, setLoi] = useState("");
+
+  const layToken = () => localStorage.getItem("token");
+
+  const taoHeaders = () => {
+    const token = layToken();
+    const headers = { Accept: "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    return headers;
+  };
+
+  const layNoiDungLoi = async (response) => {
+    try {
+      const text = await response.text();
+      if (!text) return `HTTP ${response.status}`;
+      try {
+        const data = JSON.parse(text);
+        return data.message || data.title || `HTTP ${response.status}`;
+      } catch {
+        return text;
+      }
+    } catch {
+      return `HTTP ${response.status}`;
+    }
+  };
+
+  // =====================================================
+  // TẢI DANH SÁCH HÓA ĐƠN THEO USER ID
+  // =====================================================
+  useEffect(() => {
+    const taiHoaDon = async () => {
+      try {
+        setLoading(true);
+        setLoi("");
+
+        // ✅ Lấy userId từ localStorage
+        let userId = null;
+        try {
+          const userStr = localStorage.getItem("user");
+          if (userStr) {
+            const u = JSON.parse(userStr);
+            userId = u.userId ?? u.UserId ?? null;
+          }
+        } catch (e) {
+          console.warn("Không đọc được user từ localStorage:", e);
+        }
+
+        if (!userId) {
+          throw new Error(
+            "Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại."
+          );
+        }
+
+        // ✅ Gọi /ThanhToan/cua-toi/{userId}
+        const response = await fetch(
+          `${API_URL}/ThanhToan/cua-toi/${userId}`,
+          {
+            method: "GET",
+            headers: taoHeaders(),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(await layNoiDungLoi(response));
+        }
+
+        const data = await response.json();
+        setDanhSach(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Lỗi tải hóa đơn:", error);
+        setLoi(error.message || "Không thể tải danh sách hóa đơn.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    taiHoaDon();
+  }, []);
 
   const danhSachLoc = danhSach.filter((item) => {
     if (tab === "tat-ca") return true;
@@ -15,25 +97,34 @@ const HoaDon = () => {
 
   const formatGia = (n) => Number(n || 0).toLocaleString("vi-VN") + "đ";
 
+  if (loading) {
+    return (
+      <div className="hd-wrapper">
+        <div className="hd-body">
+          <div className="hd-title-bar">
+            <h1>Hóa đơn & thanh toán</h1>
+          </div>
+          <div className="hd-table-box" style={{ textAlign: "center", padding: 40 }}>
+            Đang tải dữ liệu...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // ===== TRANG CHI TIẾT =====
   if (hoaDonChon) {
     return (
       <div className="hd-wrapper">
         <div className="hd-body">
-          {/* TIÊU ĐỀ */}
           <div className="hd-title-bar">
             <h1>Chi tiết hóa đơn</h1>
           </div>
 
-          {/* NÚT QUAY LẠI */}
-          <button
-            className="hd-btn-back"
-            onClick={() => setHoaDonChon(null)}
-          >
+          <button className="hd-btn-back" onClick={() => setHoaDonChon(null)}>
             ← Quay lại
           </button>
 
-          {/* KHỐI THÔNG TIN HÓA ĐƠN */}
           <div className="hd-card">
             <div className="hd-info-header">
               <div>
@@ -59,21 +150,17 @@ const HoaDon = () => {
             </div>
           </div>
 
-          {/* KHỐI THÔNG TIN PHƯƠNG TIỆN */}
           <div className="hd-card">
             <h3 className="hd-card-title">Thông tin phương tiện</h3>
-
             <div className="hd-grid-2">
               <div className="hd-field">
                 <label>Loại xe</label>
                 <span>{hoaDonChon.loaiXe || "—"}</span>
               </div>
-
               <div className="hd-field">
                 <label>Biển số xe</label>
                 <span>{hoaDonChon.bienSo || "—"}</span>
               </div>
-
               <div className="hd-field hd-field-full">
                 <label>Thời gian gửi</label>
                 <span>{hoaDonChon.thoiGianGui || "—"}</span>
@@ -81,10 +168,8 @@ const HoaDon = () => {
             </div>
           </div>
 
-          {/* KHỐI CHI TIẾT PHÍ */}
           <div className="hd-card">
             <h3 className="hd-card-title">Chi tiết phí</h3>
-
             <table className="hd-table-detail">
               <thead>
                 <tr>
@@ -122,7 +207,6 @@ const HoaDon = () => {
             </div>
           </div>
 
-          {/* 2 NÚT */}
           <div className="hd-actions">
             <button
               className="hd-btn-download"
@@ -132,7 +216,6 @@ const HoaDon = () => {
             >
               📄 Tải hóa đơn (PDF)
             </button>
-
             <button
               className="hd-btn-cancel"
               onClick={() => setHoaDonChon(null)}
@@ -152,6 +235,19 @@ const HoaDon = () => {
         <div className="hd-title-bar">
           <h1>Hóa đơn & thanh toán</h1>
         </div>
+
+        {loi && (
+          <div
+            className="hd-table-box"
+            style={{
+              color: "#b91c1c",
+              background: "#fff1f2",
+              border: "1px solid #fecaca",
+            }}
+          >
+            ⚠️ {loi}
+          </div>
+        )}
 
         <div className="hd-table-box">
           <div className="hd-tabs">

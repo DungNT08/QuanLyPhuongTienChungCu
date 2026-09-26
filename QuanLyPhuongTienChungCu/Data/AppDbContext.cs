@@ -42,6 +42,8 @@ public class AppDbContext : DbContext
     public DbSet<AuditLog> AuditLogs =>
         Set<AuditLog>();
 
+    public DbSet<ThongBao> ThongBaos { get; set; }
+    public DbSet<ThongBaoDaDoc> ThongBaoDaDocs { get; set; }
     // =====================================================
     // MODEL CONFIGURATION
     // =====================================================

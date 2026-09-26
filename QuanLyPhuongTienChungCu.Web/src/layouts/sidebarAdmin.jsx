@@ -33,6 +33,7 @@ const danhSachMenu = [
   // =========================
   { icon: "◴", ten: "Lịch sử", duongDan: "/admin/lich-su" },
   { icon: "▥", ten: "Báo cáo", duongDan: "/admin/bao-cao" },
+  { icon: "🔔", ten: "Thông báo", duongDan: "/admin/thong-bao" },
 
   // =========================
   // TÀI KHOẢN
@@ -315,20 +316,6 @@ function SidebarAdmin({ duLieuTimKiem = [], onTimKiem }) {
           ref={adminRef}
           style={{ position: "relative" }}
         >
-
-          {/* ===============================================
-              THÔNG BÁO
-          =============================================== */}
-          <button
-            className="nut-thong-bao"
-            type="button"
-          >
-            🔔
-
-            <span className="so-thong-bao">
-              3
-            </span>
-          </button>
 
           {/* ===============================================
               THÔNG TIN ADMIN
