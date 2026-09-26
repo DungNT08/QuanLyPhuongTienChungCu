@@ -9,8 +9,6 @@
 }
 
 .hs-body {
-  margin-left: 240px;
-  width: calc(100% - 240px);
   min-height: 100vh;
   padding-top: 68px;
   box-sizing: border-box;
