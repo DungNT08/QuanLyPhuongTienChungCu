@@ -1,16 +1,27 @@
 /* =========================================================
    LICH GUI XE - USER
-   ========================================================= */
+========================================================= */
 
 /* =========================
    RESET
 ========================= */
 
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
 .lich-gui-xe-page {
-  width: calc(100% - 258px);
+
+  width: 100%;
+
   min-height: 100vh;
 
-  margin-left: 258px;
+  margin-left: 0;
 
   padding: 100px 30px 40px;
 
@@ -19,6 +30,13 @@
   box-sizing: border-box;
 
   overflow-x: hidden;
+
+}
+
+.lich-gui-xe-page > * {
+
+  max-width: 100%;
+
 }
 
 
@@ -27,6 +45,7 @@
 ========================= */
 
 .lich-gui-xe-header {
+
   width: 100%;
 
   margin: 0 0 24px;
@@ -36,9 +55,11 @@
   text-align: center;
 
   box-sizing: border-box;
+
 }
 
 .lich-gui-xe-header h1 {
+
   margin: 0;
 
   padding: 0;
@@ -50,9 +71,11 @@
   line-height: 1.3;
 
   font-weight: 700;
+
 }
 
 .lich-gui-xe-header p {
+
   margin: 8px 0 0;
 
   color: #7690a5;
@@ -60,6 +83,7 @@
   font-size: 16px;
 
   line-height: 1.5;
+
 }
 
 
@@ -68,6 +92,7 @@
 ========================= */
 
 .bo-loc-lich-gui {
+
   width: 100%;
 
   min-height: 118px;
@@ -93,6 +118,7 @@
   box-shadow: 0 3px 12px rgba(30, 90, 130, 0.04);
 
   overflow: hidden;
+
 }
 
 
@@ -101,6 +127,7 @@
 ========================= */
 
 .o-loc {
+
   flex: 0 0 auto;
 
   display: flex;
@@ -110,9 +137,11 @@
   gap: 8px;
 
   box-sizing: border-box;
+
 }
 
 .o-loc label {
+
   display: block;
 
   margin: 0;
@@ -124,6 +153,7 @@
   font-weight: 600;
 
   white-space: nowrap;
+
 }
 
 
@@ -132,6 +162,7 @@
 ========================= */
 
 .input-ngay {
+
   width: 230px;
 
   height: 44px;
@@ -139,9 +170,11 @@
   position: relative;
 
   box-sizing: border-box;
+
 }
 
 .input-ngay input {
+
   display: block;
 
   width: 230px;
@@ -167,12 +200,15 @@
   outline: none;
 
   box-sizing: border-box;
+
 }
 
 .input-ngay input:focus {
+
   border-color: #2994dd;
 
   box-shadow: 0 0 0 3px rgba(41, 148, 221, 0.1);
+
 }
 
 
@@ -181,6 +217,7 @@
 ========================= */
 
 .btn-tim-kiem {
+
   flex: 0 0 auto;
 
   height: 44px;
@@ -208,16 +245,21 @@
   box-sizing: border-box;
 
   transition: 0.2s;
+
 }
 
 .btn-tim-kiem:hover {
+
   background: #197fc9;
+
 }
 
 .btn-tim-kiem:disabled {
+
   opacity: 0.6;
 
   cursor: not-allowed;
+
 }
 
 
@@ -226,6 +268,7 @@
 ========================= */
 
 .btn-xoa-loc {
+
   flex: 0 0 auto;
 
   height: 44px;
@@ -251,10 +294,13 @@
   box-sizing: border-box;
 
   transition: 0.2s;
+
 }
 
 .btn-xoa-loc:hover {
+
   background: #f5f8fa;
+
 }
 
 
@@ -263,6 +309,7 @@
 ========================================================= */
 
 .bang-lich-gui {
+
   width: 100%;
 
   margin: 0;
@@ -280,6 +327,7 @@
   overflow: hidden;
 
   box-shadow: 0 3px 12px rgba(30, 90, 130, 0.04);
+
 }
 
 
@@ -288,6 +336,7 @@
 ========================= */
 
 .bang-scroll {
+
   width: 100%;
 
   margin: 0;
@@ -299,12 +348,46 @@
   overflow-y: hidden;
 
   box-sizing: border-box;
+
+  scrollbar-width: thin;
+
+  scrollbar-color: #cbd5e1 #f1f5f9;
+
+}
+
+.bang-scroll::-webkit-scrollbar {
+
+  height: 8px;
+
+}
+
+.bang-scroll::-webkit-scrollbar-track {
+
+  background: #f1f5f9;
+
+  border-radius: 10px;
+
+}
+
+.bang-scroll::-webkit-scrollbar-thumb {
+
+  background: #cbd5e1;
+
+  border-radius: 10px;
+
+}
+
+.bang-scroll::-webkit-scrollbar-thumb:hover {
+
+  background: #94a3b8;
+
 }
 
 .bang-scroll table {
+
   width: 100%;
 
-  min-width: 1000px;
+  min-width: 900px;
 
   margin: 0;
 
@@ -315,6 +398,7 @@
   border-spacing: 0;
 
   table-layout: fixed;
+
 }
 
 
@@ -323,13 +407,16 @@
 ========================================================= */
 
 .bang-scroll thead {
+
   background: #f5f9fc;
+
 }
 
 .bang-scroll th {
+
   height: 52px;
 
-  padding: 0 10px;
+  padding: 0 8px;
 
   border-bottom: 1px solid #dce7ef;
 
@@ -344,6 +431,7 @@
   white-space: nowrap;
 
   box-sizing: border-box;
+
 }
 
 
@@ -352,9 +440,10 @@
 ========================================================= */
 
 .bang-scroll td {
+
   height: 62px;
 
-  padding: 8px 10px;
+  padding: 8px 8px;
 
   border-bottom: 1px solid #edf2f6;
 
@@ -367,14 +456,23 @@
   white-space: nowrap;
 
   box-sizing: border-box;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
 }
 
 .bang-scroll tbody tr:hover {
+
   background: #f9fcff;
+
 }
 
 .bang-scroll tbody tr:last-child td {
+
   border-bottom: none;
+
 }
 
 
@@ -383,9 +481,162 @@
 ========================= */
 
 .bang-scroll td.bien-so {
+
   color: #315f7d;
 
   font-weight: 700;
+
+}
+
+
+/* =========================================================
+   FIX ĐỘ RỘNG CỘT
+========================================================= */
+
+.bang-scroll th:nth-child(1),
+
+.bang-scroll td:nth-child(1) {
+
+  width: 45px; /* STT */
+
+}
+
+.bang-scroll th:nth-child(2),
+
+.bang-scroll td:nth-child(2) {
+
+  width: 110px; /* Biển số xe */
+
+}
+
+.bang-scroll th:nth-child(3),
+
+.bang-scroll td:nth-child(3) {
+
+  width: 90px; /* Loại xe */
+
+}
+
+.bang-scroll th:nth-child(4),
+
+.bang-scroll td:nth-child(4) {
+
+  width: 160px; /* Cư dân / Khách */
+
+}
+
+.bang-scroll th:nth-child(5),
+
+.bang-scroll td:nth-child(5) {
+
+  width: 130px; /* Thời gian vào */
+
+}
+
+.bang-scroll th:nth-child(6),
+
+.bang-scroll td:nth-child(6) {
+
+  width: 130px; /* Thời gian ra */
+
+}
+
+.bang-scroll th:nth-child(7),
+
+.bang-scroll td:nth-child(7) {
+
+  width: 125px; /* Thời gian gửi */
+
+}
+
+.bang-scroll th:nth-child(8),
+
+.bang-scroll td:nth-child(8) {
+
+  width: 105px; /* Trạng thái */
+
+}
+
+.bang-scroll th:nth-child(9),
+
+.bang-scroll td:nth-child(9) {
+
+  width: 70px; /* Chi tiết */
+
+}
+
+
+/* =========================
+   CỘT CƯ DÂN / KHÁCH
+========================= */
+
+.bang-scroll td.cu-dan-khach {
+
+  white-space: normal;
+
+  line-height: 1.4;
+
+  text-align: left;
+
+  padding-left: 12px;
+
+  padding-right: 12px;
+
+}
+
+.bang-scroll td.cu-dan-khach .ten-cu-dan {
+
+  display: block;
+
+  color: #58758c;
+
+  font-weight: 500;
+
+  font-size: 13px;
+
+}
+
+.bang-scroll td.cu-dan-khach .ma-can-ho {
+
+  display: inline-block;
+
+  margin-top: 3px;
+
+  padding: 2px 8px;
+
+  border-radius: 6px;
+
+  background: #dbeafe;
+
+  color: #1d4ed8;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+}
+
+
+/* =========================
+   BADGE KHÁCH
+========================= */
+
+.badge-khach {
+
+  display: inline-block;
+
+  background: #fef3c7;
+
+  color: #92400e;
+
+  padding: 4px 10px;
+
+  border-radius: 6px;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
 }
 
 
@@ -394,14 +645,16 @@
 ========================= */
 
 .trang-thai-da-thanh-toan,
+
 .trang-thai-dang-gui {
+
   display: inline-flex;
 
   align-items: center;
 
   justify-content: center;
 
-  min-width: 88px;
+  min-width: 80px;
 
   padding: 6px 10px;
 
@@ -414,18 +667,23 @@
   white-space: nowrap;
 
   box-sizing: border-box;
+
 }
 
 .trang-thai-da-thanh-toan {
+
   background: #dff7eb;
 
   color: #1ca66a;
+
 }
 
 .trang-thai-dang-gui {
+
   background: #e8f3ff;
 
   color: #248bd2;
+
 }
 
 
@@ -434,9 +692,10 @@
 ========================= */
 
 .btn-xem {
-  height: 32px;
 
-  padding: 0 12px;
+  height: 30px;
+
+  padding: 0 10px;
 
   border: 1px solid #d7e6f0;
 
@@ -455,12 +714,15 @@
   box-sizing: border-box;
 
   transition: 0.2s;
+
 }
 
 .btn-xem:hover {
+
   background: #eef7ff;
 
   border-color: #bcdff4;
+
 }
 
 
@@ -469,6 +731,7 @@
 ========================================================= */
 
 .khong-co-du-lieu {
+
   height: 220px !important;
 
   padding: 20px !important;
@@ -480,22 +743,27 @@
   color: #91a5b5 !important;
 
   box-sizing: border-box;
+
 }
 
 .icon-khong-co {
+
   margin-bottom: 10px;
 
   font-size: 34px;
 
   line-height: 1;
+
 }
 
 .khong-co-du-lieu p {
+
   margin: 0;
 
   color: #91a5b5;
 
   font-size: 14px;
+
 }
 
 
@@ -504,6 +772,7 @@
 ========================================================= */
 
 .bang-footer {
+
   width: 100%;
 
   min-height: 62px;
@@ -525,6 +794,19 @@
   color: #8aa0b1;
 
   font-size: 13px;
+
+  position: relative;
+
+  z-index: 1;
+
+}
+
+.bang-footer strong {
+
+  color: #58758c;
+
+  font-weight: 700;
+
 }
 
 
@@ -533,14 +815,17 @@
 ========================================================= */
 
 .phan-trang {
+
   display: flex;
 
   align-items: center;
 
   gap: 6px;
+
 }
 
 .phan-trang button {
+
   width: 34px;
 
   height: 34px;
@@ -560,19 +845,25 @@
   cursor: pointer;
 
   box-sizing: border-box;
+
 }
 
 .phan-trang button:hover:not(:disabled) {
+
   background: #f0f7fc;
+
 }
 
 .phan-trang button:disabled {
+
   opacity: 0.45;
 
   cursor: not-allowed;
+
 }
 
 .trang-hien-tai {
+
   width: 34px;
 
   height: 34px;
@@ -594,6 +885,7 @@
   font-weight: 600;
 
   box-sizing: border-box;
+
 }
 
 
@@ -604,23 +896,31 @@
 @media (max-width: 1100px) {
 
   .lich-gui-xe-page {
-    width: calc(100% - 258px);
 
-    margin-left: 258px;
+    width: 100%;
+
+    margin-left: 0;
 
     padding: 95px 20px 30px;
+
   }
 
   .bo-loc-lich-gui {
+
     flex-wrap: wrap;
 
     align-items: flex-end;
+
   }
 
   .input-ngay,
+
   .input-ngay input {
+
     width: 210px;
+
   }
+
 }
 
 
@@ -631,52 +931,73 @@
 @media (max-width: 700px) {
 
   .lich-gui-xe-page {
+
     width: 100%;
 
     margin-left: 0;
 
     padding: 90px 14px 30px;
+
   }
 
   .lich-gui-xe-header {
+
     text-align: left;
+
   }
 
   .lich-gui-xe-header h1 {
+
     font-size: 25px;
+
   }
 
   .lich-gui-xe-header p {
+
     font-size: 14px;
+
   }
 
   .bo-loc-lich-gui {
+
     flex-direction: column;
 
     align-items: stretch;
 
     gap: 14px;
+
   }
 
   .o-loc {
+
     width: 100%;
+
   }
 
   .input-ngay,
+
   .input-ngay input {
+
     width: 100%;
+
   }
 
   .btn-tim-kiem,
+
   .btn-xoa-loc {
+
     width: 100%;
+
   }
 
   .bang-footer {
+
     flex-direction: column;
 
     gap: 12px;
 
     padding: 15px;
+
   }
+
 }
