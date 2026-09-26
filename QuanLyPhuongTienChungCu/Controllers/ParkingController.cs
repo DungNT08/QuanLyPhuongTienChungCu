@@ -908,7 +908,7 @@ public class ParkingController : ControllerBase
     // =====================================================
     // HISTORY
     //
-    // GET: /api/Parking/history
+    // GET: /api/Parking/history?tuNgay=...&denNgay=...
     //
     // TẤT CẢ / CƯ DÂN / XE KHÁCH
     //
@@ -928,7 +928,9 @@ public class ParkingController : ControllerBase
     [Authorize(Roles = "Admin,BaoVe,CuDan")]
     [HttpGet("history")]
     public async Task<ActionResult<IEnumerable<object>>>
-        GetHistory()
+        GetHistory(
+            [FromQuery] DateTime? tuNgay,
+            [FromQuery] DateTime? denNgay)
     {
         // -------------------------------------------------
         // QUERY GỐC
@@ -964,6 +966,24 @@ public class ParkingController : ControllerBase
             query = query.Where(x =>
                 x.PhuongTien != null &&
                 x.PhuongTien.UserId == userId);
+        }
+
+        // -------------------------------------------------
+        // FILTER THEO NGÀY
+        // -------------------------------------------------
+
+        if (tuNgay.HasValue)
+        {
+            query = query.Where(x =>
+                x.ThoiGianVao >= tuNgay.Value);
+        }
+
+        if (denNgay.HasValue)
+        {
+            // Cộng thêm 1 ngày để bao gồm cả ngày kết thúc
+            var denNgayFull = denNgay.Value.AddDays(1);
+            query = query.Where(x =>
+                x.ThoiGianVao <= denNgayFull);
         }
 
         // -------------------------------------------------
@@ -1007,11 +1027,6 @@ public class ParkingController : ControllerBase
 
                     // =================================================
                     // CƯ DÂN
-                    //
-                    // LuotGuiXe
-                    //     -> PhuongTien
-                    //          -> UserId
-                    //               -> Users.HoTen
                     // =================================================
 
                     cuDan =
@@ -1027,10 +1042,6 @@ public class ParkingController : ControllerBase
 
                     // =================================================
                     // CĂN HỘ
-                    //
-                    // PhuongTien.UserId
-                    //     -> CanHo.UserId
-                    //          -> MaCanHo
                     // =================================================
 
                     canHo =
@@ -1053,10 +1064,6 @@ public class ParkingController : ControllerBase
 
                     // =================================================
                     // NGƯỜI GHI VÀO
-                    //
-                    // LuotGuiXe.NguoiGhiVaoId
-                    //     -> Users.UserId
-                    //          -> HoTen
                     // =================================================
 
                     nguoiGhiVao =
@@ -1079,10 +1086,6 @@ public class ParkingController : ControllerBase
 
                     // =================================================
                     // NGƯỜI GHI RA
-                    //
-                    // LuotGuiXe.NguoiGhiRaId
-                    //     -> Users.UserId
-                    //          -> HoTen
                     // =================================================
 
                     nguoiGhiRa =
@@ -1112,15 +1115,6 @@ public class ParkingController : ControllerBase
 
                     // =================================================
                     // TRẠNG THÁI CHO FRONTEND
-                    //
-                    // ACTIVE
-                    //     -> Đang gửi
-                    //
-                    // COMPLETED + xe cư dân
-                    //     -> Đã ra
-                    //
-                    // COMPLETED + xe khách
-                    //     -> Đã thanh toán
                     // =================================================
 
                     trangThai =
@@ -1132,8 +1126,6 @@ public class ParkingController : ControllerBase
 
                     // =================================================
                     // XE KHÁCH
-                    //
-                    // Xe khách không có PhuongTienId
                     // =================================================
 
                     laXeKhach =
